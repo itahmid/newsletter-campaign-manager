@@ -2,7 +2,6 @@ import os, sys
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, _app_ctx_stack, send_from_directory
 from flaskext.mysql import MySQL
-import math
 
 app = Flask(__name__)
 app.config.update(
@@ -27,29 +26,27 @@ error_dict = {'code':'Please enter a campaign code',
              'from_name_sel':'','replyto_sel':'','from_email_sel':''
              }
 
-
-
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'ico/favicon.ico')
+    return send_from_directory(os.path.join(app.root_path, 'static'), 
+                                                'ico/favicon.ico')
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
 
 @app.route('/', defaults={'page': 1})
 @app.route('/page/<int:page>')
 def index(page):
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    
+
     conn = mysql.get_db()
     db = conn.cursor()
     db.execute('SELECT COUNT(id) FROM newsletter')
     count = db.fetchall()
-    db.execute('SELECT * from `newsletter` ORDER BY date_added DESC LIMIT 15 OFFSET %s ' % page)
-
+    db.execute("""SELECT * from `newsletter` 
+                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % page)
     cols = tuple([d[0].decode('utf8') for d in db.description])
     _newsletters = [dict(zip(cols, row)) for row in db]
     newsletters = []
@@ -129,7 +126,6 @@ def edit_campaign(nid):
     res = db.fetchone()
     if res:
         cols = tuple([d[0].decode('utf8') for d in db.description])
-
         newsletter = dict(zip(cols, res))
         db.execute("""SELECT companies_title 
                         FROM companies 
@@ -140,9 +136,9 @@ def edit_campaign(nid):
         companies = db.fetchall()
         db.execute('SELECT name, email FROM `staff`')
         staff = db.fetchall()
-        print staff
-
-        return render_template("edit_campaign.html", newsletter=newsletter, staff=staff, companies=companies)
+        return render_template("edit_campaign.html", newsletter=newsletter, 
+                                    staff=staff, companies=companies)
+    abort(404)
 
 @app.route('/delete_campaign/<int:nid>')
 def delete_campaign(nid):
