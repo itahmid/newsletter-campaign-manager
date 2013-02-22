@@ -60,7 +60,6 @@ def index(page):
                     % newsletter['companies_id'])
         newsletter['companies_id'] = db.fetchall()[0][0]
         newsletters.append(newsletter)
-
     # offset = 15 * page
     # newsletters = newsletters[offset:(offset+15)]
 
@@ -121,6 +120,40 @@ def create_campaign():
 
     return render_template('create_campaign.html', companies=companies, 
                                 staff=staff, error=error)
+
+@app.route('/edit_campaign/<int:nid>')
+def edit_campaign(nid):
+    conn = mysql.get_db()
+    db = conn.cursor()
+    db.execute('SELECT * FROM `newsletter` WHERE id = %d' % nid)
+    res = db.fetchone()
+    if res:
+        cols = tuple([d[0].decode('utf8') for d in db.description])
+
+        newsletter = dict(zip(cols, res))
+        db.execute("""SELECT companies_title 
+                        FROM companies 
+                        WHERE companies_id = %d""" 
+                        % newsletter['companies_id'])
+        newsletter['companies_id'] = db.fetchall()[0][0]
+        db.execute('SELECT companies_id, companies_title FROM `companies`')
+        companies = db.fetchall()
+        db.execute('SELECT name, email FROM `staff`')
+        staff = db.fetchall()
+        print staff
+
+        return render_template("edit_campaign.html", newsletter=newsletter, staff=staff, companies=companies)
+
+@app.route('/delete_campaign/<int:nid>')
+def delete_campaign(nid):
+    conn = mysql.get_db()
+    db = conn.cursor()
+    db.execute('DELETE FROM newsletter WHERE id = %d' % nid)
+    return redirect(url_for('index'))
+
+@app.route('/search/', methods=['POST'])
+def search():
+    query = request.form['query']
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

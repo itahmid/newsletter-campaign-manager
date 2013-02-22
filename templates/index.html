@@ -75,24 +75,31 @@
             </tr>
          </thead>
          <tbody>
-
             {% for email in newsletters %}
             <tr>
                <td>{{ email['code'] }}</td>
                <td>{{ email['companies_id'] }}</td>
-               <td>{{ email['title'] }}</td>
+               <td>
+                  <a href="{{ url_for('edit_campaign', nid=email.id) }}">{{ email['title'] }}</a>
+               </td>
                <td>{{ email['date_added'] }}</td>
                <td>{{ email['date_sent'] }}</td>
                <td>email.list.count</td>
                <td>
-                  <p class="btn btn-danger pull-right" id='{{ email.newsletters_id }}'>Delete</p>
+                  <a href="{{url_for('delete_campaign', nid = email['id']) }}" class="btn btn-danger pull-right" onClick="confirmDelete();" >Delete</a>
                </td>
             </tr>
-         {% endfor %}
+            {% endfor %}
          </tbody>
       </table>
    </div>
 </div>
-<a href="{{ url_for('index', page = (page + 1))
+<div class="pull-right">
+   {% if page != 1 %}
+   <a href="{{ url_for('index', page = (page - 1))
+            }}">Previous Page</a>
+   {% endif %}
+   <a href="{{ url_for('index', page = (page + 1))
             }}">Next Page</a>
+</div>
 {% endblock %}
