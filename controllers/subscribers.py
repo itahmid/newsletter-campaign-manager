@@ -28,8 +28,10 @@ def lists(page):
                 ORDER BY CreatedOn DESC LIMIT 15 OFFSET %s""" % page)
     cols = tuple([d[0].decode('utf8') for d in db.description])
     lists = [dict(zip(cols, row)) for row in db]
-    
-    return render_template('lists.html', lists=lists, page=page)
+    print lists
+    for l in lists:
+        print l
+    return render_template('subscribers/lists.html', lists=lists, page=page)
 
 @mod.route('/create_list', methods=['GET', 'POST'])
 def create_list():
@@ -37,14 +39,13 @@ def create_list():
 
     if request.method == 'POST':
         pass
-    return render_template('list_details.html', error=error)
+    return render_template('subscribers/details.html', error=error)
 
-
-@mod.route('/edit_list/<int:nid>')
-def edit_list():
+@mod.route('/edit_list/<int:lid>')
+def edit_list(lid):
     error = None
     
     if request.method == 'POST':
         pass
-    return render_template('list_details.html', error=error)
+    return render_template('subscribers/details.html', error=error)
     abort(404)
