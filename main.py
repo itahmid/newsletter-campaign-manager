@@ -4,10 +4,9 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 from flaskext.mysql import MySQL
 import settings
 
-app = Flask(__name__)
-app.config.update(
-    DEBUG = True,
-)
+tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
+app = Flask(__name__, template_folder=tmpl_dir)
+app.config.update(DEBUG = True,)
 
 app.secret_key = settings.secret_key
 mysql = MySQL()
@@ -69,7 +68,7 @@ def login():
             session['logged_in'] = True
             return redirect(url_for('index'))
 
-    return render_template('login.html', error=error)
+    return render_template('manage/login.html', error=error)
 
 @app.route('/logout')
 def logout():

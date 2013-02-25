@@ -60,7 +60,7 @@ def create_campaign():
                 conn.rollback()
             return redirect(url_for('index'))
 
-    return render_template('campaign_details.html', companies=companies, 
+    return render_template('campaigns/details.html', companies=companies, 
                                 staff=staff, error=error, editing=False)
 
 @mod.route('/edit_campaign/<int:nid>')
@@ -81,7 +81,7 @@ def edit_campaign(nid):
         companies = db.fetchall()
         db.execute('SELECT name, email FROM `staff`')
         staff = db.fetchall()
-        return render_template("campaign_details.html", newsletter=newsletter, 
+        return render_template("campaigns/details.html", newsletter=newsletter, 
                                     staff=staff, companies=companies, editing=True)
     abort(404)
 
