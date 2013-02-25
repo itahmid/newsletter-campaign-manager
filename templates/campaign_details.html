@@ -41,7 +41,11 @@
          <td class="alternate">
 
             <select width="350" style="width: 350px" name="companies_id" id="companies_id" >
+               {% if editing %}
+               <option value="{{ newsletter['companies_id'] }}">{{ newsletter['companies_id'] }}</option>
+               {% else %}
                <option value="">Select</option>
+               {% endif %}
                {% for comp in companies %}
                <option value="{{ comp[0] }}">{{ comp[1] }}</option>
                {% endfor %}
@@ -54,7 +58,11 @@
       <tr>
          <td>
             <label>#</label>
+            {% if editing %}
+            <input width="350" style="width: 350px" name="code" type="text" id="code" value="{{ newsletter['code'] }}" />
+            {% else %}
             <input width="350" style="width: 350px" name="code" type="text" id="code" value="" />
+            {% endif %}
          </td>
       </tr>
       <tr>
@@ -63,7 +71,11 @@
       <tr>
          <td>
             <label>Subject</label>
+            {% if editing %}
+             <input width="350" style="width: 350px" name="subject" type="text" id="subject" value="{{ newsletter['title'] }}" />
+            {% else %}
             <input width="350" style="width: 350px" name="subject" type="text" id="subject" value="" />
+            {% endif %}
          </td>
       </tr>
       <tr>
@@ -72,7 +84,11 @@
       <tr>
          <td>
             <label>Name</label>
+            {% if editing %}
+            <input width="350" style="width: 350px" name="from_name" type="text" id="from_name" value="{{ newsletter['from_name'] }}" />
+            {% else %}
             <input width="350" style="width: 350px" name="from_name" type="text" id="from_name" value="" />
+            {% endif %}
             or choose
             <select width="350" style="width: 350px" name="from_name_sel" id="from_name_sel" >
                <option value="">Select</option>
@@ -88,7 +104,11 @@
       <tr>
          <td>
             <label>Email</label>
+            {% if editing %}
+            <input width="350" style="width: 350px" name="from_email" type="text" id="from_email" value="{{ newsletter['from_email'] }}"  />
+            {% else %}
             <input width="350" style="width: 350px" name="from_email" type="text" id="from_email" value="" />
+            {% endif %}
             or choose
             <select width="350" style="width: 350px" name="from_email_sel" id="from_email_sel" >
                <option value="">Select</option>
@@ -104,7 +124,11 @@
       <tr>
          <td>
             <label>Reply Email</label>
+            {% if editing %}
+            <input width="350" style="width: 350px" name="replyto_email" type="text" id="replyto_email" value="{{ newsletter['replyto_email'] }}"  />
+            {% else %}
             <input width="350" style="width: 350px" name="replyto_email" type="text" id="replyto_email" value="" />
+            {% endif %}
             or choose
             <select width="350" style="width: 350px" name="replyto_sel" id="replyto_sel" >
                <option value="">Select</option>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   {% block head %}
-  <title>pymail{% block title %}{% endblock %}</title>
+  <title>pymail</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
   <meta name="keywords" content="">
@@ -10,10 +10,12 @@
   <meta charset="utf-8">
 
   <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
-  <style> body { padding-top: 60px; } 
-            td.h { font-size:20px;background:#F5F5F5; }
+  <style type="text/css">
+      body { padding-top: 0 !important;}
+      td.h { font-size:20px;background:#F5F5F5; }
+      }
     </style>
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
 
   <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
   <!--[if lt IE 9]>
@@ -58,10 +60,9 @@
          return false;
     }
   </script>
- 
 
-  {% endblock %}
 </head>
+  {% endblock %}
 <body>
   {% block navbar %}
   <div class="navbar navbar-inverse navbar-fixed-top">
@@ -101,7 +102,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#">Lists</a>
+                  <a href="{{ url_for('subscribers.lists') }}">Lists</a>
                 </li>
                 <li>
                   <a href="#">Unsubscribers</a>
