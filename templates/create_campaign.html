@@ -11,7 +11,7 @@
    {% endfor %}
 {% endif %}
 </div>
-<form action="{{ url_for('create_campaign') }}" method="post">
+<form action="{{ url_for('campaigns.create_campaign') }}" method="post">
    <table class="table table-hover table-bordered">
       <tr>
          <td class="h">Priority</td>
@@ -75,7 +75,6 @@
             <input width="350" style="width: 350px" name="from_name" type="text" id="from_name" value="" />
             or choose
             <select width="350" style="width: 350px" name="from_name_sel" id="from_name_sel" >
-               <option value="">Select</option>
                <option value="">Select</option>
                {% for st in staff %}
                <option value="{{ st[0] }}">{{ st[0] }}</option>

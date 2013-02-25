@@ -83,10 +83,14 @@
                   <a href="{{ url_for('campaigns.edit_campaign', nid=email.id) }}">{{ email['title'] }}</a>
                </td>
                <td>{{ email['date_added'] }}</td>
+               {% if not email['date_sent'] %}
+               <td>Unsent</td>
+               {% else %}
                <td>{{ email['date_sent'] }}</td>
+               {% endif %}
                <td>email.list.count</td>
                <td>
-                  <a href="{{url_for('campaigns.delete_campaign', nid = email['id']) }}" class="btn btn-danger pull-right" onClick="confirmDelete();" >Delete</a>
+                  <a href="{{url_for('campaigns.delete_campaign', nid = email['id']) }}" class="btn btn-danger pull-right" onClick="return confirmDelete();" >Delete</a>
                </td>
             </tr>
             {% endfor %}
