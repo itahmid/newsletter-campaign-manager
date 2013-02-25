@@ -15,83 +15,36 @@ error_dict = {'code':'Please enter a campaign code',
              }
 
 mysql = MySQL()
-mod = Blueprint('campaigns', __name__)
+mod = Blueprint('subscribers', __name__)
 
-
-@mod.route('/create_campaign', methods=['GET', 'POST'])
-def create_campaign():
-    error = None
+@mod.route('/lists', defaults={'page': 1})
+@mod.route('/lists/page/<int:page>')
+def lists(page):
     conn = mysql.get_db()
     db = conn.cursor()
-    db.execute('SELECT companies_id, companies_title FROM `companies`')
-    companies = db.fetchall()
-    db.execute('SELECT name, email FROM `staff`')
-    staff = db.fetchall()
+    db.execute('SELECT COUNT(id) FROM newsletter')
+    count = db.fetchall()
+    db.execute("""SELECT * from `newsletter_list` 
+                ORDER BY CreatedOn DESC LIMIT 15 OFFSET %s""" % page)
+    cols = tuple([d[0].decode('utf8') for d in db.description])
+    lists = [dict(zip(cols, row)) for row in db]
+    
+    return render_template('lists.html', lists=lists, page=page)
+
+@mod.route('/create_list', methods=['GET', 'POST'])
+def create_list():
+    error = None
 
     if request.method == 'POST':
-        errors = [opt for opt, val in request.form.iteritems() if val == '']
-        if len(errors) > 1:
-            error = [error_dict.get(err) for err in errors 
-                        if error_dict.get(err) != '']
-        else:
-            try:
-                db.execute("""INSERT INTO newsletter
-                            (title, code, companies_id, date_added, 
-                            email_templates_id,from_name, from_email,
-                            replyto_email, priority, campaign_id, unsubscribe) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                            (
-                                request.form['subject'], 
-                                request.form['code'], 
-                                request.form['companies_id'], 
-                                int(time.time()),
-                                0,
-                                request.form['from_name'], 
-                                request.form['from_email'], 
-                                request.form['replyto_email'], 
-                                request.form['priority'],
-                                '0',
-                                request.form['unsubscribe']
-                                )
-                            )
-                conn.commit()
-            except Exception as e:
-                print e
-                conn.rollback()
-            return redirect(url_for('index'))
+        pass
+    return render_template('list_details.html', error=error)
 
-    return render_template('create_campaign.html', companies=companies, 
-                                staff=staff, error=error)
 
-@mod.route('/edit_campaign/<int:nid>')
-def edit_campaign(nid):
-    conn = mysql.get_db()
-    db = conn.cursor()
-    db.execute('SELECT * FROM `newsletter` WHERE id = %d' % nid)
-    res = db.fetchone()
-    if res:
-        cols = tuple([d[0].decode('utf8') for d in db.description])
-        newsletter = dict(zip(cols, res))
-        db.execute("""SELECT companies_title 
-                        FROM companies 
-                        WHERE companies_id = %d""" 
-                        % newsletter['companies_id'])
-        newsletter['companies_id'] = db.fetchall()[0][0]
-        db.execute('SELECT companies_id, companies_title FROM `companies`')
-        companies = db.fetchall()
-        db.execute('SELECT name, email FROM `staff`')
-        staff = db.fetchall()
-        return render_template("edit_campaign.html", newsletter=newsletter, 
-                                    staff=staff, companies=companies)
+@mod.route('/edit_list/<int:nid>')
+def edit_list():
+    error = None
+    
+    if request.method == 'POST':
+        pass
+    return render_template('list_details.html', error=error)
     abort(404)
-
-@mod.route('/delete_campaign/<int:nid>')
-def delete_campaign(nid):
-    conn = mysql.get_db()
-    db = conn.cursor()
-    db.execute('DELETE FROM newsletter WHERE id = %d' % nid)
-    return redirect(url_for('index'))
-
-@mod.route('/search/', methods=['POST'])
-def search():
-    query = request.form['query']

@@ -12,3 +12,4 @@ todo
 - campaign searches
 - types/companies/staff
 - unsubscribe links/unsubscriber search & deletion
+- combined create_campaign and edit_campaign into campaign_details

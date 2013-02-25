@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+ {% if error %}
+<div class="alert alert-block">
+   <button type="button" class="close" data-dismiss="alert">&times;</button>
+   <h4>Error</h4>
+   {% for err in error %}
+   <span class="text-error">{{ err }}</span>
+   <br>
+   {% endfor %}
+{% endif %}
+</div>
+<form action="{{ url_for('subscribers.create_list') }}" method="post">
+<table class="table table-hover table-bordered">
+    <tr>
+
+         <td class="h">Priority</td>
+      </tr>
+      <tr>
+         <td>
+            <select width="350" style="width: 350px" name="priority" id="priority">
+               <option value="2">Normal</option>
+               <option value="3">Low</option>
+               <option value="1">High</option>
+            </select>
+         </td>
+      </tr>
+   </table>
+      <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+</form>
+
+<br />
+{% endblock %}

@@ -77,6 +77,7 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    from controllers import campaigns
+    from controllers import campaigns, subscribers
     app.register_blueprint(campaigns.mod)
+    app.register_blueprint(subscribers.mod)
     app.run(host='0.0.0.0', port = 5000, debug = True)
