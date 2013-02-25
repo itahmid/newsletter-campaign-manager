@@ -1,7 +1,7 @@
-pypip
+pipmail
 =======
 
-Email campaign manager written using the Python Flask micro-framework.  I created this for a specific application, so that I could leave my other pymail project alone.
+Email campaign manager written using the Python Flask micro-framework.  Adapting my pymail project for a specific application.
 
 todo
 =======
