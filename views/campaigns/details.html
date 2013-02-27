@@ -11,6 +11,7 @@
    {% endfor %}
 {% endif %}
 </div>
+{if editing 
 <form action="{{ url_for('campaigns.create_campaign') }}" method="post">
    <table class="table table-hover table-bordered">
       <tr>
@@ -30,7 +31,7 @@
       </tr>
       <tr>
          <td class="alternate">
-            <input type="checkbox" name="unsubscribe" id="unsubscribe" value="1" />
+            <input type="checkbox" name="unsub" id="unsub" value="1" />
             Yes add an unsubscribe link to this email
          </td>
       </tr>
@@ -40,9 +41,9 @@
       <tr>
          <td class="alternate">
 
-            <select width="350" style="width: 350px" name="companies_id" id="companies_id" >
+            <select width="350" style="width: 350px" name="company" id="company" >
                {% if editing %}
-               <option value="{{ newsletter['companies_id'] }}">{{ newsletter['companies_id'] }}</option>
+               <option value="{{ newsletter['company'] }}">{{ newsletter['company'] }}</option>
                {% else %}
                <option value="">Select</option>
                {% endif %}
@@ -72,7 +73,7 @@
          <td>
             <label>Subject</label>
             {% if editing %}
-             <input width="350" style="width: 350px" name="subject" type="text" id="subject" value="{{ newsletter['title'] }}" />
+             <input width="350" style="width: 350px" name="subject" type="text" id="subject" value="{{ newsletter['name'] }}" />
             {% else %}
             <input width="350" style="width: 350px" name="subject" type="text" id="subject" value="" />
             {% endif %}

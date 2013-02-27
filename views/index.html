@@ -65,12 +65,12 @@
       <table class="table table-hover table-bordered">
          <thead>
             <tr>
-               <th>Campaign</th>
+               <th>Code</th>
                <th>Company</th>
-               <th>Title</th>
+               <th>Name</th>
                <th>Date Added</th>
                <th>Date Sent</th>
-               <th>Recipient Count</th>
+               <th>Recipients</th>
                <th></th>
             </tr>
          </thead>
@@ -78,9 +78,9 @@
             {% for email in newsletters %}
             <tr>
                <td>{{ email['code'] }}</td>
-               <td>{{ email['companies_id'] }}</td>
+               <td>{{ email['company'] }}</td>
                <td>
-                  <a href="{{ url_for('campaigns.edit_campaign', nid=email.id) }}">{{ email['title'] }}</a>
+                  <a href="{{ url_for('campaigns.edit_campaign', nid=email['newsletters_id']) }}">{{ email['name'] }}</a>
                </td>
                <td>{{ email['date_added'] }}</td>
                {% if not email['date_sent'] %}
@@ -90,7 +90,7 @@
                {% endif %}
                <td>email.list.count</td>
                <td>
-                  <a href="{{url_for('campaigns.delete_campaign', nid = email['id']) }}" class="btn btn-danger pull-right" onClick="return confirmDelete();" >Delete</a>
+                  <a href="{{url_for('campaigns.delete_campaign', nid = email['newsletters_id']) }}" class="btn btn-danger pull-right" onClick="return confirmDelete();" >Delete</a>
                </td>
             </tr>
             {% endfor %}
