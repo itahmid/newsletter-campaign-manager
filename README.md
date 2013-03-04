@@ -5,6 +5,7 @@ Email campaign manager written using the Python Flask micro-framework.  Adapting
 
 todo
 =======
+- figure how to authenticate users
 - add everything the old Ruby/PHP versions have
 - recipients lists
 - email templates and delivery
@@ -12,4 +13,3 @@ todo
 - campaign searches
 - types/companies/staff
 - unsubscribe links/unsubscriber search & deletion
-- combined create_campaign and edit_campaign into campaign_details
