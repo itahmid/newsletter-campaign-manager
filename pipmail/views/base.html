@@ -78,7 +78,7 @@
           <span class="icon-bar"></span>
         </a>
 
-        <a class="brand" href="/">pymail</a>
+        <a class="brand" href="/">pipmail</a>
         <div class="nav-collapse collapse">
           <ul class="nav">
             <li class="dropdown">
@@ -105,9 +105,16 @@
                 Subscribers <b class="caret"></b>
               </a>
               <ul class="dropdown-menu">
-                <li>
+                <li class="dropdown-submenu">
                   <a href="{{ url_for('subscribers.lists') }}">Lists</a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a href="#">Create</a>
+                    </li>
+
+                  </ul>
                 </li>
+
                 <li>
                   <a href="#">Unsubscribers</a>
                 </li>
@@ -127,35 +134,35 @@
           <ul class="nav pull-right">
             {% if not session['logged_in'] %}
             <li>
-            <a href="{{ url_for('login') }}">Login</a>
-          </li>
-         {% else %}
-          <li>
-            <a href="{{ url_for('logout') }}">Logout</a>
-          </li>
-          {% endif %}
-        </ul>
-        {% endblock %}
-      </div>
-      <!--/.nav-collapse --> </div>
-  </div>
-
-</div>
-{% endblock %}
-<div class="container page">
-  <div class="content">
-    {% block content %}
+              <a href="{{ url_for('login') }}">Login</a>
+            </li>
+            {% else %}
+            <li>
+              <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+            {% endif %}
+          </ul>
           {% endblock %}
+        </div>
+        <!--/.nav-collapse --> </div>
+    </div>
+
   </div>
-  <hr>
-  {% block footer %}
-  <footer class="footer">
-    <p>pipmail</p>
-  </footer>
   {% endblock %}
-</div>
-{% block js_footer %}
-<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
-{% endblock %}
+  <div class="container page">
+    <div class="content">
+      {% block content %}
+          {% endblock %}
+    </div>
+    <hr>
+    {% block footer %}
+    <footer class="footer">
+      <p>pipmail</p>
+    </footer>
+    {% endblock %}
+  </div>
+  {% block js_footer %}
+  <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
+  {% endblock %}
 </body>
 </html>

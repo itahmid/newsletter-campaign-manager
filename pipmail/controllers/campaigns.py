@@ -1,6 +1,6 @@
 import time
 from flask import Blueprint, request, redirect, url_for, abort, \
-    render_template, current_app
+    render_template
 from flask.ext.mysql import MySQL
 from pipmail.auth import login_required
 
@@ -21,10 +21,6 @@ mod = Blueprint('campaigns', __name__)
 @mod.route('/create_campaign', methods=['GET', 'POST'])
 @login_required
 def create_campaign():
-    # app = current_app._get_current_object()
-    # if not authorize(app):
-    #     return render_template('auth/login.html')
-
     error = None
     conn = mysql.get_db()
     db = conn.cursor()
@@ -99,6 +95,7 @@ def create_campaign():
 
 
 @mod.route('/edit_campaign/<int:nid>')
+@login_required
 def edit_campaign(nid):
     conn = mysql.get_db()
     db = conn.cursor()
@@ -126,6 +123,7 @@ def edit_campaign(nid):
 
 
 @mod.route('/delete_campaign/<int:nid>')
+@login_required
 def delete_campaign(nid):
     conn = mysql.get_db()
     db = conn.cursor()

@@ -1,4 +1,5 @@
 import os
+import datetime
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
 from flask.ext.mysql import MySQL
@@ -45,6 +46,9 @@ def index(page):
     _newsletters = [dict(zip(cols, row)) for row in db]
     newsletters = []
     for newsletter in _newsletters:
+        unix_to_local = int(newsletter['date_added'])
+        newsletter['date_added'] = datetime.datetime.fromtimestamp(
+            unix_to_local).strftime('%Y-%m-%d %I:%M:%S')
         if newsletter['company'] == 0:
             newsletter['company'] = 'N/A'
         else:
@@ -76,6 +80,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     session['logged_in'] = False
     return render_template('auth/login.html', logout=True)
