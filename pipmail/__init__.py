@@ -2,9 +2,8 @@ import os
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
 from flask.ext.mysql import MySQL
-from functools import wraps
 import settings
-
+from auth import login_required
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
@@ -19,17 +18,6 @@ app.config.setdefault('MYSQL_DATABASE_DB', settings.DB)
 app.config.setdefault('MYSQL_DATABASE_CHARSET', 'utf8')
 
 mysql.init_app(app)
-
-
-def login_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if session['logged_in']:
-            print session['logged_in']
-            return func(*args, **kwargs)
-        else:
-            return redirect('/login')
-    return wrapper
 
 
 @app.route('/favicon.ico')

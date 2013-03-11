@@ -2,6 +2,7 @@ import time
 from flask import Blueprint, request, redirect, url_for, abort, \
     render_template, current_app
 from flask.ext.mysql import MySQL
+from pipmail.auth import login_required
 
 
 error_dict = {'code': 'Please enter a campaign code',
@@ -18,6 +19,7 @@ mod = Blueprint('campaigns', __name__)
 
 
 @mod.route('/create_campaign', methods=['GET', 'POST'])
+@login_required
 def create_campaign():
     # app = current_app._get_current_object()
     # if not authorize(app):
