@@ -29,18 +29,18 @@ def lists(page):
 @login_required
 def create_list():
     error = None
-    
+
     if request.method == 'POST':
         pass
-    return render_template('subscribers/details.html', error=error)
+    return render_template('subscribers/details.html', error=error,
+                           editing=False)
 
 
 @mod.route('/edit_list/<int:lid>')
 @login_required
 def edit_list(lid):
-    error = None
 
     if request.method == 'POST':
         pass
-    return render_template('subscribers/details.html', error=error)
+    return render_template('subscribers/details.html', editing=True)
     abort(404)
