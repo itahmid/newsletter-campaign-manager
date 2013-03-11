@@ -19,9 +19,9 @@ mod = Blueprint('campaigns', __name__)
 
 @mod.route('/create_campaign', methods=['GET', 'POST'])
 def create_campaign():
-    app = current_app._get_current_object()
-    if not authorize(app):
-        return render_template('auth/login.html')
+    # app = current_app._get_current_object()
+    # if not authorize(app):
+    #     return render_template('auth/login.html')
 
     error = None
     conn = mysql.get_db()

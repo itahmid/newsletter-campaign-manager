@@ -1,7 +1,8 @@
 import os
 from flask import Flask, redirect, request, url_for, render_template, \
-    send_from_directory
+    send_from_directory, session
 from flask.ext.mysql import MySQL
+from functools import wraps
 import settings
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
@@ -9,7 +10,6 @@ app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
 app.secret_key = settings.secret_key
 mysql = MySQL()
-app.logged_in = False
 
 
 app.config.setdefault('MYSQL_DATABASE_PORT', 3306)
@@ -19,6 +19,17 @@ app.config.setdefault('MYSQL_DATABASE_DB', settings.DB)
 app.config.setdefault('MYSQL_DATABASE_CHARSET', 'utf8')
 
 mysql.init_app(app)
+
+
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if session['logged_in']:
+            print session['logged_in']
+            return func(*args, **kwargs)
+        else:
+            return redirect('/login')
+    return wrapper
 
 
 @app.route('/favicon.ico')
@@ -34,10 +45,8 @@ def page_not_found(e):
 
 @app.route('/', defaults={'page': 1})
 @app.route('/page/<int:page>')
+@login_required
 def index(page):
-    if not app.logged_in:
-        return render_template('auth/login.html')
-
     conn = mysql.get_db()
     db = conn.cursor()
     # db.execute('SELECT COUNT(newsletters_id) FROM newsletters')
@@ -63,7 +72,7 @@ def index(page):
 def login():
     error = None
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'username' in request.form:
         username = request.form['username']
         password = request.form['password']
         db = mysql.get_db().cursor()
@@ -73,12 +82,12 @@ def login():
         if not check:
             error = 'Invalid username or password'
         else:
-            app.logged_in = True
+            session['logged_in'] = True
             return redirect(url_for('index'))
     return render_template('auth/login.html', error=error)
 
 
 @app.route('/logout')
 def logout():
-    app.logged_in = False
+    session['logged_in'] = False
     return render_template('auth/login.html', logout=True)

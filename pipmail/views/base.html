@@ -125,37 +125,37 @@
           </ul>
           {% block navbar_right %}
           <ul class="nav pull-right">
-
-<!--             <li>
-              <a href="{{ url_for('login') }}">Login</a>
-            </li> -->
-
+            {% if not session['logged_in'] %}
             <li>
-              <a href="{{ url_for('logout') }}">Logout</a>
-            </li>
-    
-          </ul>
-          {% endblock %}
-        </div>
-        <!--/.nav-collapse --> </div>
-    </div>
+            <a href="{{ url_for('login') }}">Login</a>
+          </li>
+         {% else %}
+          <li>
+            <a href="{{ url_for('logout') }}">Logout</a>
+          </li>
+          {% endif %}
+        </ul>
+        {% endblock %}
+      </div>
+      <!--/.nav-collapse --> </div>
+  </div>
 
-  </div>
-  {% endblock %}
-  <div class="container page">
-    <div class="content">
-      {% block content %}
+</div>
+{% endblock %}
+<div class="container page">
+  <div class="content">
+    {% block content %}
           {% endblock %}
-    </div>
-    <hr>
-    {% block footer %}
-    <footer class="footer">
-      <p>pipmail</p>
-    </footer>
-    {% endblock %}
   </div>
-  {% block js_footer %}
-  <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
+  <hr>
+  {% block footer %}
+  <footer class="footer">
+    <p>pipmail</p>
+  </footer>
   {% endblock %}
+</div>
+{% block js_footer %}
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
+{% endblock %}
 </body>
 </html>
