@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   {% block head %}
-  <title>pymail</title>
+  <title>pipmail</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
   <meta name="keywords" content="">
@@ -125,15 +125,15 @@
           </ul>
           {% block navbar_right %}
           <ul class="nav pull-right">
-            {% if not app.logged_in %}
-            <li>
+
+<!--             <li>
               <a href="{{ url_for('login') }}">Login</a>
-            </li>
-            {% else %}
+            </li> -->
+
             <li>
               <a href="{{ url_for('logout') }}">Logout</a>
             </li>
-            {% endif %}
+    
           </ul>
           {% endblock %}
         </div>
@@ -150,7 +150,7 @@
     <hr>
     {% block footer %}
     <footer class="footer">
-      <p>pymail</p>
+      <p>pipmail</p>
     </footer>
     {% endblock %}
   </div>
