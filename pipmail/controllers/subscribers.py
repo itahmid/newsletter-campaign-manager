@@ -87,8 +87,22 @@ def create_list():
 @mod.route('/edit_list/<int:lid>')
 @login_required
 def edit_list(lid):
-
-    if request.method == 'POST':
-        pass
-    return render_template('subscribers/details.html', editing=True)
+    conn = mysql.get_db()
+    db = conn.cursor()
+    db.execute('SELECT * FROM `lists` WHERE lists_id = %d' % lid)
+    res = db.fetchone()
+    if res:
+        cols = tuple([d[0].decode('utf8') for d in db.description])
+        lst = dict(zip(cols, res))
+    return render_template('subscribers/details.html', editing=True, list=lst)
     abort(404)
+
+
+@mod.route('/delete_list/<int:lid>')
+@login_required
+def delete_campaign(lid):
+    conn = mysql.get_db()
+    db = conn.cursor()
+    db.execute('DELETE FROM lists WHERE lists_id = %d' % lid)
+    conn.commit()
+    return redirect(url_for('subscribers.lists'))

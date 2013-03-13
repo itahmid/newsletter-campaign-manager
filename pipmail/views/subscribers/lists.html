@@ -33,7 +33,7 @@
                     <td>0</td>
                     <td>
                         <a href="{{ url_for('subscribers.edit_list', lid=lst['lists_id'] ) }}" class="btn btn-success ">Edit</a>
-                        <a href="teststest" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
+                        <a href="{{url_for('subscribers.delete_campaign', lid = lst['lists_id']) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
 
                     </td>
                 </tr>

@@ -20,7 +20,11 @@
       <tr>
          <td>
             <label>Enter the name of the list</label>
+            {% if editing %}
+            <input width="200" style="width: 200px" name="name" type="text" id="name" value="{{ list['name'] }}" />
+            {% else %}
             <input width="200" style="width: 200px" name="name" type="text" id="name" value="" />
+            {% endif %}
          </td>
       </tr>
       <tr>
@@ -30,7 +34,11 @@
       <tr>
          <td>
             <label>Enter a brief description for this list</label>
+            {% if editing %}
+            <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ list['description'] }}" />
+            {% else %}
             <input width="200" style="width: 400px" name="description" type="text" id="description" value="" />
+            {% endif %}
          </td>
       </tr>
       {% if editing %}
