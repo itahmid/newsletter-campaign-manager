@@ -1,10 +1,9 @@
 import os
-import datetime
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
 from flask.ext.mysql import MySQL
 import settings
-from auth import login_required
+from helpers import login_required, unix_to_local
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
@@ -46,9 +45,8 @@ def index(page):
     _newsletters = [dict(zip(cols, row)) for row in db]
     newsletters = []
     for newsletter in _newsletters:
-        unix_to_local = int(newsletter['date_added'])
-        newsletter['date_added'] = datetime.datetime.fromtimestamp(
-            unix_to_local).strftime('%Y-%m-%d %I:%M:%S')
+
+        newsletter['date_added'] = unix_to_local(newsletter['date_added'])
         if newsletter['company'] == 0:
             newsletter['company'] = 'N/A'
         else:

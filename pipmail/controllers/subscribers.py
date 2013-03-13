@@ -1,8 +1,7 @@
 from flask import Blueprint, request, abort, render_template, redirect, url_for
 from flaskext.mysql import MySQL
-from pipmail.auth import login_required
+from pipmail.helpers import login_required, unix_to_local
 import time
-import datetime
 
 error_dict = {'name': 'Please enter a name for this list',
               'description': 'Please enter a brief description for this list',
@@ -31,9 +30,7 @@ def lists(page):
     _lists = [dict(zip(cols, row)) for row in db]
     lists = []
     for lst in _lists:
-        unix_to_local = int(lst['date_added'])
-        lst['date_added'] = datetime.datetime.fromtimestamp(
-            unix_to_local).strftime('%Y-%m-%d %I:%M:%S')
+        lst['date_added'] = unix_to_local(lst['date_added'])
         lists.append(lst)
     return render_template('subscribers/lists.html', lists=lists, page=page)
 

@@ -2,7 +2,7 @@ import time
 from flask import Blueprint, request, redirect, url_for, abort, \
     render_template
 from flask.ext.mysql import MySQL
-from pipmail.auth import login_required
+from pipmail.helpers import login_required
 
 
 error_dict = {'code': 'Please enter a campaign code',

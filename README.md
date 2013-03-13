@@ -13,7 +13,6 @@ todo
 - campaign searches
 - types/companies/staff
 - unsubscribe links/unsubscriber search & deletion
-- make unix_to_local a function since i use it across controllers
 
 installation
 =======
