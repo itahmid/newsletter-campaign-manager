@@ -2,7 +2,7 @@ import time
 from flask import Blueprint, request, redirect, url_for, abort, \
     render_template
 from flask.ext.mysql import MySQL
-from pipmail.helpers import login_required
+from pipmail.helpers import login_required, unix_to_local
 
 
 error_dict = {'code': 'Please enter a campaign code',
@@ -16,6 +16,34 @@ error_dict = {'code': 'Please enter a campaign code',
 
 mysql = MySQL()
 mod = Blueprint('campaigns', __name__)
+
+
+@mod.route('/campaigns', defaults={'page': 1})
+@mod.route('/page/<int:page>')
+@login_required
+def index(page):
+    conn = mysql.get_db()
+    db = conn.cursor()
+    # db.execute('SELECT COUNT(newsletters_id) FROM newsletters')
+    # count = db.fetchall()
+    db.execute("""SELECT * FROM `newsletters`
+                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % page)
+    cols = tuple([d[0].decode('utf8') for d in db.description])
+    _newsletters = [dict(zip(cols, row)) for row in db]
+    newsletters = []
+    for newsletter in _newsletters:
+
+        newsletter['date_added'] = unix_to_local(newsletter['date_added'])
+        if newsletter['company'] == 0:
+            newsletter['company'] = 'N/A'
+        else:
+            db.execute("""SELECT name FROM `companies`
+                        WHERE companies_id = %d""" % newsletter['company'])
+            newsletter['company'] = db.fetchall()[0][0]
+        newsletters.append(newsletter)
+
+    return render_template('campaigns/index.html', newsletters=newsletters,
+                           page=page)
 
 
 @mod.route('/create_campaign', methods=['GET', 'POST'])

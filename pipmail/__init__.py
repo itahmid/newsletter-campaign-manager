@@ -3,7 +3,7 @@ from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
 from flask.ext.mysql import MySQL
 import settings
-from helpers import login_required, unix_to_local
+from helpers import login_required
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
@@ -31,33 +31,6 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-@app.route('/', defaults={'page': 1})
-@app.route('/page/<int:page>')
-@login_required
-def index(page):
-    conn = mysql.get_db()
-    db = conn.cursor()
-    # db.execute('SELECT COUNT(newsletters_id) FROM newsletters')
-    # count = db.fetchall()
-    db.execute("""SELECT * FROM `newsletters`
-                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % page)
-    cols = tuple([d[0].decode('utf8') for d in db.description])
-    _newsletters = [dict(zip(cols, row)) for row in db]
-    newsletters = []
-    for newsletter in _newsletters:
-
-        newsletter['date_added'] = unix_to_local(newsletter['date_added'])
-        if newsletter['company'] == 0:
-            newsletter['company'] = 'N/A'
-        else:
-            db.execute("""SELECT name FROM `companies`
-                        WHERE companies_id = %d""" % newsletter['company'])
-            newsletter['company'] = db.fetchall()[0][0]
-        newsletters.append(newsletter)
-
-    return render_template('index.html', newsletters=newsletters, page=page)
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -73,7 +46,7 @@ def login():
             error = 'Invalid username or password'
         else:
             session['logged_in'] = True
-            return redirect(url_for('index'))
+            return redirect(url_for('campaigns.index'))
     return render_template('auth/login.html', error=error)
 
 

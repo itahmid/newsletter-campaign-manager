@@ -18,7 +18,7 @@ mod = Blueprint('subscribers', __name__)
 @mod.route('/lists', defaults={'page': 0})
 @mod.route('/lists/page/<int:page>')
 @login_required
-def lists(page):
+def index(page):
     conn = mysql.get_db()
     db = conn.cursor()
     db.execute('SELECT COUNT(lists_id) FROM lists')
@@ -32,7 +32,7 @@ def lists(page):
     for lst in _lists:
         lst['date_added'] = unix_to_local(lst['date_added'])
         lists.append(lst)
-    return render_template('subscribers/lists.html', lists=lists, page=page)
+    return render_template('subscribers/index.html', lists=lists, page=page)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -102,4 +102,4 @@ def delete_campaign(lid):
     db = conn.cursor()
     db.execute('DELETE FROM lists WHERE lists_id = %d' % lid)
     conn.commit()
-    return redirect(url_for('subscribers.lists'))
+    return redirect(url_for('subscribers.index'))
