@@ -31,6 +31,12 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+@app.route('/')
+@login_required
+def index():
+    return redirect(url_for('campaigns.index'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None

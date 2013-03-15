@@ -6,11 +6,10 @@ import datetime
 def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if session['logged_in']:
-            print session['logged_in']
-            return func(*args, **kwargs)
-        else:
+        if not session.get('logged_in'):
             return redirect('/login')
+        else:
+            return func(*args, **kwargs)
     return wrapper
 
 
