@@ -32,15 +32,15 @@ def index(page):
     _lists = [dict(zip(cols, row)) for row in db]
     lists = []
     for lst in _lists:
+        lid = lst['lists_id']
+        db.execute('SELECT COUNT(list_id) \
+                    FROM recipients WHERE list_id = %s' % lid)
+        recip_count = db.fetchall()
+        if recip_count > 0:
+            lst['list_count'] = recip_count
         lst['date_added'] = unix_to_local(lst['date_added'])
         lists.append(lst)
     return render_template('subscribers/index.html', lists=lists, page=page)
-
-#15 per page
-#count
-#n_pages = count/15
-#pass n_pages
-#for reach ehverhv
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -101,6 +101,28 @@ def edit_list(lid):
         lst = dict(zip(cols, res))
     return render_template('subscribers/details.html', editing=True, list=lst)
     abort(404)
+
+
+@mod.route('/edit_list_recipients/<int:lid>')
+@login_required
+def edit_list_recipients(lid):
+    conn = mysql.get_db()
+    db = conn.cursor()
+    db.execute('SELECT * FROM `recipients` WHERE list_id = %d' % lid)
+    res = db.fetchall()
+    if res:
+        cols = tuple([d[0].decode('utf8') for d in db.description])
+        lst = dict(zip(cols, res))
+    else:
+        lst = {'list_id': lid}
+    return render_template('subscribers/edit_recipients.html', list=lst)
+    abort(404)
+
+
+@mod.route('/create_recipient/<int:lid>')
+@login_required
+def create_recipient(lid):
+    return render_template('subscribers/create_recipient.html')
 
 
 @mod.route('/delete_list/<int:lid>')

@@ -18,6 +18,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Description</th>
                     <th>Date Added</th>
                     <th>Recipients</th>
                     <th></th>
@@ -28,8 +29,8 @@
                 {% for lst in lists %}
                 <tr>
                     <td>{{ lst['name'] }}</td>
-                    <td>{{ lst['date_added'] }}</td>
                     <td>{{ lst['description'] }}</td>
+                    <td>{{ lst['date_added'] }}</td>
                     <td>0</td>
                     <td>
                         <a href="{{ url_for('subscribers.edit_list', lid=lst['lists_id'] ) }}" class="btn btn-success ">Edit</a>
