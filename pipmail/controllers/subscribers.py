@@ -21,11 +21,13 @@ mod = Blueprint('subscribers', __name__)
 def index(page):
     conn = mysql.get_db()
     db = conn.cursor()
-    db.execute('SELECT COUNT(lists_id) FROM lists')
-    count = db.fetchall()
-    print count
+    offset = 0
+
+    if page > 0:
+        offset = (page * 15)
+
     db.execute("""SELECT * FROM `lists`
-                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % page)
+                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % offset)
     cols = tuple([d[0].decode('utf8') for d in db.description])
     _lists = [dict(zip(cols, row)) for row in db]
     lists = []
@@ -33,6 +35,12 @@ def index(page):
         lst['date_added'] = unix_to_local(lst['date_added'])
         lists.append(lst)
     return render_template('subscribers/index.html', lists=lists, page=page)
+
+#15 per page
+#count
+#n_pages = count/15
+#pass n_pages
+#for reach ehverhv
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -76,7 +84,7 @@ def create_list():
                 conn.rollback()
             #return render_template('subscribers/lists.html', success=True,
                                    #lists=lists, page=1)
-            return redirect(url_for('subscribers.lists'))
+            return redirect(url_for('subscribers.index'))
     return render_template('subscribers/details.html', error=error,
                            editing=False)
 

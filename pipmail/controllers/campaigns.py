@@ -18,16 +18,19 @@ mysql = MySQL()
 mod = Blueprint('campaigns', __name__)
 
 
-@mod.route('/campaigns', defaults={'page': 1})
+@mod.route('/campaigns', defaults={'page': 0})
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
     conn = mysql.get_db()
     db = conn.cursor()
+    offset = 0
     # db.execute('SELECT COUNT(newsletters_id) FROM newsletters')
     # count = db.fetchall()
+    if page > 0:
+        offset = (page * 15)
     db.execute("""SELECT * FROM `newsletters`
-                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % page)
+                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % offset)
     cols = tuple([d[0].decode('utf8') for d in db.description])
     _newsletters = [dict(zip(cols, row)) for row in db]
     newsletters = []

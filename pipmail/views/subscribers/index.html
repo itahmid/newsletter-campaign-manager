@@ -43,7 +43,7 @@
     </div>
 </div>
 <div class="pull-right">
-    {% if page != 1 %}
+    {% if page != 0 %}
     <a href="{{ url_for('subscribers.index', page = (page - 1))
             }}">Previous Page</a>
     {% endif %}
