@@ -25,8 +25,6 @@ def index(page):
     conn = mysql.get_db()
     db = conn.cursor()
     offset = 0
-    # db.execute('SELECT COUNT(newsletters_id) FROM newsletters')
-    # count = db.fetchall()
     if page > 0:
         offset = (page * 15)
     db.execute("""SELECT * FROM `newsletters`
@@ -35,7 +33,14 @@ def index(page):
     _newsletters = [dict(zip(cols, row)) for row in db]
     newsletters = []
     for newsletter in _newsletters:
-
+        if newsletter['list_id'] > 0:
+            lid = newsletter['list_id']
+            db.execute('SELECT COUNT(%s) FROM newsletters' % lid)
+            recip_count = db.fetchall()
+            if recip_count > 0:
+                newsletters['list_count'] = recip_count
+        else:
+            newsletter['list_count'] = 0
         newsletter['date_added'] = unix_to_local(newsletter['date_added'])
         if newsletter['company'] == 0:
             newsletter['company'] = 'N/A'
@@ -61,11 +66,12 @@ def create_campaign():
     staff = db.fetchall()
 
     if request.method == 'POST':
-
         errors = [opt for opt, val in request.form.iteritems()
-                  if (val == '' and opt[:len(opt) - 3] != 'sel')]
+                  if (val == '' and opt[len(opt) - 3:] != 'sel')]
 
         if len(errors) > 1:
+            for error in errors:
+                print error
             error = [error_dict.get(err) for err in errors
                      if error_dict.get(err) != '']
         else:
