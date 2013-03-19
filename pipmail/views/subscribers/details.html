@@ -13,10 +13,14 @@
 {% endif %}
 <form action="{{ url_for('subscribers.create_list') }}" method="post">
    <table class="table table-hover table-bordered">
+      <thead>
       <tr>
 
          <td class="h">Name</td>
+         <td class="span8 div-content">Test</td>
       </tr>
+   </thead>
+   <tbody>
       <tr>
          <td>
             <label>Enter the name of the list</label>
@@ -49,6 +53,25 @@
             {% endif %}
          </td>
       </tr>
+      <tr>
+      <td>
+         <select>
+  <option>1</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+</select>
+ 
+<select multiple="multiple">
+  <option>1</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+</select>
+</td></tr>
+   </tbody>
    </table>
    <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
 </form>

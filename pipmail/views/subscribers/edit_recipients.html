@@ -2,8 +2,8 @@
 {% block content %}
 <div class="row-fluid">
     <div class="span20">
-        <h1 class="pull-left">Latest Campaigns</h1><br>
-        <a href="{{ url_for('subscribers.create_recipient', lid= list['list_id']) }}" class="btn btn-success pull-right">New Recipient</a>
+        <h1 class="pull-left">Recipients</h1><br>
+        <a href="{{ url_for('subscribers.create_recipient', lid = list['list_id']) }}" class="btn btn-success pull-right">New Recipient</a>
         <table style="overflow: auto;" class="table table-hover table-bordered">
             <thead>
                 <tr>

@@ -22,15 +22,16 @@ def index(page):
     conn = mysql.get_db()
     db = conn.cursor()
     offset = 0
+    lsts = []
 
     if page > 0:
         offset = (page * 15)
 
-    db.execute("""SELECT * FROM `lists`
-                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % offset)
+    db.execute("""SELECT * FROM lists
+                  ORDER BY date_added
+                  DESC LIMIT 15 OFFSET %s""" % offset)
     cols = tuple([d[0].decode('utf8') for d in db.description])
     _lists = [dict(zip(cols, row)) for row in db]
-    lists = []
     for lst in _lists:
         lid = lst['lists_id']
         db.execute('SELECT COUNT(list_id) \
@@ -39,8 +40,8 @@ def index(page):
         if recip_count > 0:
             lst['list_count'] = recip_count
         lst['date_added'] = unix_to_local(lst['date_added'])
-        lists.append(lst)
-    return render_template('subscribers/index.html', lists=lists, page=page)
+        lsts.append(lst)
+    return render_template('subscribers/index.html', lists=lsts, page=page)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -94,12 +95,13 @@ def create_list():
 def edit_list(lid):
     conn = mysql.get_db()
     db = conn.cursor()
-    db.execute('SELECT * FROM `lists` WHERE lists_id = %d' % lid)
+    db.execute('SELECT * FROM lists WHERE lists_id = %d' % lid)
     res = db.fetchone()
     if res:
         cols = tuple([d[0].decode('utf8') for d in db.description])
         lst = dict(zip(cols, res))
-    return render_template('subscribers/details.html', editing=True, list=lst)
+        return render_template('subscribers/details.html', editing=True,
+                               list=lst)
     abort(404)
 
 
@@ -119,10 +121,41 @@ def edit_list_recipients(lid):
     abort(404)
 
 
-@mod.route('/create_recipient/<int:lid>')
+@mod.route('/create_recipient')
 @login_required
-def create_recipient(lid):
+def create_recipient():
     return render_template('subscribers/create_recipient.html')
+
+
+@mod.route('/add_recipient')
+def add_recipient(lid, methods=['GET', 'POST']):
+    conn = mysql.get_db()
+    db = conn.cursor()
+    if request.method == 'POST':
+        try:
+            db.execute("""INSERT INTO recipients
+                          (
+                            first_name,
+                            last_name,
+                            email,
+                            list_id
+                          )
+                          VALUES (
+                            %s,
+                            %s,
+                            %s,
+                            %s)
+                        """,
+                      (
+                          request.form['first_name'],
+                          request.form['last_name'],
+                          request.form['email'],
+                          lid
+                      ))
+        except Exception, e:
+            print e
+            conn.rollback()
+    return redirect(url_for('subscribers.edit_list_recipients'))
 
 
 @mod.route('/delete_list/<int:lid>')
