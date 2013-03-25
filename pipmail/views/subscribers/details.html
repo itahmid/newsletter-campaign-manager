@@ -4,77 +4,99 @@
 {% if error %}
 <br>
 <div class="alert alert-error">
-   <button type="button" class="close" data-dismiss="alert">&times;</button>
-   <h4>Error</h4>
-   {% for err in error %}
-   <span class="text-error">{{ err }}</span>
-   {% endfor %}
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <h4>Error</h4>
+  {% for err in error %}
+  <span class="text-error">{{ err }}</span>
+  {% endfor %}
 </div>
 {% endif %}
 <form action="{{ url_for('subscribers.create_list') }}" method="post">
-   <table class="table table-hover table-bordered">
-      <thead>
-      <tr>
+  <div class="row-fluid">
+    <div class="span7">
+      <table class="table table-hover table-bordered">
+        <thead>
+          <tr>
+            <td class="h">List Details</td>
+          </tr>
+        </thead>
+        <tbody>
 
-         <td class="h">Name</td>
-         <td class="span8 div-content">Test</td>
-      </tr>
-   </thead>
-   <tbody>
-      <tr>
-         <td>
-            <label>Enter the name of the list</label>
-            {% if editing %}
-            <input width="200" style="width: 200px" name="name" type="text" id="name" value="{{ list['name'] }}" />
-            {% else %}
-            <input width="200" style="width: 200px" name="name" type="text" id="name" value="" />
-            {% endif %}
-         </td>
-      </tr>
-      <tr>
+          <tr>
+            <td colspan="2">
+              <label> <strong>Enter the name of the list</strong>
+              </label>
+              {% if editing %}
+              <input width="200" style="width: 200px" name="name" type="text" id="name" value="{{ list['name'] }}" />
+              {% else %}
+              <input width="200" style="width: 200px" name="name" type="text" id="name" value="" />
+              {% endif %}
+            </td>
+          </tr>
 
-         <td class="h">Description</td>
+          <tr>
+            <td>
+              <label> <strong>Enter a brief description for this list</strong>
+              </label>
+              {% if editing %}
+              <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ list['description'] }}" />
+              {% else %}
+              <input width="200" style="width: 400px" name="description" type="text" id="description" value="" />
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="span5">
+    <form action="{{ url_for('subscribers.edit_recipients') }}" method="post">
+      <table class="table table-hover table-bordered">
+        <td class="h">Edit Recipients</td>
+
+        <tr>
+          <td>
+            <label>
+              <strong>Add new recipient</strong>
+            </label>
+            Name&nbsp;&nbsp;
+            <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="" />
+          </br>
+          Email&nbsp;&nbsp;&nbsp;
+          <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
+        </td>
+        <input type="hidden" style="width: 400px" name="list_id" id="list_id" value="{{list_id}}" />
+      </tr>
+
+      <tr>
+        <td>
+          <label>
+            <strong>Edit current recipient</strong>
+          </label>
+          {% for recip in recipients %}
+          <select>
+            <option>{{ recip }}</option>
+          </select>
+          {% endfor %}
+        </td>
       </tr>
       <tr>
-         <td>
-            <label>Enter a brief description for this list</label>
-            {% if editing %}
-            <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ list['description'] }}" />
-            {% else %}
-            <input width="200" style="width: 400px" name="description" type="text" id="description" value="" />
-            {% endif %}
-         </td>
-      </tr>
-      {% if editing %}
-      <tr>
-         <td>
-            <a href="{{ url_for('subscribers.edit_list_recipients', lid=list['lists_id'])
-            }}" class="btn btn-success pull-left">Edit Recipients</a>
-            {% endif %}
-         </td>
-      </tr>
-      <tr>
-      <td>
-         <select>
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
-</select>
- 
-<select multiple="multiple">
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
-</select>
-</td></tr>
-   </tbody>
-   </table>
-   <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
-</form>
+        <td>
+
+          <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+        </form>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
 
 <br />
 {% endblock %}
