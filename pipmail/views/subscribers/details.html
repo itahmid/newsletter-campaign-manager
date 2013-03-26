@@ -12,6 +12,7 @@
 </div>
 {% endif %}
 <form action="{{ url_for('subscribers.create_list') }}" method="post">
+  <br>
   <div class="row-fluid">
     <div class="span7">
       <table class="table table-hover table-bordered">
@@ -68,34 +69,54 @@
             </label>
             Name&nbsp;&nbsp;
             <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="" />
-          </br>
-          Email&nbsp;&nbsp;&nbsp;
-          <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
+            Email&nbsp;&nbsp;&nbsp;
+            <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
+          </td>
+          <input type="hidden" style="width: 400px" name="list_id" id="list_id" value="{{list_id}}" />
+        </tr>
+
+        <tr>
+          <td>
+            <label>
+              <strong>Edit current recipient</strong>
+            </label>
+
+            <select>
+              {% for recip in recipients %}
+              <option value="{{ recip.split()[2] }}">{{ recip }}</option>
+              {% endfor %}
+            </select>
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+
+            <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+          </form>
         </td>
-        <input type="hidden" style="width: 400px" name="list_id" id="list_id" value="{{list_id}}" />
       </tr>
 
-      <tr>
-        <td>
-          <label>
-            <strong>Edit current recipient</strong>
-          </label>
-          {% for recip in recipients %}
-          <select>
-            <option>{{ recip }}</option>
-          </select>
-          {% endfor %}
-        </td>
-      </tr>
-      <tr>
-        <td>
+      <form action="{{ url_for('subscribers.upload_csv'), list_id }}" method="post" enctype="multipart/form-data">
 
-          <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
-        </form>
-      </td>
-    </tr>
-  </table>
-</div>
+        <tr>
+          <td>
+            <label>
+              <strong>Import recipients from CSV</strong>
+            </label>
+            <input type="file" name="file" id="file" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="submit" class="btn btn-success pull-left" value="Upload" />
+          </td>
+        </tr>
+
+      </form>
+
+    </table>
+  </div>
 </div>
 
 <br />

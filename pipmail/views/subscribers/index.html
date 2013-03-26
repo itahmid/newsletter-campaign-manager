@@ -14,7 +14,7 @@
     <div class="span20">
         <h1 class="pull-left">Existing Lists</h1>
         <br>
-        <a href="" class="btn btn-success pull-right ">Create New List</a>
+        <a href="{{ url_for('subscribers.create_list') }}" class="btn btn-success pull-right ">Create New List</a>
         <table class="table table-hover table-bordered">
             <thead>
                 <tr>
@@ -32,7 +32,7 @@
                     <td>{{ lst['name'] }}</td>
                     <td>{{ lst['description'] }}</td>
                     <td>{{ lst['date_added'] }}</td>
-                    <td>0</td>
+                    <td>{{ lst['recip_count'] }}</td>
                     <td>
                         <a href="{{ url_for('subscribers.edit_list', lid=lst['lists_id'] ) }}" class="btn btn-success ">Edit</a>
                         <a href="{{url_for('subscribers.delete_campaign', lid = lst['lists_id']) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
