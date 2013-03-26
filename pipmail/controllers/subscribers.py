@@ -171,12 +171,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@mod.route('/upload_csv/', methods=['GET', 'POST'])
+@mod.route('/upload_csv', methods=['GET', 'POST'])
 @login_required
-def upload_csv(lid):
+def upload_csv():
     conn = mysql.get_db()
     db = conn.cursor()
     if request.method == 'POST':
+        lid = request.form['list_id']
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -222,4 +223,4 @@ def upload_csv(lid):
                         print e
                         conn.rollback()
                         return redirect(url_for('subscribers.index'))
-                    return redirect(url_for('subscribers.index'))
+    return redirect(url_for('subscribers.index'))
