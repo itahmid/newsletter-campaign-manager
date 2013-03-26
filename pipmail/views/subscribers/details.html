@@ -88,19 +88,22 @@
               <strong>Edit current recipient</strong>
             </label>
 
-            <select>
+            <select id="currRecips">
               {% for recip in recipients %}
               <option value="{{ recip.split()[2] }}">{{ recip }}</option>
               {% endfor %}
             </select>
-
           </td>
         </tr>
         <tr>
           <td>
-
-            <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+            <input id="action" type="hidden" name="action" value="">
+            <input type="submit" name="edit" class="btn btn-success pull-left" onClick="document.getElementById('action').value='edit';" value="Edit" />
+          </td>
+          <td>
+            <input type="submit" name="delete" class="btn btn-danger pull-left" value="Delete" class="btn btn-danger " onClick="document.getElementById('action').value='delete';"  />
           </form>
+
         </td>
       </tr>
 

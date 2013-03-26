@@ -124,35 +124,45 @@ def edit_recipients():
     conn = mysql.get_db()
     db = conn.cursor()
     if request.method == 'POST':
-        first_name, last_name = request.form['new_name'].split()
-        email = request.form['new_email']
-        lid = request.form['list_id']
-        try:
-            db.execute("""INSERT INTO recipients
-                          (
-                            first_name,
-                            last_name,
-                            email,
-                            list_id
-                          )
-                          VALUES (
-                            %s,
-                            %s,
-                            %s,
-                            %s)
-                        """,
-                      (
-                          first_name,
-                          last_name,
-                          email,
-                          lid
-                      ))
-            conn.commit()
-        except Exception, e:
-            print e
-            conn.rollback()
-    return redirect(url_for('subscribers.edit_list', lid = lid))
+        print request.form['action']
+        #check if request form has items
+    #     first_name, last_name = request.form['new_name'].split()
+    #     email = request.form['new_email']
+    #     lid = request.form['list_id']
+    #     try:
+    #         db.execute("""INSERT INTO recipients
+    #                       (
+    #                         first_name,
+    #                         last_name,
+    #                         email,
+    #                         list_id
+    #                       )
+    #                       VALUES (
+    #                         %s,
+    #                         %s,
+    #                         %s,
+    #                         %s)
+    #                     """,
+    #                   (
+    #                       first_name,
+    #                       last_name,
+    #                       email,
+    #                       lid
+    #                   ))
+    #         conn.commit()
+    #     except Exception, e:
+    #         print e
+    #         conn.rollback()
+    # return redirect(url_for('subscribers.edit_list', lid=lid))
 
+# @mod.route('/delete_recipient')
+# @login_required
+# def delete_campaign(lid, email):
+#     conn = mysql.get_db()
+#     db = conn.cursor()
+#     db.execute('DELETE FROM recipients WHERE lists_id = %d AND email="%s"' % (lid, email))
+#     conn.commit()
+#     return redirect(url_for('subscribers.index'))
 
 @mod.route('/delete_list/<int:lid>')
 @login_required
