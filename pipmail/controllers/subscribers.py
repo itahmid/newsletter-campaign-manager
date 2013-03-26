@@ -66,8 +66,6 @@ def create_list():
             error = [error_dict.get(err) for err in errors
                      if error_dict.get(err) != '']
         else:
-            for k, v in request.form.iteritems():
-                print k, v
             try:
                 db.execute("""INSERT into lists
                             (
@@ -89,10 +87,10 @@ def create_list():
                            )
                 conn.commit()
             except Exception, e:
-                print e
                 conn.rollback()
-            #return render_template('subscribers/lists.html', success=True,
-                                   #lists=lists, page=1)
+                error = e
+                return render_template('subscribers/details.html', error=error,
+                                       editing=False)
             return redirect(url_for('subscribers.index'))
     return render_template('subscribers/details.html', error=error,
                            editing=False)
@@ -153,7 +151,7 @@ def edit_recipients():
         except Exception, e:
             print e
             conn.rollback()
-    return redirect(url_for('subscribers.index'))
+    return redirect(url_for('subscribers.edit_list', lid = lid))
 
 
 @mod.route('/delete_list/<int:lid>')

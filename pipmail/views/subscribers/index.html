@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-
-{% if success %}
 <br>
+{% if error %}
+<div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Error:</h4>
+    <span class="text-error">{{ error }}</span>
+</div>
+<br>
+{% endif %}
+{% if success %}
+
 <div class="alert alert-success">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <h4>Success:</h4>
-    <span class="text-success">List was created successfully</span>
+    <span class="text-success">{{ success }}</span>
 </div>
 <br>
 {% endif %}

@@ -8,8 +8,15 @@
   <h4>Error</h4>
   {% for err in error %}
   <span class="text-error">{{ err }}</span>
-  {% endfor %}
+  <br>{% endfor %}</div>
+{% endif %}
+{% if success %}
+<div class="alert alert-success">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <h4>Success</h4>
+  <span class="text-success">{{ success }}</span>
 </div>
+<br>
 {% endif %}
 <form action="{{ url_for('subscribers.create_list') }}" method="post">
   <br>
