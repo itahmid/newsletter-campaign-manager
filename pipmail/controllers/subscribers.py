@@ -1,4 +1,4 @@
-from flask import Blueprint, request, abort, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for
 from flaskext.mysql import MySQL
 from werkzeug import secure_filename
 from pipmail.helpers import login_required, unix_to_local
@@ -111,11 +111,11 @@ def edit_list(lid):
                     WHERE list_id = %d' % lid)
         recips = db.fetchall()
         recips = ['%s %s %s' % recip for recip in recips]
+        recips = [r.encode('ascii', 'ignore') for r in recips]
         if len(recips) < 1:
             recips = ['No recipients']
         return render_template('subscribers/details.html', editing=True,
                                list=lst, recipients=recips, list_id=_lid)
-    abort(404)
 
 
 @mod.route('/edit_recipients', methods=['GET', 'POST'])
@@ -124,45 +124,55 @@ def edit_recipients():
     conn = mysql.get_db()
     db = conn.cursor()
     if request.method == 'POST':
-        print request.form['action']
-        #check if request form has items
-    #     first_name, last_name = request.form['new_name'].split()
-    #     email = request.form['new_email']
-    #     lid = request.form['list_id']
-    #     try:
-    #         db.execute("""INSERT INTO recipients
-    #                       (
-    #                         first_name,
-    #                         last_name,
-    #                         email,
-    #                         list_id
-    #                       )
-    #                       VALUES (
-    #                         %s,
-    #                         %s,
-    #                         %s,
-    #                         %s)
-    #                     """,
-    #                   (
-    #                       first_name,
-    #                       last_name,
-    #                       email,
-    #                       lid
-    #                   ))
-    #         conn.commit()
-    #     except Exception, e:
-    #         print e
-    #         conn.rollback()
-    # return redirect(url_for('subscribers.edit_list', lid=lid))
+        email = request.form['recipChoice'].encode('ascii', 'ignore')
+        if 'delete' in request.form.keys():
+            action = 'delete'
+        elif 'edit' in request.form.keys():
+            action = 'edit'
+        else:
+            action = 'add'
 
-# @mod.route('/delete_recipient')
-# @login_required
-# def delete_campaign(lid, email):
-#     conn = mysql.get_db()
-#     db = conn.cursor()
-#     db.execute('DELETE FROM recipients WHERE lists_id = %d AND email="%s"' % (lid, email))
-#     conn.commit()
-#     return redirect(url_for('subscribers.index'))
+        lid = request.form['list_id'].encode('ascii', 'ignore')
+        if action == 'delete':
+            try:
+                db.execute('DELETE FROM recipients WHERE list_id = %s \
+                            AND email = "%s"' % (lid, email))
+                conn.commit()
+            except Exception, e:
+                print e
+                conn.rollback()
+        if action == 'add':
+            first_name = request.form['new_name'].split()[0]
+            last_name = request.form['new_name'].split()[1]
+            email = request.form['new_email']
+            lid = lid
+            try:
+                db.execute("""INSERT INTO recipients
+                              (
+                                first_name,
+                                last_name,
+                                email,
+                                list_id
+                              )
+                              VALUES (
+                                %s,
+                                %s,
+                                %s,
+                                %s)
+                            """,
+                          (
+                              first_name,
+                              last_name,
+                              email,
+                              lid
+                          ))
+                conn.commit()
+            except Exception, e:
+                print e
+                conn.rollback()
+                return redirect(url_for('subscribers.index'))
+    return redirect(url_for('subscribers.edit_list', lid=lid))
+
 
 @mod.route('/delete_list/<int:lid>')
 @login_required
