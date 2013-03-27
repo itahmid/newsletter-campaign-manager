@@ -7,7 +7,8 @@ todo
 =======
 - add models/use ORM for database lookups (maybe)
 - add everything the old Ruby/PHP versions have
-- fix edit/create list details
+- add the ability to edit individual list recipients
+- add section for assinging lists to campaigns
 - email templates and delivery
 - statistics
 - campaign searches

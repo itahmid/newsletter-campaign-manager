@@ -35,7 +35,8 @@ def index(page):
     for newsletter in _newsletters:
         if newsletter['list_id'] > 0:
             lid = newsletter['list_id']
-            db.execute('SELECT COUNT(%s) FROM newsletters' % lid)
+            db.execute('SELECT COUNT(list_id) \
+                    FROM recipients WHERE list_id = %s' % lid)
             recip_count = db.fetchall()
             if recip_count > 0:
                 newsletters['list_count'] = recip_count
