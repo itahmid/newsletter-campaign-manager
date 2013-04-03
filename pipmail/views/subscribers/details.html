@@ -63,15 +63,16 @@
       </tbody>
     </table>
   </div>
-
+  {% if editing %}
   <div class="span5">
     <form action="{{ url_for('subscribers.edit_recipients') }}" method="post">
-       <input type="hidden" name="choice" id="choice" value="" />
+      <input type="hidden" name="choice" id="choice" value="" />
       <table class="table table-hover table-bordered">
         <td class="h">Edit Recipients</td>
 
         <tr>
           <td>
+
             <label>
               <strong>Add new recipient</strong>
             </label>
@@ -88,7 +89,27 @@
             <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
           </td>
         </tr>
+        {% if recip_email %}
+        <tr>
+          <td>
 
+            <label>
+              <strong>Edit recipient</strong>
+            </label>
+            Name&nbsp;&nbsp;
+            <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="" />
+            <br>
+            Email&nbsp;&nbsp;&nbsp;
+            <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
+          </td>
+          <input type="hidden" name="list_id" id="list_id" value="{{list_id}}" />
+        </tr>
+        <tr>
+          <td>
+            <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
+          </td>
+        </tr>
+        {% endif %}
         <tr>
           <td>
             <label>
@@ -97,14 +118,14 @@
 
             <select name="recipChoice" id="recipChoice">
               {% for recip in recipients %}
-              <option value="{{ recip.split()[2] }}">{{ recip }}</option>
+              <option value="[{{recip.split()[0]+' '+recip.split()[1]}}, {{ recip.split()[2] }}]">{{ recip }}</option>
               {% endfor %}
             </select>
           </td>
         </tr>
         <tr>
           <td>
-           
+
             <input type="submit" name="edit" class="btn btn-success pull-left" style="margin-right:5px;" onClick="document.getElementById('choice').value='edit';" value="Edit" />
             <input type="submit" name="delete" class="btn btn-danger pull-left" value="Delete" class="btn btn-danger " onClick="document.getElementById('choice').value='delete';"  />
           </form>
@@ -134,6 +155,6 @@
     </table>
   </div>
 </div>
-
+{% endif %}
 <br />
 {% endblock %}

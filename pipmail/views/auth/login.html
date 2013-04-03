@@ -7,24 +7,24 @@
 {% endif %}
 
 {% if logout %}
-<p class=error> <strong>Logged out:</strong>
-You have been successfully logged out.
+  <p class=error> <strong>Logged out:</strong>
+    You have been successfully logged out.
 {% endif %}
-  <form action="{{ url_for('login') }}" method=post>
-    <dl>
-      <dt>
-        Username:
+    <form action="{{ url_for('login') }}" method=post>
+      <dl>
+        <dt>
+          Username:
+          <dd>
+            <input type=text name=username></dd>
+        </dt>
+        <dt>
+          Password:
+          <dd>
+            <input type=password name=password></dd>
+        </dt>
         <dd>
-          <input type=text name=username></dd>
-      </dt>
-      <dt>
-        Password:
-        <dd>
-          <input type=password name=password></dd>
-      </dt>
-      <dd>
-        <input type=submit value=Login></dd>
-    </dl>
+          <input type=submit value=Login></dd>
+      </dl>
 
-  </form>
-  {% endblock %}
+    </form>
+    {% endblock %}
