@@ -68,8 +68,8 @@
     <form action="{{ url_for('subscribers.edit_recipients') }}" method="post">
       <input type="hidden" name="choice" id="choice" value="" />
       <table class="table table-hover table-bordered">
-        <td class="h">Edit Recipients</td>
-
+        {% if not recip_email and not edit_email %}
+        <td class="h">Add Recipients</td>
         <tr>
           <td>
 
@@ -89,7 +89,9 @@
             <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
           </td>
         </tr>
-        {% if recip_email %}
+        {% endif %}
+        {% if recip_email or edit_email %}
+        <td class="h">Edit Recipients</td>
         <tr>
           <td>
 
@@ -97,16 +99,17 @@
               <strong>Edit recipient</strong>
             </label>
             Name&nbsp;&nbsp;
-            <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="" />
+            <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="{{ edit_name }}" />
             <br>
             Email&nbsp;&nbsp;&nbsp;
-            <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
+            <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="{{ edit_email }}" />
           </td>
           <input type="hidden" name="list_id" id="list_id" value="{{list_id}}" />
+          <input type="hidden" name="old_email" id="old_email" value="{{ edit_email }}"/>
         </tr>
         <tr>
           <td>
-            <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
+            <input type="submit" name="confirm_edit" class="btn btn-success pull-left" value="Confirm" onClick="document.getElementById('choice').value='confirm_edit';"  />
           </td>
         </tr>
         {% endif %}

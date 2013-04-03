@@ -98,12 +98,7 @@ def create_list():
 
 @mod.route('/edit_list/<int:lid>', methods=['GET'])
 @login_required
-def edit_list(lid, recip_info=None):
-    if request.method == 'GET':
-        print 'ya get it'
-        print request.args
-    print recip_info
-
+def edit_list(lid):
     _lid = lid
     conn = mysql.get_db()
     db = conn.cursor()
@@ -119,22 +114,32 @@ def edit_list(lid, recip_info=None):
         recips = [r.encode('ascii', 'ignore') for r in recips]
         if len(recips) < 1:
             recips = ['No recipients']
+        if request.method == 'GET':
+            edit_name = request.args.get('recip_name')
+            edit_email = request.args.get('recip_email')
+            print 'ok'
+            return render_template('subscribers/details.html', editing=True,
+                                   list=lst, recipients=recips, list_id=_lid,
+                                   edit_name=edit_name, edit_email=edit_email)
         return render_template('subscribers/details.html', editing=True,
-                               list=lst, recipients=recips, list_id=_lid,
-                               edit_recip=recip_info)
+                               list=lst, recipients=recips, list_id=_lid)
+    #abort 404
 
 
 @mod.route('/edit_recipients', methods=['GET', 'POST'])
 @login_required
 def edit_recipients():
+    action = None
     conn = mysql.get_db()
     db = conn.cursor()
     if request.method == 'POST':
         email = request.form['recipChoice'].encode('ascii', 'ignore')
         if 'delete' in request.form.keys():
-            action = 'delete'
+            action = 'delete'  # surely theres a better way to do this
         elif 'edit' in request.form.keys():
             action = 'edit'
+        elif 'confirm_edit' in request.form.keys():
+            action = 'confirm_edit'
         else:
             action = 'add'
 
@@ -148,21 +153,6 @@ def edit_recipients():
             except Exception, e:
                 print e
                 conn.rollback()
-            # return render_template('subscribers/details.html', editing=True,
-            #                        edit_recip=recip_info)
-            # first_name = request.form['edit_name'].split()[0]
-            # last_name = request.form['edit_name'].split()[1]
-            # new_email = request.form['edit_email']
-            # try:
-            #     db.execute("""UPDATE pymail
-            #                SET first_name=%s, last_name=%s, email=%s
-            #                WHERE email=%s AND lid = %s""",
-            #                (first_name, last_name, new_email, email, lid))
-            #     conn.commit()
-            # except Exception, e:
-            #     print e
-            #     conn.rollback()
-            #     return redirect(url_for('subscribers.index'))
 
     if action == 'add':
         first_name = request.form['new_name'].split()[0]
@@ -194,6 +184,25 @@ def edit_recipients():
             conn.rollback()
             return redirect(url_for('subscribers.index'))
         return redirect(url_for('subscribers.edit_list', lid=lid))
+    if action == 'confirm_edit':
+        #iterate error_dict to check for missing items
+        new_name = request.form['new_name']
+        if len(new_name.split()) < 2:
+            return redirect(url_for('subscribers.index'))
+        first_name = request.form['new_name'].split()[0]
+        last_name = request.form['new_name'].split()[1]
+        new_email = request.form['new_email']
+        old_email = request.form['old_email']
+        try:
+            db.execute("""UPDATE recipients
+                       SET first_name=%s, last_name=%s, email=%s
+                       WHERE email=%s AND lid = %s""",
+                       (first_name, last_name, new_email, old_email, lid))
+            conn.commit()
+        except Exception, e:
+            print e
+            conn.rollback()
+            return redirect(url_for('subscribers.index'))
     elif action == 'edit':
         recip_info = request.form['recipChoice'].split(',')
         recip_name = recip_info[0][1:]
@@ -202,6 +211,7 @@ def edit_recipients():
         print recip_email
         return redirect(url_for('subscribers.edit_list', lid=lid,
                         recip_name=recip_name, recip_email=recip_email))
+    return redirect(url_for('subscribers.index'))
 
 
 @mod.route('/delete_list/<int:lid>')
