@@ -9,7 +9,7 @@
   <meta name="author" content="">
   <meta charset="utf-8">
 
-  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
   <style type="text/css">
       body { padding-top: 40px; }
       @media screen and (max-width: 768px) {
@@ -19,7 +19,7 @@
       td.h { font-size:20px;background:#F5F5F5; }
       }
     </style>
-  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
 
   <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
   <!--[if lt IE 9]>
