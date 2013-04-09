@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for
-from flaskext.mysql import MySQL
 from werkzeug import secure_filename
 from pipmail.helpers import login_required, unix_to_local
+from pipmail import mysql
 import time
 import csv
 import os
@@ -16,7 +16,7 @@ error_dict = {'name': 'Please enter a name for this list',
 ALLOWED_EXTENSIONS = set(['csv', 'xls', 'xlsx'])
 UPLOAD_FOLDER = '%s/pipmail/static/uploads' % os.getcwd()
 
-mysql = MySQL()
+
 mod = Blueprint('subscribers', __name__)
 
 
@@ -135,7 +135,7 @@ def edit_recipients():
     if request.method == 'POST':
         email = request.form['recipChoice'].encode('ascii', 'ignore')
         if 'delete' in request.form.keys():
-            action = 'delete'  # surely theres a better way to do this
+            action = 'delete'
         elif 'edit' in request.form.keys():
             action = 'edit'
         elif 'confirm_edit' in request.form.keys():
@@ -207,8 +207,6 @@ def edit_recipients():
         recip_info = request.form['recipChoice'].split(',')
         recip_name = recip_info[0][1:]
         recip_email = recip_info[1][1:len(recip_info[1]) - 1]
-        print recip_name
-        print recip_email
         return redirect(url_for('subscribers.edit_list', lid=lid,
                         recip_name=recip_name, recip_email=recip_email))
     return redirect(url_for('subscribers.index'))

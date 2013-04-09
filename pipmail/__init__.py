@@ -44,14 +44,15 @@ def login():
     if request.method == 'POST' and 'username' in request.form:
         username = request.form['username']
         password = request.form['password']
-        db = mysql.get_db().cursor()
-        db.execute("""SELECT * FROM users WHERE name = '%s'
+        cur = mysql.get_db().cursor()
+        cur.execute("""SELECT * FROM users WHERE name = '%s'
                     AND password='%s'""" % (username, password))
-        check = db.fetchall()
+        check = cur.fetchall()
         if not check:
             error = 'Invalid username or password'
         else:
             session['logged_in'] = True
+            session['current_user'] = username
             return redirect(url_for('campaigns.index'))
     return render_template('auth/login.html', error=error)
 
@@ -60,4 +61,5 @@ def login():
 @login_required
 def logout():
     session['logged_in'] = False
+    session['current_user'] = ''
     return render_template('auth/login.html', logout=True)
