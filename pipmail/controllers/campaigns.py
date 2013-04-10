@@ -1,8 +1,8 @@
 import time
 from flask import Blueprint, request, redirect, url_for, abort, \
     render_template, session
-from pipmail.helpers import login_required, unix_to_local
 from pipmail import mysql
+from pipmail.helpers import login_required, unix_to_local
 
 error_dict = {'code': 'Please enter a campaign code',
               'replyto_email': 'Please enter a reply-to email',
@@ -44,7 +44,7 @@ def index(page):
         if newsletter['company'] == 0:
             newsletter['company'] = 'N/A'
         else:
-            cur.execute("""SELECT name FROM `companies`
+            cur.execute("""SELECT name FROM companies
                         WHERE companies_id = %d""" % newsletter['company'])
             newsletter['company'] = cur.fetchall()[0][0]
         newsletters.append(newsletter)
@@ -75,35 +75,11 @@ def create_campaign():
             if not request.form.get('unsub'):
                 unsub = 0
             try:
-                cur.execute("""INSERT INTO newsletters
-                            (
-                                code,
-                                name,
-                                author,
-                                company,
-                                from_name,
-                                from_email,
-                                replyto_email,
-                                date_added,
-                                date_sent,
-                                priority,
-                                unsub
-                            )
-
-                            VALUES (
-                                %s, #code
-                                %s, #name
-                                %s, #author
-                                %s, #company
-                                %s, #from_name
-                                %s, #from_email
-                                %s, #replyto_email
-                                %s, #date_added
-                                %s, #date_sent
-                                %s, #priority
-                                %s) #unsub
-                            """,
-                           (
+                cur.execute("""INSERT INTO newsletters(code, name, author,
+                            company, from_name, from_email, replyto_email,
+                            date_added, date_sent, priority, unsub)
+                            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                            """, (
                             request.form['code'],
                             request.form['subject'],
                             session['current_user'],
@@ -122,6 +98,7 @@ def create_campaign():
                 print e
                 conn.rollback()
             return redirect(url_for('index'))
+
     return render_template('campaigns/details.html', companies=companies,
                            staff=staff, error=error, editing=False)
 

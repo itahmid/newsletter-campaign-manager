@@ -16,7 +16,6 @@ error_dict = {'name': 'Please enter a name for this list',
 ALLOWED_EXTENSIONS = set(['csv', 'xls', 'xlsx'])
 UPLOAD_FOLDER = '%s/pipmail/static/uploads' % os.getcwd()
 
-
 mod = Blueprint('subscribers', __name__)
 
 
@@ -28,16 +27,13 @@ def index(page):
     db = conn.cursor()
     offset = 0
     lsts = []
-
     if page > 0:
         offset = (page * 15)
-
     db.execute("""SELECT * FROM lists
                   ORDER BY date_added
                   DESC LIMIT 15 OFFSET %s""" % offset)
     cols = tuple([d[0].decode('utf8') for d in db.description])
-    _lists = [dict(zip(cols, row)) for row in db]
-    for lst in _lists:
+    for lst in [dict(zip(cols, row)) for row in db]:
         lid = lst['lists_id']
         db.execute('SELECT COUNT(list_id) \
                     FROM recipients WHERE list_id = %s' % lid)
@@ -67,19 +63,10 @@ def create_list():
                      if error_dict.get(err) != '']
         else:
             try:
-                db.execute("""INSERT into lists
-                            (
-                                name,
-                                description,
-                                date_added
-                            )
-
-                            VALUES (
-                                %s, #name
-                                %s, #description
-                                %s) #date_added
-                            """,
-                           (
+                db.execute("""INSERT into lists (name, description,
+                            date_added)
+                            VALUES (%s, %s, %s)
+                            """, (
                            request.form['name'],
                            request.form['description'],
                            int(time.time())
@@ -142,9 +129,7 @@ def edit_recipients():
             action = 'confirm_edit'
         else:
             action = 'add'
-
         lid = request.form['list_id'].encode('ascii', 'ignore')
-
         if action == 'delete':
             try:
                 db.execute('DELETE FROM recipients WHERE list_id = %s \
@@ -153,7 +138,6 @@ def edit_recipients():
             except Exception, e:
                 print e
                 conn.rollback()
-
     if action == 'add':
         first_name = request.form['new_name'].split()[0]
         last_name = request.form['new_name'].split()[1]
