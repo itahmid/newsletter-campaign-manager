@@ -83,20 +83,34 @@ def create_list():
                            editing=False)
 
 
-@mod.route('/edit_list/<int:lid>', methods=['GET'])
+@mod.route('/edit_list/<int:lid>', methods=['GET', 'POST'])
 @login_required
 def edit_list(lid):
-    _lid = lid
     conn = mysql.get_db()
-    db = conn.cursor()
-    db.execute('SELECT * FROM lists WHERE lists_id = %d' % lid)
-    res = db.fetchone()
+    cur = conn.cursor()
+    if request.method == 'POST':
+        try:
+            cur.execute("""UPDATE lists
+                        SET name=%s, description=%s
+                        WHERE lists_id = %s
+                        """, (
+                        request.form['name'],
+                        request.form['description'],
+                        lid)
+                        )
+            conn.commit()
+        except Exception as e:
+            print "ERROR: %s" % e
+            conn.rollback()
+        return redirect(url_for('subscribers.index'))
+    cur.execute('SELECT * FROM lists WHERE lists_id = %d' % lid)
+    res = cur.fetchone()
     if res:
-        cols = tuple([d[0].decode('utf8') for d in db.description])
+        cols = tuple([d[0].decode('utf8') for d in cur.description])
         lst = dict(zip(cols, res))
-        db.execute('SELECT first_name, last_name, email FROM `recipients` \
+        cur.execute('SELECT first_name, last_name, email FROM `recipients` \
                     WHERE list_id = %d' % lid)
-        recips = db.fetchall()
+        recips = cur.fetchall()
         recips = ['%s %s %s' % recip for recip in recips]
         recips = [r.encode('ascii', 'ignore') for r in recips]
         if len(recips) < 1:
@@ -106,11 +120,10 @@ def edit_list(lid):
             edit_email = request.args.get('recip_email')
             print 'ok'
             return render_template('subscribers/details.html', editing=True,
-                                   list=lst, recipients=recips, list_id=_lid,
+                                   list=lst, recipients=recips, list_id=lid,
                                    edit_name=edit_name, edit_email=edit_email)
         return render_template('subscribers/details.html', editing=True,
-                               list=lst, recipients=recips, list_id=_lid)
-    #abort 404
+                               list=lst, recipients=recips, list_id=lid)
 
 
 @mod.route('/edit_recipients', methods=['GET', 'POST'])

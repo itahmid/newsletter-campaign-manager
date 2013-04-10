@@ -13,13 +13,16 @@
 </div>
 <br>
 
-
 <ul class="nav nav-tabs">
-  <li class="active">
-    <a href="#">Step 1</a>
-  </li>
-  <li><a href="#">Step 2</a></li>
-  <li><a href="#">Step 3</a></li>
+   <li class="active">
+      <a href="#">Step 1</a>
+   </li>
+   <li>
+      <a href="{{ url_for('subscribers.index') }}">Step 2</a>
+   </li>
+   <li>
+      <a href="#">Step 3</a>
+   </li>
 </ul>
 {% if editing %}
 <form action="{{ url_for('campaigns.edit_campaign', nid = nid) }}" method="post">

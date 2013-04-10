@@ -18,7 +18,11 @@
 </div>
 <br>
 {% endif %}
+{% if editing %}
+<form action="{{ url_for('subscribers.edit_list', lid=list_id) }}" method="post">
+{% else %}
 <form action="{{ url_for('subscribers.create_list') }}" method="post">
+{% endif %}  
   <br>
   <div class="row-fluid">
     <div class="span7">

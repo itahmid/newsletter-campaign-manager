@@ -113,32 +113,24 @@ def edit_campaign(nid):
         for k, v in request.args.iteritems():
             print k, v
         try:
-            cur.execute("""UPDATE newsletters SET
-                            code=%s,
-                            name=%s,
-                            author=%s,
-                            company=%s,
-                            from_name=%s,
-                            from_email=%s,
-                            replyto_email=%s,
-                            date_added=%s,
-                            date_sent=%s,
-                            priority=%s,
-                            unsub=0
-                            WHERE
-                            newsletters_id = %s
-                        """, (request.form['code'],
-                              request.form['subject'],
-                              'Me',
-                              request.form['company'],
-                              request.form['from_name'],
-                              request.form['from_email'],
-                              request.form['replyto_email'],
-                              int(time.time()),
-                              0,  # date sent
-                              request.form['priority'],
-                              request.form['unsub'],
-                              nid)
+            cur.execute("""UPDATE newsletters
+                        SET code=%s, name=%s, author=%s, company=%s,
+                        from_name=%s, from_email=%s, replyto_email=%s,
+                        date_added=%s, date_sent=%s, priority=%s, unsub=0
+                        WHERE newsletters_id = %s
+                        """, (
+                        request.form['code'],
+                        request.form['subject'],
+                        session['current_user'],
+                        request.form['company'],
+                        request.form['from_name'],
+                        request.form['from_email'],
+                        request.form['replyto_email'],
+                        int(time.time()),
+                        0,
+                        request.form['priority'],
+                        request.form['unsub'],
+                        nid)
                         )
             conn.commit()
         except Exception as e:
