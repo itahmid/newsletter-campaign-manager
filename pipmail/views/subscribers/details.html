@@ -19,149 +19,155 @@
 <br>
 {% endif %}
 {% if editing %}
-<form action="{{ url_for('subscribers.edit_list', lid=list_id) }}" method="post">
-{% else %}
-<form action="{{ url_for('subscribers.create_list') }}" method="post">
-{% endif %}  
-  <br>
-  <div class="row-fluid">
-    <div class="span7">
-      <table class="table table-hover table-bordered">
-        <thead>
-          <tr>
-            <td class="h">List Details</td>
-          </tr>
-        </thead>
-        <tbody>
+<form action="{{ url_for('subscribers.edit_list', lid=lst.id) }}" method="post">
+  {% else %}
+  <form action="{{ url_for('subscribers.create_list') }}" method="post">
+    {% endif %}
+    <br>
+    <div class="row-fluid">
+      <div class="span7">
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr>
+              <td class="h">List Details</td>
+            </tr>
+          </thead>
+          <tbody>
 
-          <tr>
-            <td colspan="2">
-              <label> <strong>Enter the name of the list</strong>
-              </label>
-              {% if editing %}
-              <input width="200" style="width: 200px" name="name" type="text" id="name" value="{{ list['name'] }}" />
-              {% else %}
-              <input width="200" style="width: 200px" name="name" type="text" id="name" value="" />
-              {% endif %}
+            <tr>
+              <td colspan="2">
+                <label> <strong>Enter the name of the list</strong>
+                </label>
+                {% if editing %}
+                <input width="200" style="width: 200px" name="name" type="text" id="name" value="{{ lst.name }}" />
+                {% else %}
+                <input width="200" style="width: 200px" name="name" type="text" id="name" value="" />
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label> <strong>Enter a brief description for this list</strong>
+                </label>
+                {% if editing %}
+                <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ lst.description }}" />
+                {% else %}
+                <input width="200" style="width: 400px" name="description" type="text" id="description" value="" />
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+              </form>
             </td>
           </tr>
-
+        </tbody>
+      </table>
+    </div>
+    {% if editing %}
+    <div class="span5">
+      <form action="{{ url_for('subscribers.edit_recipients') }}" method="post">
+        <input type="hidden" name="choice" id="choice" value="" />
+        <table class="table table-hover table-bordered">
+          {% if not recip_email and not edit_email %}
+          <td class="h">Add Recipients</td>
           <tr>
             <td>
-              <label> <strong>Enter a brief description for this list</strong>
+
+              <label>
+                <strong>Add new recipient</strong>
               </label>
-              {% if editing %}
-              <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ list['description'] }}" />
-              {% else %}
-              <input width="200" style="width: 400px" name="description" type="text" id="description" value="" />
-              {% endif %}
+              Name&nbsp;&nbsp;
+              <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="" />
+              <br>
+              Email&nbsp;&nbsp;&nbsp;
+              <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
+            </td>
+            <input type="hidden" name="list_id" id="list_id" value="{{lst.id}}" />
+          </tr>
+          <tr>
+            <td>
+              <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
             </td>
           </tr>
-
-          <tr>
-            <td>
-              <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  {% if editing %}
-  <div class="span5">
-    <form action="{{ url_for('subscribers.edit_recipients') }}" method="post">
-      <input type="hidden" name="choice" id="choice" value="" />
-      <table class="table table-hover table-bordered">
-        {% if not recip_email and not edit_email %}
-        <td class="h">Add Recipients</td>
-        <tr>
-          <td>
-
-            <label>
-              <strong>Add new recipient</strong>
-            </label>
-            Name&nbsp;&nbsp;
-            <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="" />
-            <br>
-            Email&nbsp;&nbsp;&nbsp;
-            <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="" />
-          </td>
-          <input type="hidden" name="list_id" id="list_id" value="{{list_id}}" />
-        </tr>
-        <tr>
-          <td>
-            <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
-          </td>
-        </tr>
-        {% endif %}
+          {% endif %}
         {% if recip_email or edit_email %}
-        <td class="h">Edit Recipients</td>
-        <tr>
-          <td>
+          <td class="h">Edit Recipients</td>
+          <tr>
+            <td>
 
-            <label>
-              <strong>Edit recipient</strong>
-            </label>
-            Name&nbsp;&nbsp;
-            <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="{{ edit_name }}" />
-            <br>
-            Email&nbsp;&nbsp;&nbsp;
-            <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="{{ edit_email }}" />
-          </td>
-          <input type="hidden" name="list_id" id="list_id" value="{{list_id}}" />
-          <input type="hidden" name="old_email" id="old_email" value="{{ edit_email }}"/>
-        </tr>
-        <tr>
-          <td>
-            <input type="submit" name="confirm_edit" class="btn btn-success pull-left" value="Confirm" onClick="document.getElementById('choice').value='confirm_edit';"  />
-          </td>
-        </tr>
-        {% endif %}
-        <tr>
-          <td>
-            <label>
-              <strong>Edit current recipient</strong>
-            </label>
+              <label>
+                <strong>Edit recipient</strong>
+              </label>
+              Name&nbsp;&nbsp;
+              <input width="200" style="width: 400px" name="new_name" type="text" id="new_name" value="{{ edit_name }}" />
+              <br>
+              Email&nbsp;&nbsp;&nbsp;
+              <input width="200" style="width: 400px" name="new_email" type="text" id="new_email" value="{{ edit_email }}" />
+            </td>
+            <input type="hidden" name="list_id" id="list_id" value="{{lst.id}}" />
+            <input type="hidden" name="old_email" id="old_email" value="{{ edit_email }}"/>
+          </tr>
+          <tr>
+            <td>
+              <input type="submit" name="confirm_edit" class="btn btn-success pull-left" value="Confirm" onClick="document.getElementById('choice').value='confirm_edit';"  />
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td>
+              <label>
+                <strong>Edit current recipient</strong>
+              </label>
+              <select name="recipChoice" id="recipChoice">
+                {% if recips %}
+                {% for recip in recipients %}
+                <option value="{{recip['first_name']+' '+recip['last_name']}}, {{ recip['email'] }}">
+                  {{ recip['first_name']+' '+recip['last_name']+' '+recip['email'] }}
+                </option>
+                {% endfor %}
+                {% else %}
+                <option value="None">No recipients</option>
+                {% endif %}
+              </select>
 
-            <select name="recipChoice" id="recipChoice">
-              {% for recip in recipients %}
-              <option value="[{{recip.split()[0]+' '+recip.split()[1]}}, {{ recip.split()[2] }}]">{{ recip }}</option>
-              {% endfor %}
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>
+            </td>
+          </tr>
+          <tr>
+            <td>
 
-            <input type="submit" name="edit" class="btn btn-success pull-left" style="margin-right:5px;" onClick="document.getElementById('choice').value='edit';" value="Edit" />
-            <input type="submit" name="delete" class="btn btn-danger pull-left" value="Delete" class="btn btn-danger " onClick="document.getElementById('choice').value='delete';"  />
-          </form>
+              <input type="submit" name="edit" class="btn btn-success pull-left" style="margin-right:5px;" onClick="document.getElementById('choice').value='edit';" value="Edit" />
+              <input type="submit" name="delete" class="btn btn-danger pull-left" value="Delete" class="btn btn-danger " onClick="document.getElementById('choice').value='delete';"  />
+            </form>
 
-        </td>
-      </tr>
-
-      <form action="/upload_csv" method="post" enctype="multipart/form-data">
-
-        <tr>
-          <td>
-            <label>
-              <strong>Import recipients from CSV</strong>
-            </label>
-            <input type="file" name="file" id="file" />
-            <input type="hidden" name="list_id" id="list_id" value="{{list_id}}" />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <input type="submit" class="btn btn-success pull-left" value="Upload" />
           </td>
         </tr>
 
-      </form>
+        <form action="/upload_csv" method="post" enctype="multipart/form-data">
 
-    </table>
+          <tr>
+            <td>
+              <label>
+                <strong>Import recipients from CSV</strong>
+              </label>
+              <input type="file" name="file" id="file" />
+              <input type="hidden" name="list_id" id="list_id" value="{{lst.id}}" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="submit" class="btn btn-success pull-left" value="Upload" />
+            </td>
+          </tr>
+
+        </form>
+
+      </table>
+    </div>
   </div>
-</div>
-{% endif %}
-<br />
-{% endblock %}
+  {% endif %}
+  <br />
+  {% endblock %}

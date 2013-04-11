@@ -5,7 +5,9 @@ Email campaign manager written using the Python Flask micro-framework.  Adapting
 
 todo
 =======
-- add models/use ORM for database lookups ~~(maybe)~~ ~~(probably)~~ NO
+- ~~(add models/use ORM for database lookups ~~(maybe)~~ ~~(probably)~~ NO)~~
+- make class object for campaign models/refactor views
+- fix recipient adding view
 - add everything the old Ruby/PHP versions have
 - add an error_dict for checking edit_recipient form contents
 - edit sql column list_id for recipients to accept multiple list_ids
