@@ -19,32 +19,46 @@ UPLOAD_FOLDER = '%s/pipmail/static/uploads' % os.getcwd()
 mod = Blueprint('subscribers', __name__)
 
 
+class List(object):
+    '''Create model for list '''
+    def __init__(self, conn, _id):
+        self.conn = conn
+        self.cur = conn.cursor()
+        self.id = _id
+        for k, v in self.get_result_dict().iteritems():
+            setattr(self, k, v)
+        self.local_time = unix_to_local(self.date_added)
+        self.recip_count = self.get_recip_count()
+    
+    def get_result_dict(self):
+        self.cur.execute("SELECT * FROM lists WHERE id = %s" % self.id)
+        res = self.cur.fetchall()
+        cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
+        return dict(zip(cols, res[0][1:]))
+
+    def get_recip_count(self):
+        self.cur.execute("""SELECT COUNT(id)
+                            FROM recipients
+                            WHERE list_id = %s""" % self.id)
+        return self.cur.fetchall()[0][0]
+
+
 @mod.route('/lists', defaults={'page': 0})
 @mod.route('/lists/page/<int:page>')
 @login_required
 def index(page):
     conn = mysql.get_db()
-    db = conn.cursor()
+    cur = conn.cursor()
     offset = 0
-    lsts = []
+    lists = []
     if page > 0:
         offset = (page * 15)
-    db.execute("""SELECT * FROM lists
+    cur.execute("""SELECT id FROM lists
                   ORDER BY date_added
                   DESC LIMIT 15 OFFSET %s""" % offset)
-    cols = tuple([d[0].decode('utf8') for d in db.description])
-    for lst in [dict(zip(cols, row)) for row in db]:
-        lid = lst['lists_id']
-        db.execute('SELECT COUNT(list_id) \
-                    FROM recipients WHERE list_id = %s' % lid)
-        recip_count = db.fetchall()
-        if recip_count > 0:
-            lst['recip_count'] = recip_count[0][0]
-        else:
-            lst['recip_count'] = 0
-        lst['date_added'] = unix_to_local(lst['date_added'])
-        lsts.append(lst)
-    return render_template('subscribers/index.html', lists=lsts, page=page)
+    res = cur.fetchall()
+    lists = [List(conn, lst[0]) for lst in res]
+    return render_template('subscribers/index.html', lists=lists, page=page)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])

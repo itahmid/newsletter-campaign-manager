@@ -42,9 +42,8 @@
                     <td>{{ lst['date_added'] }}</td>
                     <td>{{ lst['recip_count'] }}</td>
                     <td>
-                        <a href="{{ url_for('subscribers.edit_list', lid=lst['lists_id'] ) }}" class="btn btn-success ">Edit</a>
-                        <a href="{{url_for('subscribers.delete_campaign', lid = lst['lists_id']) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
-
+                        <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>
+                        <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
                     </td>
                 </tr>
                 {% endfor %}
