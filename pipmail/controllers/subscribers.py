@@ -55,6 +55,7 @@ class List(object):
 @mod.route('/lists/page/<int:page>')
 @login_required
 def index(page):
+    '''Render subscriber list index'''
     conn = mysql.get_db()
     cur = conn.cursor()
     offset = 0
@@ -62,8 +63,8 @@ def index(page):
     if page > 0:
         offset = (page * 15)
     cur.execute("""SELECT id FROM lists
-                  ORDER BY date_added
-                  DESC LIMIT 15 OFFSET %s""" % offset)
+                ORDER BY date_added
+                DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
     lists = [List(conn, lst[0]) for lst in res]
     return render_template('subscribers/index.html', lists=lists, page=page)
@@ -101,7 +102,7 @@ def create_list():
                 return render_template('subscribers/details.html', error=error,
                                        editing=False)
             return redirect(url_for('subscribers.index'))
-            
+
     return render_template('subscribers/details.html', error=error,
                            editing=False)
 
@@ -132,6 +133,7 @@ def edit_list(lid):
     recips = lst.get_recips()
 
     if request.method == 'GET':
+        print 'testing'
         edit_name = request.args.get('recip_name')
         edit_email = request.args.get('recip_email')
         return render_template('subscribers/details.html', editing=True,
@@ -147,23 +149,8 @@ def edit_recipients():
     conn = mysql.get_db()
     cur = conn.cursor()
     if request.method == 'POST':
-        recip_choice = request.form['recipChoice'].encode('ascii', 'ignore')
-        email = recip_choice.split(',')[1].lstrip()
-        lid = request.form['list_id']
-        if request.form.get('delete'):
-            try:
-                print lid
-                print email
-                cur.execute("""DELETE FROM recipients
-                            WHERE list_id = %s
-                            AND email = '%s'""" % (lid, email))
-                conn.commit()
-            except Exception, e:
-                print e
-                print "hahahah"
-                conn.rollback()
-
-        if request.form.get('add'):
+        lid = request.form.get('list_id')
+        if request.form.get('new'):
             first_name = request.form['new_name'].split()[0]
             last_name = request.form['new_name'].split()[1]
             email = request.form['new_email']
@@ -183,7 +170,24 @@ def edit_recipients():
                 print e
                 conn.rollback()
                 return redirect(url_for('subscribers.index'))
-            return redirect(url_for('subscribers.edit_list', lid=lid))
+        else:
+            recip_choice = request.form['recipChoice'].encode('ascii',
+                                                              'ignore')
+            email = recip_choice.split(',')[1].lstrip()
+            if request.form.get('delete'):
+                try:
+                    print lid
+                    print email
+                    cur.execute("""DELETE FROM recipients
+                                WHERE list_id = %s
+                                AND email = '%s'""" % (lid, email))
+                    conn.commit()
+                except Exception, e:
+                    print e
+                    print "hahahah"
+                    conn.rollback()
+
+                return redirect(url_for('subscribers.edit_list', lid=lid))
     # if action == 'confirm_edit':
     #     #iterate error_dict to check for missing items
     #     new_name = request.form['new_name']
@@ -216,8 +220,8 @@ def edit_recipients():
 @login_required
 def delete_campaign(lid):
     conn = mysql.get_db()
-    db = conn.cursor()
-    db.execute('DELETE FROM lists WHERE lists_id = %d' % lid)
+    cur = conn.cursor()
+    cur.execute('DELETE FROM lists WHERE id = %d' % lid)
     conn.commit()
     return redirect(url_for('subscribers.index'))
 

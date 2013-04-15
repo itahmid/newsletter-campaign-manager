@@ -15,12 +15,55 @@ error_dict = {'code': 'Please enter a campaign code',
 mod = Blueprint('campaigns', __name__)
 
 
+class Newsletter(object):
+    '''Model for newsletter'''
+    def __init__(self, conn, _id):
+        self.conn = conn
+        self.cur = conn.cursor()
+        self.id = _id
+        for k, v in self.get_result_dict()[0].iteritems():
+            print k, v
+            setattr(self, k, v)
+        if self.company == 0:
+            self.company = 'N/A'
+        else:
+            self.company = self.get_company_name()
+
+        self.local_time = unix_to_local(self.date_added)
+        #self.recip_count = self.get_recip_count()
+
+    def get_result_dict(self):
+        self.cur.execute("SELECT * FROM newsletters WHERE id = %s" % self.id)
+        self.cur.fetchall()
+        cols = tuple([d[0].decode('utf8') for d in self.cur.description])
+        return [dict(zip(cols, row)) for row in self.cur]
+
+    def get_company_name(self):
+        self.cur.execute("""SELECT name FROM companies
+                        WHERE id = %s""" % self.company)
+        comp = self.cur.fetchall()[0][0]
+        return comp
+
+    # def get_recip_count(self):
+    #     self.cur.execute("""SELECT COUNT(id)
+    #                         FROM recipients
+    #                         WHERE list_id = %s""" % self.id)
+    #     return self.cur.fetchall()[0][0]
+
+    # def get_recips(self):
+    #     self.cur.execute("""SELECT first_name, last_name, email
+    #                         FROM recipients
+    #                         WHERE list_id = %s""" % self.id)
+    #     res = self.cur.fetchall()
+    #     cols = tuple([d[0].decode('utf8') for d in self.cur.description])
+    #     return [dict(zip(cols, res)) for res in self.cur]
+
+
 @mod.route('/campaigns', defaults={'page': 0})
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
     '''Render newsletter index'''
-    print session['current_user']
     conn = mysql.get_db()
     cur = conn.cursor()
     offset = 0
@@ -28,26 +71,10 @@ def index(page):
     if page > 0:
         offset = (page * 15)
     cur.execute("""SELECT * FROM newsletters
-                ORDER BY date_added DESC LIMIT 15 OFFSET %s""" % offset)
-    cols = tuple([d[0].decode('utf8') for d in cur.description])
-    for newsletter in [dict(zip(cols, row)) for row in cur]:
-        if newsletter['list_id'] > 0:
-            lid = newsletter['list_id']
-            cur.execute("""SELECT COUNT(list_id) FROM recipients
-                       WHERE list_id = %s""" % lid)
-            recip_count = cur.fetchall()
-            if recip_count > 0:
-                newsletters['list_count'] = recip_count
-        else:
-            newsletter['list_count'] = 0
-        newsletter['date_added'] = unix_to_local(newsletter['date_added'])
-        if newsletter['company'] == 0:
-            newsletter['company'] = 'N/A'
-        else:
-            cur.execute("""SELECT name FROM companies
-                        WHERE companies_id = %d""" % newsletter['company'])
-            newsletter['company'] = cur.fetchall()[0][0]
-        newsletters.append(newsletter)
+                ORDER BY date_added
+                DESC LIMIT 15 OFFSET %s""" % offset)
+    res = cur.fetchall()
+    newsletters = [Newsletter(conn, nltr[0]) for nltr in res]
     return render_template('campaigns/index.html', newsletters=newsletters,
                            page=page)
 
@@ -59,7 +86,7 @@ def create_campaign():
     error = None
     conn = mysql.get_db()
     cur = conn.cursor()
-    cur.execute('SELECT companies_id, name FROM `companies`')
+    cur.execute('SELECT id, name FROM `companies`')
     companies = cur.fetchall()
     cur.execute('SELECT name, email FROM `staff`')
     staff = cur.fetchall()
@@ -117,7 +144,7 @@ def edit_campaign(nid):
                         SET code=%s, name=%s, author=%s, company=%s,
                         from_name=%s, from_email=%s, replyto_email=%s,
                         date_added=%s, date_sent=%s, priority=%s, unsub=0
-                        WHERE newsletters_id = %s
+                        WHERE id = %s
                         """, (
                         request.form['code'],
                         request.form['subject'],
@@ -137,19 +164,19 @@ def edit_campaign(nid):
             print "ERROR: %s" % e
             conn.rollback()
         return redirect(url_for('index'))
-    cur.execute('SELECT * FROM `newsletters` WHERE newsletters_id = %d' % nid)
+    cur.execute('SELECT * FROM `newsletters` WHERE id = %d' % nid)
     res = cur.fetchone()
     if res:
         cols = tuple([d[0].decode('utf8') for d in cur.description])
         newsletter = dict(zip(cols, res))
         cur.execute("""SELECT name
                         FROM companies
-                        WHERE companies_id = %d""" % newsletter['company'])
+                        WHERE id = %d""" % newsletter['company'])
         try:
             newsletter['company'] = cur.fetchall()[0][0]
         except:
             newsletter['company'] = 'None'
-        cur.execute('SELECT companies_id, name FROM `companies`')
+        cur.execute('SELECT id, name FROM `companies`')
         companies = cur.fetchall()
         cur.execute('SELECT name, email FROM `staff`')
         staff = cur.fetchall()
@@ -165,7 +192,7 @@ def delete_campaign(nid):
     '''Delete a campaign'''
     conn = mysql.get_db()
     cur = conn.cursor()
-    cur.execute('DELETE FROM newsletters WHERE newsletters_id = %d' % nid)
+    cur.execute('DELETE FROM newsletters WHERE id = %d' % nid)
     conn.commit()
     return redirect(url_for('index'))
 

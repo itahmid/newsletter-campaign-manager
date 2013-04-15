@@ -75,22 +75,22 @@
             </tr>
          </thead>
          <tbody>
-            {% for email in newsletters %}
+            {% for nltr in newsletters %}
             <tr>
-               <td>{{ email['code'] }}</td>
-               <td>{{ email['company'] }}</td>
+               <td>{{ nltr.code }}</td>
+               <td>{{ nltr.company }}</td>
                <td>
-                  <a href="{{ url_for('campaigns.edit_campaign', nid=email['newsletters_id']) }}">{{ email['name'] }}</a>
+                  <a href="{{ url_for('campaigns.edit_campaign', nid=nltr.id) }}">{{ nltr.name }}</a>
                </td>
-               <td>{{ email['date_added'] }}</td>
-               {% if not email['date_sent'] %}
+               <td>{{ nltr.local_time }}</td>
+               {% if not nltr.date_sent %}
                <td>Unsent</td>
                {% else %}
-               <td>{{ email['date_sent'] }}</td>
+               <td>{{ nltr.date_sent }}</td>
                {% endif %}
-               <td>{{ email['list_count'] }}</td>
+               <td>{{ nltr.list_count }}</td>
                <td>
-                  <a href="{{url_for('campaigns.delete_campaign', nid = email['newsletters_id']) }}" class="btn btn-danger pull-right" onClick="return confirmDelete();" >Delete</a>
+                  <a href="{{url_for('campaigns.delete_campaign', nid = nltr.id) }}" class="btn btn-danger pull-right" onClick="return confirmDelete();" >Delete</a>
                </td>
             </tr>
             {% endfor %}
