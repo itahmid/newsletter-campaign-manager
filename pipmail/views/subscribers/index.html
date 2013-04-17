@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
+
 <br>
+{% if nid %}
+<ul class="nav nav-tabs">
+   <li>
+      <a href="{{ url_for('campaigns.edit_campaign', nid=nid) }}">Step 1</a>
+   </li>
+   <li class="active">
+      <a href="#">Step 2</a>
+   </li>
+   <li>
+      <a href="#">Step 3</a>
+   </li>
+</ul>
+<br>
+{% endif %}
 {% if error %}
 <div class="alert alert-error">
     <button type="button" class="close" data-dismiss="alert">&times;</button>

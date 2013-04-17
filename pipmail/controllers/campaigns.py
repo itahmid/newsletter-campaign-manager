@@ -28,7 +28,6 @@ class Newsletter(object):
             self.company = 'N/A'
         else:
             self.company = self.get_company_name()
-
         self.local_time = unix_to_local(self.date_added)
         #self.recip_count = self.get_recip_count()
 
@@ -84,18 +83,17 @@ def index(page):
 def create_campaign():
     '''Create a new campaign'''
     error = None
+    nid = 0
     conn = mysql.get_db()
     cur = conn.cursor()
-    cur.execute('SELECT id, name FROM `companies`')
+    cur.execute('SELECT id, name FROM companies')
     companies = cur.fetchall()
-    cur.execute('SELECT name, email FROM `staff`')
+    cur.execute('SELECT name, email FROM staff')
     staff = cur.fetchall()
     if request.method == 'POST':
         errors = [opt for opt, val in request.form.iteritems()
                   if (val == '' and opt[len(opt) - 3:] != 'sel')]
         if len(errors) > 1:
-            for error in errors:
-                print error
             error = [error_dict.get(err) for err in errors
                      if error_dict.get(err) != '']
         else:
@@ -121,10 +119,16 @@ def create_campaign():
                             )
                             )
                 conn.commit()
+                cur.execute('SELECT last_insert_id()')
+                nid = cur.fetchall()[0][0]
+                print nid
             except Exception, e:
-                print e
                 conn.rollback()
-            return redirect(url_for('index'))
+                print e
+                #def on_error?
+                print "i get here lol"
+                return render_template('error.html', error=e)
+            return redirect(url_for('subscribers.index', nid=nid))
 
     return render_template('campaigns/details.html', companies=companies,
                            staff=staff, error=error, editing=False)
@@ -161,9 +165,9 @@ def edit_campaign(nid):
                         )
             conn.commit()
         except Exception as e:
-            print "ERROR: %s" % e
             conn.rollback()
-        return redirect(url_for('index'))
+            return render_template('error.html', error=e)
+
     cur.execute('SELECT * FROM `newsletters` WHERE id = %d' % nid)
     res = cur.fetchone()
     if res:

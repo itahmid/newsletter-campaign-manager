@@ -54,8 +54,9 @@ class List(object):
 @mod.route('/lists', defaults={'page': 0})
 @mod.route('/lists/page/<int:page>')
 @login_required
-def index(page):
+def index(page=0):
     '''Render subscriber list index'''
+    nid = request.args.get('nid')
     conn = mysql.get_db()
     cur = conn.cursor()
     offset = 0
@@ -67,7 +68,9 @@ def index(page):
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
     lists = [List(conn, lst[0]) for lst in res]
-    return render_template('subscribers/index.html', lists=lists, page=page)
+    print nid
+    return render_template('subscribers/index.html', lists=lists, page=page,
+                           nid=nid)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -154,6 +157,7 @@ def edit_recipients():
             first_name = request.form['new_name'].split()[0]
             last_name = request.form['new_name'].split()[1]
             email = request.form['new_email']
+            #check for duplicates here
             try:
                 cur.execute("""INSERT INTO recipients(first_name, last_name,
                             email, list_id)
@@ -241,8 +245,8 @@ def upload_csv():
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            print os.path
-            print os.path.join(UPLOAD_FOLDER, filename)
+            #print os.path
+            #print os.path.join(UPLOAD_FOLDER, filename)
             try:
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
             except Exception as e:
