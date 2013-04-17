@@ -88,7 +88,7 @@
                {% else %}
                <td>{{ nltr.date_sent }}</td>
                {% endif %}
-               <td>{{ nltr.list_count }}</td>
+               <td>{{ nltr.recip_count }}</td>
                <td>
                   <a href="{{url_for('campaigns.delete_campaign', nid = nltr.id) }}" class="btn btn-danger pull-right" onClick="return confirmDelete();" >Delete</a>
                </td>

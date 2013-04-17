@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-
 <br>
 {% if nid %}
 <ul class="nav nav-tabs">
-   <li>
-      <a href="{{ url_for('campaigns.edit_campaign', nid=nid) }}">Step 1</a>
-   </li>
-   <li class="active">
-      <a href="#">Step 2</a>
-   </li>
-   <li>
-      <a href="#">Step 3</a>
-   </li>
+    <li>
+        <a href="{{ url_for('campaigns.edit_campaign', nid=nid) }}">Step 1</a>
+    </li>
+    <li class="active">
+        <a href="#">Step 2</a>
+    </li>
+    <li>
+        <a href="#">Step 3</a>
+    </li>
 </ul>
 <br>
 {% endif %}
@@ -40,8 +39,8 @@
         <table class="table table-hover table-bordered">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Description</th>
+                    <th>Name {{ nid }}</th>
+                    <th style="width:40%;">Description</th>
                     <th>Date Added</th>
                     <th>Recipients</th>
                     <th>Actions</th>
@@ -56,8 +55,15 @@
                     <td>{{ lst.local_time }}</td>
                     <td>{{ lst.recip_count }}</td>
                     <td>
-                        <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>
-                        <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
+                            {% if nid %}
+                            <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a>
+                            {% else %}
+                            <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=None) }}" class="btn btn" >Add to Campaign</a>
+                            {% endif %}
+
+                            &nbsp;
+                            <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>&nbsp;
+                            <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
                     </td>
                 </tr>
                 {% endfor %}

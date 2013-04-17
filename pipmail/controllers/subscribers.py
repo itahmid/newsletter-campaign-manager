@@ -230,6 +230,30 @@ def delete_campaign(lid):
     return redirect(url_for('subscribers.index'))
 
 
+@mod.route('/add_to_campaign', methods=['GET', 'POST'])
+@login_required
+def add_to_campaign():
+    nid = request.args.get('nid')
+    lid = request.args.get('lid')
+    conn = mysql.get_db()
+    cur = conn.cursor()
+    if request.method == 'GET':
+        try:
+            cur.execute("""UPDATE newsletters
+                           SET list_id=%s
+                           WHERE id = %s
+                        """, (
+                        lid, nid)
+                        )
+            conn.commit()
+            print 'yay!'
+        except Exception as e:
+            print "ERROR: %s" % e
+            conn.rollback()
+            print e
+    return redirect(url_for('subscribers.index'))
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS

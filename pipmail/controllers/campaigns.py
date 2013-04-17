@@ -29,7 +29,7 @@ class Newsletter(object):
         else:
             self.company = self.get_company_name()
         self.local_time = unix_to_local(self.date_added)
-        #self.recip_count = self.get_recip_count()
+        self.recip_count = self.get_recip_count()
 
     def get_result_dict(self):
         self.cur.execute("SELECT * FROM newsletters WHERE id = %s" % self.id)
@@ -43,11 +43,13 @@ class Newsletter(object):
         comp = self.cur.fetchall()[0][0]
         return comp
 
-    # def get_recip_count(self):
-    #     self.cur.execute("""SELECT COUNT(id)
-    #                         FROM recipients
-    #                         WHERE list_id = %s""" % self.id)
-    #     return self.cur.fetchall()[0][0]
+    def get_recip_count(self):
+        if self.list_id > 0:
+            self.cur.execute("""SELECT COUNT(id)
+                                FROM recipients
+                                WHERE list_id = %s""" % self.list_id)
+            return self.cur.fetchall()[0][0]
+        return 0
 
     # def get_recips(self):
     #     self.cur.execute("""SELECT first_name, last_name, email
