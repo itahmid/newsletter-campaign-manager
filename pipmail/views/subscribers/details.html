@@ -123,7 +123,7 @@
                 <strong>Edit current recipient</strong>
               </label>
               <select name="recipChoice" id="recipChoice">
-                {% if recips %}
+                {% if recipients %}
                 {% for recip in recipients %}
                 <option value="{{recip['first_name']+' '+recip['last_name']}}, {{ recip['email'] }}">
                   {{ recip['first_name']+' '+recip['last_name']+' '+recip['email'] }}

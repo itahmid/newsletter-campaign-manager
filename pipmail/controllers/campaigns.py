@@ -51,14 +51,6 @@ class Newsletter(object):
             return self.cur.fetchall()[0][0]
         return 0
 
-    # def get_recips(self):
-    #     self.cur.execute("""SELECT first_name, last_name, email
-    #                         FROM recipients
-    #                         WHERE list_id = %s""" % self.id)
-    #     res = self.cur.fetchall()
-    #     cols = tuple([d[0].decode('utf8') for d in self.cur.description])
-    #     return [dict(zip(cols, res)) for res in self.cur]
-
 
 @mod.route('/campaigns', defaults={'page': 0})
 @mod.route('/page/<int:page>')
@@ -123,12 +115,9 @@ def create_campaign():
                 conn.commit()
                 cur.execute('SELECT last_insert_id()')
                 nid = cur.fetchall()[0][0]
-                print nid
             except Exception, e:
                 conn.rollback()
-                print e
                 #def on_error?
-                print "i get here lol"
                 return render_template('error.html', error=e)
             return redirect(url_for('subscribers.index', nid=nid))
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
-from pipmail.helpers import login_required, unix_to_local
+from pipmail.helpers import login_required, unix_to_local, allowed_file
 from pipmail import mysql
 import time
 import csv
@@ -13,7 +13,6 @@ error_dict = {'name': 'Please enter a name for this list',
               'email': 'Please enter an email address for this recipient',
               }
 
-ALLOWED_EXTENSIONS = set(['csv', 'xls', 'xlsx'])
 UPLOAD_FOLDER = '%s/pipmail/static/uploads' % os.getcwd()
 
 mod = Blueprint('subscribers', __name__)
@@ -57,6 +56,8 @@ class List(object):
 def index(page=0):
     '''Render subscriber list index'''
     nid = request.args.get('nid')
+    if not nid:
+        nid = None
     conn = mysql.get_db()
     cur = conn.cursor()
     offset = 0
@@ -68,9 +69,12 @@ def index(page=0):
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
     lists = [List(conn, lst[0]) for lst in res]
-    print nid
     return render_template('subscribers/index.html', lists=lists, page=page,
                            nid=nid)
+
+# def form_errors(rform, cntrlr):
+#     errors = [opt for opt, val in rform.iteritems()
+#               if (vaerror_dict.get(cntrlr)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -79,7 +83,6 @@ def create_list():
     error = None
     conn = mysql.get_db()
     db = conn.cursor()
-
     if request.method == 'POST':
         errors = [opt for opt, val in request.form.iteritems()
                   if (val not in ('first_name', 'last_name', 'email')
@@ -128,15 +131,13 @@ def edit_list(lid):
                         )
             conn.commit()
         except Exception as e:
-            print "ERROR: %s" % e
+            print(e)
             conn.rollback()
         return redirect(url_for('subscribers.index'))
 
     lst = List(conn, lid)
     recips = lst.get_recips()
-
     if request.method == 'GET':
-        print 'testing'
         edit_name = request.args.get('recip_name')
         edit_email = request.args.get('recip_email')
         return render_template('subscribers/details.html', editing=True,
@@ -157,67 +158,73 @@ def edit_recipients():
             first_name = request.form['new_name'].split()[0]
             last_name = request.form['new_name'].split()[1]
             email = request.form['new_email']
-            #check for duplicates here
-            try:
-                cur.execute("""INSERT INTO recipients(first_name, last_name,
-                            email, list_id)
-                            VALUES (%s,%s,%s,%s)
-                            """, (
-                            first_name,
-                            last_name,
-                            email,
-                            lid
-                            )
-                            )
-                conn.commit()
-            except Exception, e:
-                print e
-                conn.rollback()
-                return redirect(url_for('subscribers.index'))
+            print email
+            print len(email)
+            cur.execute("""SELECT *
+                           FROM recipients
+                           WHERE email = '%s'""" % email)
+            res = cur.fetchall()
+            if not res:
+                try:
+                    cur.execute("""INSERT INTO recipients(first_name,
+                                last_name, email, list_id)
+                                VALUES (%s,%s,%s,%s)
+                                """, (
+                                first_name,
+                                last_name,
+                                email,
+                                lid
+                                )
+                                )
+                    conn.commit()
+                except Exception, e:
+                    print(e)
+                    conn.rollback()
+                    return redirect(url_for('subscribers.index'))
+            else:
+                return render_template('subscribers/lists', error="error lol")
         else:
             recip_choice = request.form['recipChoice'].encode('ascii',
                                                               'ignore')
             email = recip_choice.split(',')[1].lstrip()
             if request.form.get('delete'):
                 try:
-                    print lid
-                    print email
                     cur.execute("""DELETE FROM recipients
                                 WHERE list_id = %s
                                 AND email = '%s'""" % (lid, email))
                     conn.commit()
                 except Exception, e:
-                    print e
-                    print "hahahah"
+                    print(e)
                     conn.rollback()
-
                 return redirect(url_for('subscribers.edit_list', lid=lid))
-    # if action == 'confirm_edit':
-    #     #iterate error_dict to check for missing items
-    #     new_name = request.form['new_name']
-    #     if len(new_name.split()) < 2:
-    #         return redirect(url_for('subscribers.index'))
-    #     first_name = request.form['new_name'].split()[0]
-    #     last_name = request.form['new_name'].split()[1]
-    #     new_email = request.form['new_email']
-    #     old_email = request.form['old_email']
-    #     try:
-    #         db.execute("""UPDATE recipients
-    #                    SET first_name=%s, last_name=%s, email=%s
-    #                    WHERE email=%s AND lid = %s""",
-    #                    (first_name, last_name, new_email, old_email, lid))
-    #         conn.commit()
-    #     except Exception, e:
-    #         print e
-    #         conn.rollback()
-    #         return redirect(url_for('subscribers.index'))
-    # elif action == 'edit':
-    #     recip_info = request.form['recipChoice'].split(',')
-    #     recip_name = recip_info[0][1:]
-    #     recip_email = recip_info[1][1:len(recip_info[1]) - 1]
-    #     return redirect(url_for('subscribers.edit_list', lid=lid,
-    #                     recip_name=recip_name, recip_email=recip_email))
-    return redirect(url_for('subscribers.index'))
+        if request.form.get('confirm_edit'):
+            new_name = request.form['new_name']
+            if len(new_name.split()) < 2:
+                return redirect(url_for('subscribers.index'))
+            first_name = request.form['new_name'].split()[0]
+            last_name = request.form['new_name'].split()[1]
+            new_email = request.form['new_email']
+            old_email = request.form['old_email']
+            try:
+                cur.execute("""UPDATE recipients
+                           SET first_name=%s, last_name=%s, email=%s
+                           WHERE email=%s AND list_id = %s""",
+                           (first_name, last_name, new_email, old_email, lid))
+                conn.commit()
+                print "YES"
+            except Exception, e:
+                print "NO"
+                print(e)
+                conn.rollback()
+            return redirect(url_for('subscribers.edit_list', lid=lid))
+        elif request.form.get('edit'):
+            recip_info = request.form['recipChoice'].split(',')
+            recip_name = recip_info[0]
+            recip_email = recip_info[1].lstrip()
+            print len(recip_email)
+            return redirect(url_for('subscribers.edit_list', lid=lid,
+                            recip_name=recip_name, recip_email=recip_email))
+        return redirect(url_for('subscribers.index'))
 
 
 @mod.route('/delete_list/<int:lid>')
@@ -246,17 +253,10 @@ def add_to_campaign():
                         lid, nid)
                         )
             conn.commit()
-            print 'yay!'
         except Exception as e:
-            print "ERROR: %s" % e
+            print(e)
             conn.rollback()
-            print e
     return redirect(url_for('subscribers.index'))
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 @mod.route('/upload_csv', methods=['GET', 'POST'])
@@ -267,7 +267,7 @@ def upload_csv():
     if request.method == 'POST':
         lid = request.form['list_id']
         file = request.files['file']
-        if file and allowed_file(file.filename):
+        if file and allowed_file(file.filename, set(['csv', 'xls', 'xlsx'])):
             filename = secure_filename(file.filename)
             #print os.path
             #print os.path.join(UPLOAD_FOLDER, filename)
@@ -308,7 +308,6 @@ def upload_csv():
                                   ))
                         conn.commit()
                     except Exception, e:
-                        print e
                         conn.rollback()
                         return redirect(url_for('subscribers.index'))
     return redirect(url_for('subscribers.index'))
