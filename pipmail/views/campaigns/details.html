@@ -21,7 +21,7 @@
       <a href="{{ url_for('subscribers.index', nid=nid) }}">Step 2</a>
    </li>
    <li>
-      <a href="#">Step 3</a>
+      <a href="{{ url_for('messages.edit_message', nid=nid) }}">Step 3</a>
    </li>
 </ul>
 {% if editing %}
