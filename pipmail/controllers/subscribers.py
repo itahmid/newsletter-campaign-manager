@@ -82,7 +82,7 @@ def index(page=0):
 def create_list():
     error = None
     conn = mysql.get_db()
-    db = conn.cursor()
+    cur = conn.cursor()
     if request.method == 'POST':
         errors = [opt for opt, val in request.form.iteritems()
                   if (val not in ('first_name', 'last_name', 'email')
@@ -92,7 +92,7 @@ def create_list():
                      if error_dict.get(err) != '']
         else:
             try:
-                db.execute("""INSERT into lists (name, description,
+                cur.execute("""INSERT into lists (name, description,
                             date_added)
                             VALUES (%s, %s, %s)
                             """, (
@@ -102,12 +102,14 @@ def create_list():
                            )
                            )
                 conn.commit()
+                cur.execute('SELECT last_insert_id()')
+                lid = cur.fetchall()[0][0]
             except Exception, e:
                 conn.rollback()
                 error = e
                 return render_template('subscribers/details.html', error=error,
                                        editing=False)
-            return redirect(url_for('subscribers.index'))
+            return redirect(url_for('subscribers.edit_list', lid=lid ))
 
     return render_template('subscribers/details.html', error=error,
                            editing=False)
