@@ -24,6 +24,12 @@ def unix_to_local(timestamp):
         ts).strftime('%Y-%m-%d %I:%M:%S')
     return _time
 
+
+def get_sql(mysql):
+    conn = mysql.get_db()
+    cur = conn.cursor()
+    return conn, cur
+
 #make a uniform search function for both controllers
 # def search():
 #     keywords = request.form['keywords']

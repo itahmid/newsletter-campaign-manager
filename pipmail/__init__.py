@@ -1,4 +1,5 @@
 import os
+import time
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
 from flask.ext.mysql import MySQL
@@ -44,7 +45,8 @@ def login():
     if request.method == 'POST' and 'username' in request.form:
         username = request.form['username']
         password = request.form['password']
-        cur = mysql.get_db().cursor()
+        conn = mysql.get_db()
+        cur = conn.cursor()
         cur.execute("""SELECT * FROM users WHERE name = '%s'
                     AND password='%s'""" % (username, password))
         check = cur.fetchall()
@@ -53,6 +55,11 @@ def login():
         else:
             session['logged_in'] = True
             session['current_user'] = username
+            cur.execute("""UPDATE users
+                           SET last_login=%s
+                           WHERE name=%s""", (int(time.time()), username))
+            # add first, last name, email change this later
+            conn.commit()
             return redirect(url_for('campaigns.index'))
     return render_template('auth/login.html', error=error)
 

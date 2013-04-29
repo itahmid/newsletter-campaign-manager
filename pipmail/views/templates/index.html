@@ -1,4 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-templates
+<br>
+
+{% if error %}
+<div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Error:</h4>
+    <span class="text-error">{{ error }}</span>
+</div>
+<br>
+{% endif %}
+{% if success %}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <h4>Success:</h4>
+    <span class="text-success">{{ success }}</span>
+</div>
+<br>
+{% endif %}
+<div class="row-fluid">
+    <div class="span20">
+        <h1 class="pull-left">Existing Templates</h1>
+        <br>
+        <a href="{{ url_for('subscribers.create_list') }}" class="btn btn-success pull-right ">Create New Template</a>
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Preview</th>
+                    <th style="width:40%;">Description</th>
+                    <th>Date Added</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

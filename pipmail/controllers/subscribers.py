@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
-from pipmail.helpers import login_required, unix_to_local, allowed_file
+from pipmail.helpers import login_required, unix_to_local, allowed_file, get_sql
 from pipmail import mysql
 import time
 import csv
@@ -81,8 +81,7 @@ def index(page=0):
 @login_required
 def create_list():
     error = None
-    conn = mysql.get_db()
-    cur = conn.cursor()
+    conn, cur = get_sql(mysql)
     if request.method == 'POST':
         errors = [opt for opt, val in request.form.iteritems()
                   if (val not in ('first_name', 'last_name', 'email')
@@ -96,11 +95,11 @@ def create_list():
                             date_added)
                             VALUES (%s, %s, %s)
                             """, (
-                           request.form['name'],
-                           request.form['description'],
-                           int(time.time())
-                           )
-                           )
+                            request.form['name'],
+                            request.form['description'],
+                            int(time.time())
+                            )
+                            )
                 conn.commit()
                 cur.execute('SELECT last_insert_id()')
                 lid = cur.fetchall()[0][0]
@@ -109,7 +108,7 @@ def create_list():
                 error = e
                 return render_template('subscribers/details.html', error=error,
                                        editing=False)
-            return redirect(url_for('subscribers.edit_list', lid=lid ))
+            return redirect(url_for('subscribers.edit_list', lid=lid))
 
     return render_template('subscribers/details.html', error=error,
                            editing=False)
@@ -118,8 +117,7 @@ def create_list():
 @mod.route('/edit_list/<int:lid>', methods=['GET', 'POST'])
 @login_required
 def edit_list(lid):
-    conn = mysql.get_db()
-    cur = conn.cursor()
+    conn, cur = get_sql(mysql)
 
     if request.method == 'POST':
         try:
@@ -152,8 +150,7 @@ def edit_list(lid):
 @mod.route('/edit_recipients', methods=['GET', 'POST'])
 @login_required
 def edit_recipients():
-    conn = mysql.get_db()
-    cur = conn.cursor()
+    conn, cur = get_sql(mysql)
     if request.method == 'POST':
         lid = request.form.get('list_id')
         if request.form.get('new'):
@@ -232,8 +229,7 @@ def edit_recipients():
 @mod.route('/delete_list/<int:lid>')
 @login_required
 def delete_campaign(lid):
-    conn = mysql.get_db()
-    cur = conn.cursor()
+    conn, cur = get_sql(mysql)
     cur.execute('DELETE FROM lists WHERE id = %d' % lid)
     conn.commit()
     return redirect(url_for('subscribers.index'))
@@ -264,14 +260,12 @@ def add_to_campaign():
 @mod.route('/upload_csv', methods=['GET', 'POST'])
 @login_required
 def upload_csv():
-    conn = mysql.get_db()
-    db = conn.cursor()
+    conn, cur = get_sql(mysql)
     if request.method == 'POST':
         lid = request.form['list_id']
         file = request.files['file']
         if file and allowed_file(file.filename, set(['csv', 'xls', 'xlsx'])):
             filename = secure_filename(file.filename)
-            #print os.path
             #print os.path.join(UPLOAD_FOLDER, filename)
             try:
                 file.save(os.path.join(UPLOAD_FOLDER, filename))
@@ -289,7 +283,7 @@ def upload_csv():
                     email = row[2]
                     lid = lid
                     try:
-                        db.execute("""INSERT INTO recipients
+                        cur.execute("""INSERT INTO recipients
                                       (
                                         first_name,
                                         last_name,
@@ -302,12 +296,12 @@ def upload_csv():
                                         %s,
                                         %s)
                                     """,
-                                  (
-                                      first_name,
-                                      last_name,
-                                      email,
-                                      lid
-                                  ))
+                                   (
+                                       first_name,
+                                       last_name,
+                                       email,
+                                       lid
+                                   ))
                         conn.commit()
                     except Exception, e:
                         conn.rollback()
