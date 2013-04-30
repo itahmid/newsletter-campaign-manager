@@ -24,16 +24,15 @@ mod = Blueprint('subscribers', __name__)
 
 class List(object):
     '''Model for list'''
-    def __init__(self, conn, _id):
+    def __init__(self, conn, _id, count=False):
         self.conn, self.cur = get_sql()
-        # self.conn = conn
-        # self.cur = conn.cursor()
+        self.count = count
         self.id = str(_id)
+        if self.count:
+            self.recip_count = self.get_recips()
         for k, v in self.get_result_dict().iteritems():
             setattr(self, k, v)
-            #print k, v
         self.local_time = unix_to_local(self.date_added)
-        self.recip_count = 0
 
     def get_result_dict(self):
         self.cur.execute("SELECT * FROM lists WHERE id = %s" % self.id)
@@ -41,50 +40,31 @@ class List(object):
         cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
         return dict(zip(cols, res[0][1:]))
 
-    # def get_recip_count(self):
-    #     self.cur.execute("SELECT * FROM recipients WHERE list_ids != 0")
-    #     res = self.cur.fetchall()
-    #     #print res
-
-    #     # res = str(self.cur.fetchall()[0][0])
-    #     # print res
-    #     # res = res.split(',')
-    #     # print "res: %s list_id: %s" % (res, self.id)
-
-    #         # _count = 0
-    #         # _id_list = self.list_ids.split()
-    #         # for _id in _id_list:
-
-    #         #     self.cur.execute("""SELECT COUNT(id)
-    #         #                         FROM recipients
-    #         #                         WHERE list_id = %s""" % _id)
-    #         #     #self.cur.fetchall()[0][0]
-    #         #     print self.cur.fetchall()[0][0]
-    #         #     _count += self.cur.fetchall()[0][0]
-    #         # return _count
-    #     return 0
-
     def get_recips(self):
         recip_ids = []
         self.cur.execute("""SELECT id, list_ids
                             FROM recipients
                             WHERE list_ids != '0'""")
         res = self.cur.fetchall()
-
         for i in res:
             list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
             if self.id in list_ids:
                 recip_ids.append(int(i[0]))
-
-        format_strings = ','.join(['%s'] * len(recip_ids))
-        self.cur.execute("""SELECT first_name, last_name, email
-                            FROM recipients
-                            WHERE id IN (%s)""" %
-                         format_strings,
-                         tuple(recip_ids))
-        res = self.cur.fetchall()
-        cols = tuple([d[0].decode('utf8') for d in self.cur.description])
-        return [dict(zip(cols, res)) for res in self.cur]
+        recip_count = len(recip_ids)
+        if self.count:
+            return recip_count
+        format_strings = ','.join(['%s'] * recip_count)
+        try:
+            self.cur.execute("""SELECT first_name, last_name, email
+                                FROM recipients
+                                WHERE id IN (%s)""" %
+                             format_strings,
+                             tuple(recip_ids))
+            res = self.cur.fetchall()
+            cols = tuple([d[0].decode('utf8') for d in self.cur.description])
+            return [dict(zip(cols, res)) for res in self.cur]
+        except:
+            return None
 
 
 @mod.route('/lists', defaults={'page': 0})
@@ -104,7 +84,7 @@ def index(page=0):
                 ORDER BY date_added
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
-    lists = [List(conn, lst[0]) for lst in res]
+    lists = [List(conn, lst[0], count=True) for lst in res]
     return render_template('subscribers/index.html', lists=lists, page=page,
                            nid=nid)
 
@@ -169,12 +149,21 @@ def edit_list(lid):
     recips = lst.get_recips()
     if request.method == 'GET':
         edit_name = request.args.get('recip_name')
-        edit_email = request.args.get('recip_email')
+        if edit_name:
+            edit_email = request.args.get('recip_email')
+            return render_template('subscribers/details.html', editing=True,
+                                   lst=lst, recipients=recips,
+                                   edit_name=edit_name, edit_email=edit_email)
+        cur.execute("SELECT * FROM recipients")
+        print "OK"
+        res = cur.fetchall()
+        cols = tuple([d[0].decode('utf8') for d in cur.description])
+        all_recips = [dict(zip(cols, res)) for res in cur]
+        print all_recips
+        print ":("
         return render_template('subscribers/details.html', editing=True,
                                lst=lst, recipients=recips,
-                               edit_name=edit_name, edit_email=edit_email)
-    return render_template('subscribers/details.html', editing=True,
-                           lst=lst, recipients=recips)
+                               all_recipients=all_recips)
 
 
 @mod.route('/edit_recipients', methods=['GET', 'POST'])
@@ -194,31 +183,46 @@ def edit_recipients():
             if not res:
                 try:
                     cur.execute("""INSERT INTO recipients(first_name,
-                                last_name, email, list_id)
+                                last_name, email, list_ids)
                                 VALUES (%s,%s,%s,%s)
                                 """, (
                                 first_name,
                                 last_name,
                                 email,
-                                lid
+                                lid + ','
                                 )
                                 )
                     conn.commit()
                 except Exception, e:
                     print(e)
                     conn.rollback()
-                    return redirect(url_for('subscribers.index'))
+                    return redirect(url_for('subscribers.edit_list', lid))
             else:
-                return render_template('subscribers/lists', error="error lol")
+                return redirect(url_for('subscribers.edit_list'), lid)
         else:
             recip_choice = request.form['recipChoice'].encode('ascii',
                                                               'ignore')
             email = recip_choice.split(',')[1].lstrip()
             if request.form.get('delete'):
+                cur.execute("""SELECT id, list_ids
+                            FROM recipients
+                            WHERE email = '%s'""" % email)
+                res = cur.fetchall()
+                for i in res:
+                    recip_id = i[0]
+                    new_list_ids = [_id.encode('utf8')
+                                    for _id in i[1].split(',') if _id != lid]
+                for x in xrange(15):
+                    print new_list_ids
+                if len(new_list_ids) > 0:
+                    new_list_ids = ','.join(['%s'] * len(new_list_ids))
+                else:
+                    new_list_ids = '0'
                 try:
-                    cur.execute("""DELETE FROM recipients
-                                WHERE list_id = %s
-                                AND email = '%s'""" % (lid, email))
+                    cur.execute("""UPDATE recipients
+                                    SET list_ids=%s
+                                    WHERE id = %s""",
+                                (new_list_ids, recip_id))
                     conn.commit()
                 except Exception, e:
                     print(e)
@@ -250,8 +254,8 @@ def edit_recipients():
             recip_email = recip_info[1].lstrip()
             print len(recip_email)
             return redirect(url_for('subscribers.edit_list', lid=lid,
-                            recip_name=recip_name, recip_email=recip_email))
-        return redirect(url_for('subscribers.index'))
+                            recip_sname=recip_name, recip_email=recip_email))
+        return redirect(url_for('subscribers.edit_list', lid=lid))
 
 
 @mod.route('/delete_list/<int:lid>')

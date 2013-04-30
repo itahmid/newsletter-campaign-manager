@@ -29,7 +29,6 @@ def unix_to_local(timestamp):
 def get_sql():
     conn = mysql.get_db()
     cur = conn.cursor()
-    print conn
     return conn, cur
 
 #make a uniform search function for both controllers

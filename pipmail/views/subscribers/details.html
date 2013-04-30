@@ -90,6 +90,25 @@
           </tr>
           <tr>
             <td>
+              <label>
+                <strong>Add existing recipient</strong>
+              </label>
+              <select name="recipChoice" id="recipChoice">
+                {% if all_recipients %}
+                {% for recip in all_recipients %}
+                <option value="{{recip['first_name']+' '+recip['last_name']}}, {{ recip['email'] }}">
+                  {{ recip['first_name']+' '+recip['last_name']+' '+recip['email'] }}
+                </option>
+                {% endfor %}
+                {% else %}
+                <option value="None">No recipients</option>
+                {% endif %}
+              </select></td>
+            </tr>
+
+
+          <tr>
+            <td>
               <input type="submit" name="new" class="btn btn-success pull-left" value="Add New" onClick="document.getElementById('choice').value='new';"  />
             </td>
           </tr>
