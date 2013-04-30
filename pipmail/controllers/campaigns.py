@@ -22,7 +22,7 @@ class Newsletter(object):
         self.cur = conn.cursor()
         self.id = _id
         for k, v in self.get_result_dict()[0].iteritems():
-            print k, v
+            # print k, v
             setattr(self, k, v)
         if self.company == 0:
             self.company = 'N/A'
@@ -44,11 +44,17 @@ class Newsletter(object):
         return comp
 
     def get_recip_count(self):
-        if self.list_id > 0:
-            self.cur.execute("""SELECT COUNT(id)
-                                FROM recipients
-                                WHERE list_id = %s""" % self.list_id)
-            return self.cur.fetchall()[0][0]
+        if self.list_ids > 0:
+            _count = 0
+            _id_list = self.list_ids.split()
+            for _id in _id_list:
+
+                self.cur.execute("""SELECT COUNT(id)
+                                    FROM recipients
+                                    WHERE list_id = %s""" % _id)
+                #self.cur.fetchall()[0][0]
+                print self.cur.fetchall()[0][0]
+                _count += self.cur.fetchall()[0][0]
         return 0
 
 
@@ -156,6 +162,7 @@ def edit_campaign(nid):
                         )
             conn.commit()
         except Exception as e:
+            print(e)
             conn.rollback()
             return render_template('error.html', error=e)
 

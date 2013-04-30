@@ -1,7 +1,8 @@
 from functools import wraps
 from flask import redirect, session
 import datetime
-
+from flask.ext.mysql import MySQL
+mysql = MySQL()
 
 def allowed_file(filename, exts):
     return '.' in filename and \
@@ -25,9 +26,10 @@ def unix_to_local(timestamp):
     return _time
 
 
-def get_sql(mysql):
+def get_sql():
     conn = mysql.get_db()
     cur = conn.cursor()
+    print conn
     return conn, cur
 
 #make a uniform search function for both controllers

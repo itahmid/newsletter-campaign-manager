@@ -2,15 +2,15 @@ import os
 import time
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
-from flask.ext.mysql import MySQL
+#from flask.ext.mysql import MySQL
 import settings
-from helpers import login_required
+from helpers import login_required, mysql, get_sql
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
 app.secret_key = settings.secret_key
-mysql = MySQL()
-
+# from flask.ext.mysql import MySQL
+# mysql = MySQL()
 
 app.config.setdefault('MYSQL_DATABASE_PORT', 3306)
 app.config.setdefault('MYSQL_DATABASE_USER', settings.USER)
@@ -45,9 +45,8 @@ def login():
     if request.method == 'POST' and 'username' in request.form:
         username = request.form['username']
         password = request.form['password']
-        conn = mysql.get_db()
-        cur = conn.cursor()
-        cur.execute("""SELECT * FROM users WHERE name = '%s'
+        conn, cur = get_sql()
+        cur.execute("""SELECT * FROM users WHERE email = '%s'
                     AND password='%s'""" % (username, password))
         check = cur.fetchall()
         if not check:
@@ -57,7 +56,7 @@ def login():
             session['current_user'] = username
             cur.execute("""UPDATE users
                            SET last_login=%s
-                           WHERE name=%s""", (int(time.time()), username))
+                           WHERE email=%s""", (int(time.time()), username))
             # add first, last name, email change this later
             conn.commit()
             return redirect(url_for('campaigns.index'))

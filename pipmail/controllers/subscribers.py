@@ -1,7 +1,11 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
-from pipmail.helpers import login_required, unix_to_local, allowed_file, get_sql
-from pipmail import mysql
+from pipmail.helpers import (
+    login_required,
+    unix_to_local,
+    allowed_file,
+    get_sql
+)
 import time
 import csv
 import os
@@ -21,13 +25,15 @@ mod = Blueprint('subscribers', __name__)
 class List(object):
     '''Model for list'''
     def __init__(self, conn, _id):
-        self.conn = conn
-        self.cur = conn.cursor()
-        self.id = _id
+        self.conn, self.cur = get_sql()
+        # self.conn = conn
+        # self.cur = conn.cursor()
+        self.id = str(_id)
         for k, v in self.get_result_dict().iteritems():
             setattr(self, k, v)
+            #print k, v
         self.local_time = unix_to_local(self.date_added)
-        self.recip_count = self.get_recip_count()
+        self.recip_count = 0
 
     def get_result_dict(self):
         self.cur.execute("SELECT * FROM lists WHERE id = %s" % self.id)
@@ -35,16 +41,47 @@ class List(object):
         cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
         return dict(zip(cols, res[0][1:]))
 
-    def get_recip_count(self):
-        self.cur.execute("""SELECT COUNT(id)
-                            FROM recipients
-                            WHERE list_id = %s""" % self.id)
-        return self.cur.fetchall()[0][0]
+    # def get_recip_count(self):
+    #     self.cur.execute("SELECT * FROM recipients WHERE list_ids != 0")
+    #     res = self.cur.fetchall()
+    #     #print res
+
+    #     # res = str(self.cur.fetchall()[0][0])
+    #     # print res
+    #     # res = res.split(',')
+    #     # print "res: %s list_id: %s" % (res, self.id)
+
+    #         # _count = 0
+    #         # _id_list = self.list_ids.split()
+    #         # for _id in _id_list:
+
+    #         #     self.cur.execute("""SELECT COUNT(id)
+    #         #                         FROM recipients
+    #         #                         WHERE list_id = %s""" % _id)
+    #         #     #self.cur.fetchall()[0][0]
+    #         #     print self.cur.fetchall()[0][0]
+    #         #     _count += self.cur.fetchall()[0][0]
+    #         # return _count
+    #     return 0
 
     def get_recips(self):
+        recip_ids = []
+        self.cur.execute("""SELECT id, list_ids
+                            FROM recipients
+                            WHERE list_ids != '0'""")
+        res = self.cur.fetchall()
+
+        for i in res:
+            list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
+            if self.id in list_ids:
+                recip_ids.append(int(i[0]))
+
+        format_strings = ','.join(['%s'] * len(recip_ids))
         self.cur.execute("""SELECT first_name, last_name, email
                             FROM recipients
-                            WHERE list_id = %s""" % self.id)
+                            WHERE id IN (%s)""" %
+                         format_strings,
+                         tuple(recip_ids))
         res = self.cur.fetchall()
         cols = tuple([d[0].decode('utf8') for d in self.cur.description])
         return [dict(zip(cols, res)) for res in self.cur]
@@ -58,8 +95,7 @@ def index(page=0):
     nid = request.args.get('nid')
     if not nid:
         nid = None
-    conn = mysql.get_db()
-    cur = conn.cursor()
+    conn, cur = get_sql()
     offset = 0
     lists = []
     if page > 0:
@@ -72,16 +108,12 @@ def index(page=0):
     return render_template('subscribers/index.html', lists=lists, page=page,
                            nid=nid)
 
-# def form_errors(rform, cntrlr):
-#     errors = [opt for opt, val in rform.iteritems()
-#               if (vaerror_dict.get(cntrlr)
-
 
 @mod.route('/create_list', methods=['GET', 'POST'])
 @login_required
 def create_list():
     error = None
-    conn, cur = get_sql(mysql)
+    conn, cur = get_sql()
     if request.method == 'POST':
         errors = [opt for opt, val in request.form.iteritems()
                   if (val not in ('first_name', 'last_name', 'email')
@@ -91,7 +123,7 @@ def create_list():
                      if error_dict.get(err) != '']
         else:
             try:
-                cur.execute("""INSERT into lists (name, description,
+                cur.execute("""INSERT into lists(name, description,
                             date_added)
                             VALUES (%s, %s, %s)
                             """, (
@@ -117,8 +149,7 @@ def create_list():
 @mod.route('/edit_list/<int:lid>', methods=['GET', 'POST'])
 @login_required
 def edit_list(lid):
-    conn, cur = get_sql(mysql)
-
+    conn, cur = get_sql()
     if request.method == 'POST':
         try:
             cur.execute("""UPDATE lists
@@ -134,7 +165,6 @@ def edit_list(lid):
             print(e)
             conn.rollback()
         return redirect(url_for('subscribers.index'))
-
     lst = List(conn, lid)
     recips = lst.get_recips()
     if request.method == 'GET':
@@ -150,15 +180,13 @@ def edit_list(lid):
 @mod.route('/edit_recipients', methods=['GET', 'POST'])
 @login_required
 def edit_recipients():
-    conn, cur = get_sql(mysql)
+    conn, cur = get_sql()
     if request.method == 'POST':
         lid = request.form.get('list_id')
         if request.form.get('new'):
             first_name = request.form['new_name'].split()[0]
             last_name = request.form['new_name'].split()[1]
             email = request.form['new_email']
-            print email
-            print len(email)
             cur.execute("""SELECT *
                            FROM recipients
                            WHERE email = '%s'""" % email)
@@ -229,7 +257,7 @@ def edit_recipients():
 @mod.route('/delete_list/<int:lid>')
 @login_required
 def delete_campaign(lid):
-    conn, cur = get_sql(mysql)
+    conn, cur = get_sql()
     cur.execute('DELETE FROM lists WHERE id = %d' % lid)
     conn.commit()
     return redirect(url_for('subscribers.index'))
@@ -240,8 +268,7 @@ def delete_campaign(lid):
 def add_to_campaign():
     nid = request.args.get('nid')
     lid = request.args.get('lid')
-    conn = mysql.get_db()
-    cur = conn.cursor()
+    conn, cur = get_sql()
     if request.method == 'GET':
         try:
             cur.execute("""UPDATE newsletters
@@ -260,7 +287,7 @@ def add_to_campaign():
 @mod.route('/upload_csv', methods=['GET', 'POST'])
 @login_required
 def upload_csv():
-    conn, cur = get_sql(mysql)
+    conn, cur = get_sql()
     if request.method == 'POST':
         lid = request.form['list_id']
         file = request.files['file']
