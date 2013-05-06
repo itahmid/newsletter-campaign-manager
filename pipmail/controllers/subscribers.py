@@ -2,10 +2,12 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
 from pipmail.helpers import (
     login_required,
-    unix_to_local,
     allowed_file,
     get_sql
 )
+from pipmail.models import List
+
+
 import time
 import csv
 import os
@@ -22,56 +24,12 @@ UPLOAD_FOLDER = '%s/pipmail/static/uploads' % os.getcwd()
 mod = Blueprint('subscribers', __name__)
 
 
-class List(object):
-    '''Model for list'''
-    def __init__(self, conn, _id, count=False):
-        self.conn, self.cur = get_sql()
-        self.count = count
-        self.id = str(_id)
-        if self.count:
-            self.recip_count = self.get_recips()
-        for k, v in self.get_result_dict().iteritems():
-            setattr(self, k, v)
-        self.local_time = unix_to_local(self.date_added)
-
-    def get_result_dict(self):
-        self.cur.execute("SELECT * FROM lists WHERE id = %s" % self.id)
-        res = self.cur.fetchall()
-        cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
-        return dict(zip(cols, res[0][1:]))
-
-    def get_recips(self):
-        recip_ids = []
-        self.cur.execute("""SELECT id, list_ids
-                            FROM recipients
-                            WHERE list_ids != '0'""")
-        res = self.cur.fetchall()
-        for i in res:
-            list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
-            if self.id in list_ids:
-                recip_ids.append(int(i[0]))
-        recip_count = len(recip_ids)
-        if self.count:
-            return recip_count
-        format_strings = ','.join(['%s'] * recip_count)
-        try:
-            self.cur.execute("""SELECT first_name, last_name, email
-                                FROM recipients
-                                WHERE id IN (%s)""" %
-                             format_strings,
-                             tuple(recip_ids))
-            res = self.cur.fetchall()
-            cols = tuple([d[0].decode('utf8') for d in self.cur.description])
-            return [dict(zip(cols, res)) for res in self.cur]
-        except:
-            return None
-
-
 @mod.route('/lists', defaults={'page': 0})
 @mod.route('/lists/page/<int:page>')
 @login_required
 def index(page=0):
     '''Render subscriber list index'''
+    tconn, tcur = get_sql()
     nid = request.args.get('nid')
     if not nid:
         nid = None
@@ -84,7 +42,7 @@ def index(page=0):
                 ORDER BY date_added
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
-    lists = [List(conn, lst[0], count=True) for lst in res]
+    lists = [List(conn, cur, lst[0]) for lst in res]
     return render_template('subscribers/index.html', lists=lists, page=page,
                            nid=nid)
 
@@ -155,12 +113,9 @@ def edit_list(lid):
                                    lst=lst, recipients=recips,
                                    edit_name=edit_name, edit_email=edit_email)
         cur.execute("SELECT * FROM recipients")
-        print "OK"
         res = cur.fetchall()
         cols = tuple([d[0].decode('utf8') for d in cur.description])
         all_recips = [dict(zip(cols, res)) for res in cur]
-        print all_recips
-        print ":("
         return render_template('subscribers/details.html', editing=True,
                                lst=lst, recipients=recips,
                                all_recipients=all_recips)

@@ -2,7 +2,8 @@ import time
 from flask import Blueprint, request, redirect, url_for, abort, \
     render_template, session
 from pipmail import mysql
-from pipmail.helpers import login_required, unix_to_local
+from pipmail.helpers import login_required
+#from pipmail.models import Newsletter
 
 error_dict = {'code': 'Please enter a campaign code',
               'replyto_email': 'Please enter a reply-to email',
@@ -13,49 +14,6 @@ error_dict = {'code': 'Please enter a campaign code',
               }
 
 mod = Blueprint('campaigns', __name__)
-
-
-class Newsletter(object):
-    '''Model for newsletter'''
-    def __init__(self, conn, _id):
-        self.conn = conn
-        self.cur = conn.cursor()
-        self.id = _id
-        for k, v in self.get_result_dict()[0].iteritems():
-            # print k, v
-            setattr(self, k, v)
-        if self.company == 0:
-            self.company = 'N/A'
-        else:
-            self.company = self.get_company_name()
-        self.local_time = unix_to_local(self.date_added)
-        self.recip_count = self.get_recip_count()
-
-    def get_result_dict(self):
-        self.cur.execute("SELECT * FROM newsletters WHERE id = %s" % self.id)
-        self.cur.fetchall()
-        cols = tuple([d[0].decode('utf8') for d in self.cur.description])
-        return [dict(zip(cols, row)) for row in self.cur]
-
-    def get_company_name(self):
-        self.cur.execute("""SELECT name FROM companies
-                        WHERE id = %s""" % self.company)
-        comp = self.cur.fetchall()[0][0]
-        return comp
-
-    def get_recip_count(self):
-        if self.list_ids > 0:
-            _count = 0
-            _id_list = self.list_ids.split()
-            for _id in _id_list:
-
-                self.cur.execute("""SELECT COUNT(id)
-                                    FROM recipients
-                                    WHERE list_id = %s""" % _id)
-                #self.cur.fetchall()[0][0]
-                print self.cur.fetchall()[0][0]
-                _count += self.cur.fetchall()[0][0]
-        return 0
 
 
 @mod.route('/campaigns', defaults={'page': 0})

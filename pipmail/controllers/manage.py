@@ -11,5 +11,5 @@ user model maybe?
 @login_required
 def index():
     conn, cur = get_sql(mysql)
-    cur.execute("""SELECT * FROM users"""
+    cur.execute("""SELECT * FROM users""")
     return render_template('manage/index.html')

@@ -7,6 +7,7 @@ todo
 =======
 - add everything the old Ruby/PHP versions have
 - more robust error handling
+- finish new models/inheritance
 - edit sql column list_id for recipients to accept multiple list_ids
 - add section for assinging lists to campaigns and fix steps process
 - email templates and delivery
