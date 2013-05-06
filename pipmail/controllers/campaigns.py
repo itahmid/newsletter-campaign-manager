@@ -3,7 +3,7 @@ from flask import Blueprint, request, redirect, url_for, abort, \
     render_template, session
 from pipmail import mysql
 from pipmail.helpers import login_required
-#from pipmail.models import Newsletter
+from pipmail.models import Newsletter
 
 error_dict = {'code': 'Please enter a campaign code',
               'replyto_email': 'Please enter a reply-to email',
@@ -31,7 +31,7 @@ def index(page):
                 ORDER BY date_added
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
-    newsletters = [Newsletter(conn, nltr[0]) for nltr in res]
+    newsletters = [Newsletter(conn, cur, nltr[0]) for nltr in res]
     return render_template('campaigns/index.html', newsletters=newsletters,
                            page=page)
 
@@ -55,8 +55,7 @@ def create_campaign():
             error = [error_dict.get(err) for err in errors
                      if error_dict.get(err) != '']
         else:
-            if not request.form.get('unsub'):
-                unsub = 0
+            unsub = request.form.get('unsub')
             try:
                 cur.execute("""INSERT INTO newsletters(code, name, author,
                             company, from_name, from_email, replyto_email,
@@ -81,7 +80,7 @@ def create_campaign():
                 nid = cur.fetchall()[0][0]
             except Exception, e:
                 conn.rollback()
-                #def on_error?
+                print "TEST TEST"
                 return render_template('error.html', error=e)
             return redirect(url_for('subscribers.index', nid=nid))
 

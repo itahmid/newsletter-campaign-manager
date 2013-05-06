@@ -42,8 +42,6 @@ def index(page=0):
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
     lists = [List(conn, cur, lst[0]) for lst in res]
-    #for l in lists:
-        
     return render_template('subscribers/index.html', lists=lists, page=page,
                            nid=nid)
 
