@@ -2,7 +2,7 @@ from helpers import unix_to_local
 
 
 class Base(object):
-
+    '''Base class for models'''
     def __init__(self, conn, cur, _id):
         self.conn = conn
         self.cur = cur
@@ -16,11 +16,55 @@ class Base(object):
 
 
 class List(Base):
+
     def __init__(self, conn, cur, _id):
         super(List, self).__init__(conn, cur, _id)
+        self.id = str(_id)
         for k, v in self.get_result_dict('lists').iteritems():
+            print k
             setattr(self, k, v)
+        self.recip_count = self.get_recip_count()
         self.local_time = unix_to_local(self.date_added)
+
+    def get_recip_count(self):
+        recip_ids = []
+        self.cur.execute("""SELECT id, list_ids
+                            FROM recipients
+                            WHERE list_ids != '0'""")
+        res = self.cur.fetchall()
+        for i in res:
+            list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
+            if self.id in list_ids:
+                recip_ids.append(int(i[0]))
+        return len(recip_ids)
+    # def get_recips(self, count=False):
+        # recip_ids = []
+        # self.cur.execute("""SELECT id, list_ids
+        #                     FROM recipients
+        #                     WHERE list_ids != '0'""")
+        # res = self.cur.fetchall()
+        # for i in res:
+        #     list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
+        #     if self.id in list_ids:
+        #         recip_ids.append(int(i[0]))
+        # recip_count = len(recip_ids)
+        # if count:
+        #     return recip_count
+    #     format_strings = ','.join(['%s'] * recip_count)
+    #     try:
+    #         self.cur.execute("""SELECT first_name, last_name, email
+    #                             FROM recipients
+    #                             WHERE id IN (%s)""" %
+    #                          format_strings,
+    #                          tuple(recip_ids))
+    #         res = self.cur.fetchall()
+    #         cols = tuple([d[0].decode('utf8') for d in self.cur.description])
+    #         return [dict(zip(cols, res)) for res in self.cur]
+    #     except:
+    #         return None
+
+
+
 
 
 # class Newsletter(Base):

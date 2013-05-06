@@ -29,7 +29,6 @@ mod = Blueprint('subscribers', __name__)
 @login_required
 def index(page=0):
     '''Render subscriber list index'''
-    tconn, tcur = get_sql()
     nid = request.args.get('nid')
     if not nid:
         nid = None
@@ -43,6 +42,8 @@ def index(page=0):
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
     lists = [List(conn, cur, lst[0]) for lst in res]
+    #for l in lists:
+        
     return render_template('subscribers/index.html', lists=lists, page=page,
                            nid=nid)
 
@@ -103,7 +104,7 @@ def edit_list(lid):
             print(e)
             conn.rollback()
         return redirect(url_for('subscribers.index'))
-    lst = List(conn, lid)
+    lst = List(conn, cur, lid)
     recips = lst.get_recips()
     if request.method == 'GET':
         edit_name = request.args.get('recip_name')
