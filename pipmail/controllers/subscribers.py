@@ -5,7 +5,7 @@ from pipmail.helpers import (
     allowed_file,
     get_sql
 )
-from pipmail.models import List
+from pipmail.models import List, Newsletter
 
 
 import time
@@ -30,9 +30,13 @@ mod = Blueprint('subscribers', __name__)
 def index(page=0):
     '''Render subscriber list index'''
     nid = request.args.get('nid')
+    current_lists = []
+    conn, cur = get_sql()
     if not nid:
         nid = None
-    conn, cur = get_sql()
+    else:
+        current_lists = Newsletter(conn, cur, nid).list_ids
+        current_lists = [_id.encode('utf8').replace(',', '') for _id in current_lists]
     offset = 0
     lists = []
     if page > 0:
@@ -42,8 +46,14 @@ def index(page=0):
                 DESC LIMIT 15 OFFSET %s""" % offset)
     res = cur.fetchall()
     lists = [List(conn, cur, lst[0]) for lst in res]
+    for lst in lists:
+        print current_lists
+        if lst.id in current_lists:
+            lst.action = 'remove_from'
+        else:
+            lst.action = 'add_to'
     return render_template('subscribers/index.html', lists=lists, page=page,
-                           nid=nid)
+                           nid=nid, current_lists=current_lists)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -224,21 +234,59 @@ def delete_campaign(lid):
 @mod.route('/add_to_campaign', methods=['GET', 'POST'])
 @login_required
 def add_to_campaign():
-    nid = request.args.get('nid')
-    lid = request.args.get('lid')
     conn, cur = get_sql()
     if request.method == 'GET':
+        nid = request.args.get('nid')
+        lid = request.args.get('lid')
+        if nid:
+            newsletter = Newsletter(conn, cur, nid)
+            current_lists = newsletter.list_ids
+            if len(current_lists) > 0:
+                current_lists = [_id.encode('utf8').replace(',', '') for _id in current_lists]
+                new_lists = current_lists.append(lid)
+            else:
+                new_lists = '%s,' % lid
+            try:
+                cur.execute("""UPDATE newsletters
+                               SET list_ids=%s
+                               WHERE id = %s
+                            """, (
+                            new_lists, nid)
+                            )
+                conn.commit()
+            except Exception as e:
+                print(e)
+                conn.rollback()
+        return redirect(url_for('subscribers.index', nid=nid))
+    return redirect(url_for('subscribers.index'))
+
+
+@mod.route('/remove_from_campaign', methods=['GET', 'POST'])
+@login_required
+def remove_from_campaign():
+    conn, cur = get_sql()
+    if request.method == 'GET':
+        nid = request.args.get('nid')
+        lid = request.args.get('lid')
+        newsletter = Newsletter(conn, cur, nid)
+        current_lists = newsletter.list_ids
+        if len(current_lists) > 0:
+            current_lists = [_id.encode('utf8').replace(',', '') for _id in current_lists]
+            new_lists = current_lists.remove(lid)
+        else:
+            new_lists = '%s,' % lid
         try:
             cur.execute("""UPDATE newsletters
-                           SET list_id=%s
+                           SET list_ids=%s
                            WHERE id = %s
                         """, (
-                        lid, nid)
+                        new_lists, nid)
                         )
             conn.commit()
         except Exception as e:
             print(e)
             conn.rollback()
+        return redirect(url_for('subscribers.index', nid=nid))
     return redirect(url_for('subscribers.index'))
 
 

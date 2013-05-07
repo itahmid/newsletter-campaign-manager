@@ -58,12 +58,20 @@ class Newsletter(Base):
         self.id = str(_id)
         for k, v in self.get_result_dict('newsletters').iteritems():
             setattr(self, k, v)
+            print k, v
         self.local_time = unix_to_local(self.date_added)
         if self.company == 0:
             self.company = 'N/A'
         else:
             self.company = self.get_company_name()
         self.local_time = unix_to_local(self.date_added)
+        print self.list_ids
+        if len(self.list_ids) > 0:
+            self.list_ids = self.list_ids.split()
+            #self.recip_count = self.get_recip_count()
+        else:
+            self.list_ids = []
+            self.recip_count = 0
 
     def get_company_name(self):
         self.cur.execute("""SELECT name FROM companies
@@ -71,19 +79,15 @@ class Newsletter(Base):
         comp = self.cur.fetchall()[0][0]
         return comp
 
-#     def get_recip_count(self):
-#         if self.list_ids > 0:
-#             _count = 0
-#             _id_list = self.list_ids.split()
-#             for _id in _id_list:
-
-#                 self.cur.execute("""SELECT COUNT(id)
-#                                     FROM recipients
-#                                     WHERE list_id = %s""" % _id)
-#                 #self.cur.fetchall()[0][0]
-#                 print self.cur.fetchall()[0][0]
-#                 _count += self.cur.fetchall()[0][0]
-#         return 0
+    def get_recip_count(self):
+        recip_count = 0
+        for _id in self.list_ids:
+            print _id
+            self.cur.execute("""SELECT COUNT(id)
+                                FROM recipients
+                                WHERE list_id = %s""" % _id)
+            recip_count += self.cur.fetchall()[0][0]
+        return recip_count
 
 
 # class User(object):

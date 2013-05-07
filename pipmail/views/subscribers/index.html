@@ -56,10 +56,10 @@
                     <td>{{ lst.local_time }}</td>
                     <td>{{ lst.recip_count }}</td>
                     <td>
-                            {% if nid %}
+                            {% if lst.action == "add_to" %}
                             <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a>
-                            {% else %}
-                            <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=None) }}" class="btn btn" >Add to Campaign</a>
+                            {% elif lst.action == "remove_from" %}
+                            <a href="{{ url_for('subscribers.remove_from_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Remove From Campaign</a>
                             {% endif %}
 
                             &nbsp;
