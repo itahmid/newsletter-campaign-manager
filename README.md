@@ -6,7 +6,6 @@ Email campaign manager written using the Python Flask micro-framework.  Adapting
 todo
 =======
 - add everything the old Ruby/PHP versions have
-- more robust error handling
 - finish new models/inheritance
 - edit subscribers view for non-step list adding
 - edit sql column list_id for recipients to accept multiple list_ids
@@ -19,6 +18,7 @@ todo
 - unsubscribe links/unsubscriber search & deletion
 - probably read more about context processors and maybe redo the authentication process
 - add tests
+- more robust error handling
 
 installation
 =======

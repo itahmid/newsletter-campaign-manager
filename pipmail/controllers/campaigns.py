@@ -154,8 +154,3 @@ def delete_campaign(nid):
     cur.execute('DELETE FROM newsletters WHERE id = %d' % nid)
     conn.commit()
     return redirect(url_for('index'))
-
-
-# @mod.route('/search/', methods=['POST'])
-# def search():
-#     query = request.form['query']
