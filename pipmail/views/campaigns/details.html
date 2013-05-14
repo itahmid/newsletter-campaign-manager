@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
- {% if error %}
-<div class="alert alert-block">
+{% if errors %}
+<br>
+<div class="alert alert-error">
    <button type="button" class="close" data-dismiss="alert">&times;</button>
    <h4>Error</h4>
-   {% for err in error %}
-   <span class="text-error">{{ err }}</span>
+   {% for err in errors %}
+   <span class="text-error">
+      Please enter a
+      <span style='font-weight:bold;'>{{ err }}</span>
+   </span>
    <br>
    {% endfor %}
 {% endif %}
@@ -18,11 +22,10 @@
       <a href="#">Step 1</a>
    </li>
    <li>
-
       <a href="{{ url_for('subscribers.index', nid=nid) if editing else url_for('campaigns.create_campaign')  }}">Step 2</a>
    </li>
    <li>
-      <a href="{{ url_for('messages.edit_message', nid=nid) }}">Step 3</a>
+      <a href="{{ url_for('messages.edit_message', nid=nid) if editing else url_for('campaigns.create_campaign')  }}">Step 3</a>
    </li>
 </ul>
 
@@ -46,7 +49,16 @@
       </tr>
       <tr>
          <td class="alternate">
+            {% if editing %}
+            {% if newsletter['unsub'] %}
+            <input type="checkbox" name="unsub" id="unsub" value="1" checked />
+            {% else %}
             <input type="checkbox" name="unsub" id="unsub" value="1" />
+            {% endif %}
+            {% else %} 
+             <input type="checkbox" name="unsub" id="unsub" value="1" />
+            {% endif %}
+
             Yes add an unsubscribe link to this email
          </td>
       </tr>
@@ -113,7 +125,7 @@
 
             <input width="350" style="width: 350px" name="from_email" type="text" id="from_email" value="{{ newsletter['from_email'] if editing else '' }}"  />
             or choose
-            <select width="350" style="width: 350px" name="from_email_sel" id="from_email_sel" >
+            <select onchange="updateInput('from_email', this.value)" width="350" style="width: 350px" name="from_email_sel" id="from_email_sel" >
                <option value="">Select</option>
                {% for st in staff %}
                <option value="{{ st[1] }}">{{ st[0] }} ({{st[1]}})</option>
@@ -129,7 +141,7 @@
             <label>Reply Email</label>
             <input width="350" style="width: 350px" name="replyto_email" type="text" id="replyto_email" value="{{ newsletter['replyto_email'] if editing}}"  />
             or choose
-            <select width="350" style="width: 350px" name="replyto_sel" id="replyto_sel" >
+            <select onchange="updateInput('replyto_email', this.value)" width="350" style="width: 350px" name="replyto_sel" id="replyto_sel" >
                <option value="">Select</option>
                {% for st in staff %}
                <option value="{{ st[1] }}">{{ st[0] }} ({{st[1]}})</option>

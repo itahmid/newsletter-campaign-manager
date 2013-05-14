@@ -1,11 +1,8 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
-from pipmail.helpers import (
-    login_required,
-    allowed_file,
-    get_sql
-)
+from pipmail.helpers import login_required, allowed_file
 from pipmail.models import List, Newsletter
+from pipmail.sql import get_sql, get_index
 
 
 import time
@@ -27,33 +24,12 @@ mod = Blueprint('subscribers', __name__)
 @mod.route('/lists', defaults={'page': 0})
 @mod.route('/lists/page/<int:page>')
 @login_required
-def index(page=0):
+def index(page=0, msg=None):
     '''Render subscriber list index'''
     nid = request.args.get('nid')
-    current_lists = []
-    conn, cur = get_sql()
-    if not nid:
-        nid = None
-    else:
-        current_lists = Newsletter(conn, cur, nid).list_ids
-        current_lists = [_id.encode('utf8').replace(',', '') for _id in current_lists]
-    offset = 0
-    lists = []
-    if page > 0:
-        offset = (page * 15)
-    cur.execute("""SELECT id FROM lists
-                ORDER BY date_added
-                DESC LIMIT 15 OFFSET %s""" % offset)
-    res = cur.fetchall()
-    lists = [List(conn, cur, lst[0]) for lst in res]
-    for lst in lists:
-        print current_lists
-        if lst.id in current_lists:
-            lst.action = 'remove_from'
-        else:
-            lst.action = 'add_to'
+    lists, current_lists = get_index(cntrlr='lists', page=page, nid=nid)
     return render_template('subscribers/index.html', lists=lists, page=page,
-                           nid=nid, current_lists=current_lists)
+                           nid=nid, msg=msg, current_lists=current_lists)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -176,8 +152,6 @@ def edit_recipients():
                     recip_id = i[0]
                     new_list_ids = [_id.encode('utf8')
                                     for _id in i[1].split(',') if _id != lid]
-                for x in xrange(15):
-                    print new_list_ids
                 if len(new_list_ids) > 0:
                     new_list_ids = ','.join(['%s'] * len(new_list_ids))
                 else:
@@ -206,9 +180,7 @@ def edit_recipients():
                            WHERE email=%s AND list_id = %s""",
                            (first_name, last_name, new_email, old_email, lid))
                 conn.commit()
-                print "YES"
             except Exception, e:
-                print "NO"
                 print(e)
                 conn.rollback()
             return redirect(url_for('subscribers.edit_list', lid=lid))
@@ -216,7 +188,6 @@ def edit_recipients():
             recip_info = request.form['recipChoice'].split(',')
             recip_name = recip_info[0]
             recip_email = recip_info[1].lstrip()
-            print len(recip_email)
             return redirect(url_for('subscribers.edit_list', lid=lid,
                             recip_sname=recip_name, recip_email=recip_email))
         return redirect(url_for('subscribers.edit_list', lid=lid))
@@ -241,11 +212,17 @@ def add_to_campaign():
         if nid:
             newsletter = Newsletter(conn, cur, nid)
             current_lists = newsletter.list_ids
-            if len(current_lists) > 0:
-                current_lists = [_id.encode('utf8').replace(',', '') for _id in current_lists]
-                new_lists = current_lists.append(lid)
+            if current_lists[0] == '0':
+                new_lists = lid
+            elif len(current_lists) == 1:
+                new_lists = '%s,%s' % (current_lists[0], lid)
+                print new_lists
             else:
-                new_lists = '%s,' % lid
+                print current_lists
+                current_lists = ','.join(current_lists)
+                
+                new_lists = ','.join((current_lists, lid))
+               
             try:
                 cur.execute("""UPDATE newsletters
                                SET list_ids=%s
@@ -270,11 +247,11 @@ def remove_from_campaign():
         lid = request.args.get('lid')
         newsletter = Newsletter(conn, cur, nid)
         current_lists = newsletter.list_ids
-        if len(current_lists) > 0:
-            current_lists = [_id.encode('utf8').replace(',', '') for _id in current_lists]
-            new_lists = current_lists.remove(lid)
+        if len(current_lists) == 1:
+            new_lists = '0'
         else:
-            new_lists = '%s,' % lid
+            new_lists = current_lists.remove(lid)
+            new_lists = ','.join(current_lists)
         try:
             cur.execute("""UPDATE newsletters
                            SET list_ids=%s

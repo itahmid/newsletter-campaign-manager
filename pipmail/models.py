@@ -58,20 +58,15 @@ class Newsletter(Base):
         self.id = str(_id)
         for k, v in self.get_result_dict('newsletters').iteritems():
             setattr(self, k, v)
-            print k, v
         self.local_time = unix_to_local(self.date_added)
         if self.company == 0:
             self.company = 'N/A'
         else:
             self.company = self.get_company_name()
         self.local_time = unix_to_local(self.date_added)
-        print self.list_ids
-        if len(self.list_ids) > 0:
-            self.list_ids = self.list_ids.split()
-            #self.recip_count = self.get_recip_count()
-        else:
-            self.list_ids = []
-            self.recip_count = 0
+        self.list_ids = self.list_ids.encode('ascii', 'ignore')
+        self.list_ids = self.list_ids.split(',')
+        self.recip_count = 0
 
     def get_company_name(self):
         self.cur.execute("""SELECT name FROM companies
@@ -82,7 +77,6 @@ class Newsletter(Base):
     def get_recip_count(self):
         recip_count = 0
         for _id in self.list_ids:
-            print _id
             self.cur.execute("""SELECT COUNT(id)
                                 FROM recipients
                                 WHERE list_id = %s""" % _id)

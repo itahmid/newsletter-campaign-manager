@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block title %} - {% endblock %}
 {% block content %}
-{{ error }}
-  <h1>Error</h1> 
-<p>There was an unexpected error. Please contact the system administrator and quote the following error code
-if the issues persist: 4535239530</p>
+<h1>Error</h1> 
+<p>There was an unexpected error. Please contact the system administrator and quote the following error if the issue persists: {{error}}</p>
 {% endblock %}

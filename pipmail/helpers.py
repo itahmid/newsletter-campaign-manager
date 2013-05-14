@@ -1,13 +1,19 @@
 from functools import wraps
 from flask import redirect, session
 import datetime
-from flask.ext.mysql import MySQL
-mysql = MySQL()
 
 
 def allowed_file(filename, exts):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in exts
+
+
+def collect_form_errors(form, cntrlr):
+    errors = []
+    for k, v in form.iteritems():
+        if (v == '' and k[len(k) - 3:] != 'sel'):
+            errors.append(k.replace('_', ' '))
+    return errors
 
 
 def login_required(func):
@@ -27,10 +33,10 @@ def unix_to_local(timestamp):
     return _time
 
 
-def get_sql():
-    conn = mysql.get_db()
-    cur = conn.cursor()
-    return conn, cur
+
+
+
+
 
 #make a uniform search function for both controllers
 # def search():

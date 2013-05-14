@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 <br>
-{% if nid != None %}
 
+{% if nid != None %}
 <ul class="nav nav-tabs">
     <li>
         <a href="{{ url_for('campaigns.edit_campaign', nid=nid) }}">Step 1</a>
@@ -56,15 +56,16 @@
                     <td>{{ lst.local_time }}</td>
                     <td>{{ lst.recip_count }}</td>
                     <td style="table-layout: fixed;overflow: hidden;text-align:center;">
-                            {% if lst.action == "add_to" %}
-                            <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a>
-                            {% elif lst.action == "remove_from" %}
-                            <a href="{{ url_for('subscribers.remove_from_campaign', lid=lst.id, nid=nid) }}" class="btn btn-inverse" >Remove From Campaign</a>
-                            {% endif %}
+                        {% if lst.action == "add_to" %}
+                        <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a>
+                        {% elif lst.action == "remove_from" %}
+                        <a href="{{ url_for('subscribers.remove_from_campaign', lid=lst.id, nid=nid) }}" class="btn btn-inverse" >Remove From Campaign</a>
+                        {% endif %}
 
                             &nbsp;
-                            <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>&nbsp;
-                            <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
+                        <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>
+                        &nbsp;
+                        <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
                     </td>
                 </tr>
                 {% endfor %}
