@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <br>
-
 {% if nid != None %}
 <ul class="nav nav-tabs">
     <li>
@@ -55,14 +54,15 @@
                     <td>{{ lst.description }}</td>
                     <td>{{ lst.local_time }}</td>
                     <td>{{ lst.recip_count }}</td>
-                    <td style="table-layout: fixed;overflow: hidden;text-align:center;">
+                    <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 30%;">
                         {% if lst.action == "add_to" %}
-                        <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a>
+                        <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a> 
+                        &nbsp;
                         {% elif lst.action == "remove_from" %}
                         <a href="{{ url_for('subscribers.remove_from_campaign', lid=lst.id, nid=nid) }}" class="btn btn-inverse" >Remove From Campaign</a>
+                        &nbsp;
                         {% endif %}
 
-                            &nbsp;
                         <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>
                         &nbsp;
                         <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
