@@ -12,7 +12,6 @@ mod = Blueprint('campaigns', __name__)
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
-    '''Render newsletter index'''
     newsletters = get_index(cntrlr='newsletters', page=page)
     return render_template('campaigns/index.html', newsletters=newsletters,
                            page=page)
@@ -21,7 +20,6 @@ def index(page):
 @mod.route('/create_campaign', methods=['GET', 'POST'])
 @login_required
 def create_campaign():
-    '''Create a new campaign'''
     errors = None
     conn, cur = get_sql()
     cur.execute('SELECT id, name FROM companies')
@@ -65,7 +63,6 @@ def create_campaign():
 @mod.route('/edit_campaign/<int:nid>', methods=['GET', 'POST'])
 @login_required
 def edit_campaign(nid):
-    '''Edit an existing campaign'''
     conn, cur = get_sql()
     if request.method == 'POST':
         errors = collect_form_errors(request.form, 'campaigns')
@@ -116,10 +113,19 @@ def edit_campaign(nid):
                                nid=nid)
 
 
+@mod.route('/search_campigns/')
+@login_required
+def search_campaigns():
+    conn, cur = get_sql()
+    if request.method == 'POST':
+        for k, v in request.form.iteritems():
+            print k, v
+    return render_template('campaigns/search.html')
+
+
 @mod.route('/delete_campaign/<int:nid>')
 @login_required
 def delete_campaign(nid):
-    '''Delete a campaign'''
     conn, cur = get_sql()
     cur.execute('DELETE FROM newsletters WHERE id = %d' % nid)
     conn.commit()

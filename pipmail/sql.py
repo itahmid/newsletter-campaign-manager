@@ -37,3 +37,13 @@ def get_index(**kwargs):
     if cntrlr == 'newsletters':
         newsletters = [Newsletter(conn, cur, nltr[0]) for nltr in res]
         return newsletters
+
+def get_search_index():
+    conn, cur = get_sql()
+    print args
+
+#     SELECT * FROM `myTable` WHERE (`title` LIKE '%hello%' OR `title` LIKE '%world%') LIMIT numberOfValues,startingAtRowNumber
+
+
+# for arg in request.args:
+#     query.append('

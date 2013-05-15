@@ -54,7 +54,11 @@
                     <td>{{ lst.description }}</td>
                     <td>{{ lst.local_time }}</td>
                     <td>{{ lst.recip_count }}</td>
-                    <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 30%;">
+                    {% if nid %}
+                    <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 30%;" >
+                    {% else %}
+                     <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 13%;" >
+                    {% endif %}
                         {% if lst.action == "add_to" %}
                         <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a> 
                         &nbsp;
