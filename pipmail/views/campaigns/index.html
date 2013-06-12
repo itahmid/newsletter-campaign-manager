@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+
 <div class="row-fluid">
    <div class="span6">
       <table class="table table-hover table-bordered">
@@ -62,56 +63,11 @@
    <div class="span20">
       <h1 class="pull-left">Latest Campaigns</h1>
       <br>
+
       <a href="{{ url_for('campaigns.create_campaign') }}" class="btn btn-success pull-right">Create New Campaign</a>
 
-
-      <table class="table table-hover table-bordered">
-         <thead>
-            <tr>
-               <td class="vcenter">Code</td>
-               <td class="vcenter">Company</td>
-               <td class="vcenter">Name</td>
-               <td class="vcenter">Date Added</td>
-               <td class="vcenter">Date Sent</td>
-               <td class="vcenter" style="width:10px;">Recipients</td>
-               <td class="vcenter"></td>
-            </tr>
-         </thead>
-         <tbody>
-            {% for nltr in newsletters %}
-            <tr>
-               <td>{{ nltr.code }}</td>
-               <td>{{ nltr.company }}</td>
-               <td>
-                  <a href="{{ url_for('campaigns.edit_campaign', nid=nltr.id) }}">{{ nltr.name }}</a>
-               </td>
-               <td style="text-align:center;vertical-align:middle;">{{ nltr.local_time }}</td>
-               {% if not nltr.date_sent %}
-               <td style="text-align:center;vertical-align:middle;">Unsent</td>
-               {% else %}
-               <td style="text-align:center;vertical-align:middle;">{{ nltr.date_sent }}</td>
-               {% endif %}
-               <td style="text-align:center;vertical-align:middle;">{{ nltr.recip_count }}</td>
-               <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 20%;">
-                  <a href="{{ url_for('campaigns.edit_campaign', nid=nltr.id) }}" class="btn btn-mini"><i class="icon-edit"></i>Edit</a>
-                  
-                  <a href="{{url_for('campaigns.delete_campaign', nid = nltr.id) }}" class="btn btn-mini" onClick="return confirmDelete();"><i class="icon-remove"></i>Delete</a>
-                  
-                  <a href="{{ url_for('subscribers.add_to_campaign', nid=nid) }}" class="btn btn-mini" ><i class="icon-align-left"></i>Statistics</a>
-               </td>
-            </tr>
-            {% endfor %}
-         </tbody>
-      </table>
-   </div>
-</div>
-<div class="pull-right">
-   {% if page != 0 %}
-   <a href="{{ url_for('campaigns.index', page = (page - 1))
-            }}">Previous Page</a>
-   {% endif %}
-   <a href="{{ url_for('campaigns.index', page = (page + 1))
-            }}">Next Page</a>
-</div>
+{% import 'macros/misc.html' as misc %}
+{{ misc.render_table(newsletters, "table table-hover table-bordered")}}
+      
 
 {% endblock %}

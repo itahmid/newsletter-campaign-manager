@@ -13,6 +13,8 @@ mod = Blueprint('campaigns', __name__)
 @login_required
 def index(page):
     newsletters = get_index(cntrlr='newsletters', page=page)
+    test = newsletters[0]
+    print type(test)
     return render_template('campaigns/index.html', newsletters=newsletters,
                            page=page)
 

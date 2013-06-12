@@ -1,11 +1,12 @@
 import os
 import time
 from flask import Flask, redirect, request, url_for, render_template, \
-    send_from_directory, session
+    send_from_directory, session, Markup
 #from flask.ext.mysql import MySQL
 import settings
 from helpers import login_required
 from sql import mysql, get_sql
+import simplejson
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
@@ -20,6 +21,10 @@ app.config.setdefault('MYSQL_DATABASE_DB', settings.DB)
 app.config.setdefault('MYSQL_DATABASE_CHARSET', 'utf8')
 
 mysql.init_app(app)
+def to_json(value):
+    return Markup(simplejson.dumps(value))
+
+app.jinja_env.filters['to_json'] = to_json
 
 
 @app.route('/favicon.ico')
@@ -44,26 +49,26 @@ def test():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
+    errors = []
 
-    if request.method == 'POST' and 'username' in request.form:
-        username = request.form.get('username')
+    if request.method == 'POST' and 'email' in request.form:
+        email = request.form.get('email')
         password = request.form.get('password')
         conn, cur = get_sql()
-        cur.execute("""SELECT * FROM users WHERE username = '%s'
-                    AND password='%s'""" % (username, password))
+        cur.execute("""SELECT * FROM users WHERE email = '%s'
+                    AND password='%s'""" % (email, password))
         check = cur.fetchall()
         if not check:
-            error = "Invalid username or password"
+            errors.append("Invalid email or password")
         else:
             session['logged_in'] = True
-            session['current_user'] = username
+            session['current_user'] = email
             cur.execute("""UPDATE users
                            SET last_login=%s
-                           WHERE username=%s""", (int(time.time()), username))
+                           WHERE email=%s""", (int(time.time()), email))
             conn.commit()
             return redirect(url_for('campaigns.index'))
-    return render_template('auth/login.html', error=error)
+    return render_template('auth/login.html', errors=errors)
 
 
 @app.route('/logout')

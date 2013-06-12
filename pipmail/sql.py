@@ -35,7 +35,7 @@ def get_index(**kwargs):
                     lst.action = 'add_to'
         return lists, current_lists
     if cntrlr == 'newsletters':
-        newsletters = [Newsletter(conn, cur, nltr[0]) for nltr in res]
+        newsletters = [Newsletter(conn, cur, nltr[0]).info for nltr in res]
         return newsletters
 
 def get_search_index():

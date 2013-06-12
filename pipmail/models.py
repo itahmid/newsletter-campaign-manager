@@ -56,27 +56,23 @@ class Newsletter(Base):
     def __init__(self, conn, cur, _id):
         super(Newsletter, self).__init__(conn, cur, _id)
         self.id = str(_id)
-        for k, v in self.get_result_dict('newsletters').iteritems():
-            setattr(self, k, v)
-        self.local_time = unix_to_local(self.date_added)
-        if self.company == 0:
-            self.company = 'N/A'
-        else:
-            self.company = self.get_company_name()
-        self.local_time = unix_to_local(self.date_added)
-        self.list_ids = self.list_ids.encode('ascii', 'ignore')
-        self.list_ids = self.list_ids.split(',')
-        self.recip_count = 0
+        self.info = self.get_result_dict('newsletters')
+        self.info['local_time'] = unix_to_local(self.info['date_added'])
+        self.info['list_ids'] = self.info['list_ids'].encode('ascii', 'ignore').split(',')
+        self.info['company'] = self.get_company_name()
+        self.info['recip_count'] = 0
 
     def get_company_name(self):
         self.cur.execute("""SELECT name FROM companies
-                        WHERE id = %s""" % self.company)
+                        WHERE id = %s""" % self.info['company'])
         comp = self.cur.fetchall()[0][0]
+        if comp == 0:
+            comp = 'N/A'
         return comp
 
     def get_recip_count(self):
         recip_count = 0
-        for _id in self.list_ids:
+        for _id in self.info['list_ids']:
             self.cur.execute("""SELECT COUNT(id)
                                 FROM recipients
                                 WHERE list_id = %s""" % _id)
