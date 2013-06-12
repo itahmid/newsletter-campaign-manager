@@ -39,12 +39,11 @@
         <table class="table table-hover table-bordered">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th style="width:40%;">Description</th>
-                    <th>Date Added</th>
-                    <th>Recipients</th>
-                    <th>Actions</th>
-
+                    <td class="vcenter">Name</td>
+                    <td class="vcenter">Description</td>
+                    <td class="vcenter">Date Added</td>
+                    <td class="vcenter" style="width:10px;">Recipients</td>
+                    <td class="vcenter"></td>
                 </tr>
             </thead>
             <tbody>
@@ -52,37 +51,33 @@
                 <tr>
                     <td>{{ lst.name }}</td>
                     <td>{{ lst.description }}</td>
-                    <td>{{ lst.local_time }}</td>
-                    <td>{{ lst.recip_count }}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ lst.local_time }}</td>
+                    <td style="text-align:center;vertical-align:middle;">{{ lst.recip_count }}</td>
                     {% if nid %}
-                    <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 30%;" >
-                    {% else %}
-                     <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 13%;" >
-                    {% endif %}
-                        {% if lst.action == "add_to" %}
-                        <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn" >Add to Campaign</a> 
-                        &nbsp;
-                        {% elif lst.action == "remove_from" %}
-                        <a href="{{ url_for('subscribers.remove_from_campaign', lid=lst.id, nid=nid) }}" class="btn btn-inverse" >Remove From Campaign</a>
-                        &nbsp;
-                        {% endif %}
-
-                        <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-success ">Edit</a>
-                        &nbsp;
-                        <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" class="btn btn-danger " onClick="return confirmDelete();" >Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    <td style="table-layout: fixed;overflow: hidden;text-align:center;width:200px;" >
+                        {% else %}
+                        <td style="table-layout: fixed;overflow: hidden;text-align:center;width:150px;">
+                            {% endif %}
+                            {% if lst.action == "add_to" %}
+                            <a href="{{ url_for('subscribers.add_to_campaign', lid=lst.id, nid=nid) }}" class="btn btn-mini"><i class="icon-plus"></i>Add</a>
+                            {% elif lst.action == "remove_from" %}
+                            <a href="{{ url_for('subscribers.remove_from_campaign', lid=lst.id, nid=nid) }}" class="btn btn-mini"><i class="icon-minus"></i>Remove</a>
+                            {% endif %}
+                            <a href="{{ url_for('subscribers.edit_list', lid=lst.id ) }}" class="btn btn-mini"><i class="icon-edit"></i>Edit</a>
+                            <a href="{{url_for('subscribers.delete_campaign', lid = lst.id) }}" onClick="return confirmDelete();" class="btn btn-mini" onClick="return confirmDelete();"><i class="icon-remove"></i>Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-<div class="pull-right">
-    {% if page != 0 %}
-    <a href="{{ url_for('subscribers.index', page = (page - 1))
-            }}">Previous Page</a>
-    {% endif %}
-    <a href="{{ url_for('subscribers.index', page = (page + 1))
-            }}">Next Page</a>
-</div>
-{% endblock %}
+    <div class="pull-right">
+        {% if page != 0 %}
+        <a href="{{ url_for('subscribers.index', page = (page - 1))
+        }}">Previous Page</a>
+        {% endif %}
+        <a href="{{ url_for('subscribers.index', page = (page + 1))
+        }}">Next Page</a>
+    </div>
+    {% endblock %}

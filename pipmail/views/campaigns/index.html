@@ -68,13 +68,13 @@
       <table class="table table-hover table-bordered">
          <thead>
             <tr>
-               <th>Code</th>
-               <th>Company</th>
-               <th>Name</th>
-               <th>Date Added</th>
-               <th>Date Sent</th>
-               <th>Recipients</th>
-               <th></th>
+               <td class="vcenter">Code</td>
+               <td class="vcenter">Company</td>
+               <td class="vcenter">Name</td>
+               <td class="vcenter">Date Added</td>
+               <td class="vcenter">Date Sent</td>
+               <td class="vcenter" style="width:10px;">Recipients</td>
+               <td class="vcenter"></td>
             </tr>
          </thead>
          <tbody>
@@ -85,19 +85,19 @@
                <td>
                   <a href="{{ url_for('campaigns.edit_campaign', nid=nltr.id) }}">{{ nltr.name }}</a>
                </td>
-               <td>{{ nltr.local_time }}</td>
+               <td style="text-align:center;vertical-align:middle;">{{ nltr.local_time }}</td>
                {% if not nltr.date_sent %}
-               <td>Unsent</td>
+               <td style="text-align:center;vertical-align:middle;">Unsent</td>
                {% else %}
-               <td>{{ nltr.date_sent }}</td>
+               <td style="text-align:center;vertical-align:middle;">{{ nltr.date_sent }}</td>
                {% endif %}
-               <td>{{ nltr.recip_count }}</td>
+               <td style="text-align:center;vertical-align:middle;">{{ nltr.recip_count }}</td>
                <td style="table-layout: fixed;overflow: hidden;text-align:center;width: 20%;">
-                  <a href="{{ url_for('campaigns.edit_campaign', nid=nltr.id) }}" class="btn btn-success">Edit</a>
-                  &nbsp;
-                  <a href="{{url_for('campaigns.delete_campaign', nid = nltr.id) }}" class="btn btn-danger" onClick="return confirmDelete();" >Delete</a>
-                  &nbsp;
-                  <a href="{{ url_for('subscribers.add_to_campaign', nid=nid) }}" class="btn btn" >Statistics</a>
+                  <a href="{{ url_for('campaigns.edit_campaign', nid=nltr.id) }}" class="btn btn-mini"><i class="icon-edit"></i>Edit</a>
+                  
+                  <a href="{{url_for('campaigns.delete_campaign', nid = nltr.id) }}" class="btn btn-mini" onClick="return confirmDelete();"><i class="icon-remove"></i>Delete</a>
+                  
+                  <a href="{{ url_for('subscribers.add_to_campaign', nid=nid) }}" class="btn btn-mini" ><i class="icon-align-left"></i>Statistics</a>
                </td>
             </tr>
             {% endfor %}
@@ -113,4 +113,5 @@
    <a href="{{ url_for('campaigns.index', page = (page + 1))
             }}">Next Page</a>
 </div>
+
 {% endblock %}
