@@ -38,27 +38,29 @@ def page_not_found(e):
 def index():
     return redirect(url_for('campaigns.index'))
 
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
 
     if request.method == 'POST' and 'username' in request.form:
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
         conn, cur = get_sql()
-        cur.execute("""SELECT * FROM users WHERE email = '%s'
+        cur.execute("""SELECT * FROM users WHERE username = '%s'
                     AND password='%s'""" % (username, password))
         check = cur.fetchall()
         if not check:
-            error = 'Invalid username or password'
+            error = "Invalid username or password"
         else:
             session['logged_in'] = True
             session['current_user'] = username
             cur.execute("""UPDATE users
                            SET last_login=%s
-                           WHERE email=%s""", (int(time.time()), username))
-            # add first, last name, email change this later
+                           WHERE username=%s""", (int(time.time()), username))
             conn.commit()
             return redirect(url_for('campaigns.index'))
     return render_template('auth/login.html', error=error)

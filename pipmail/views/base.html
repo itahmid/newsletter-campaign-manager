@@ -19,6 +19,16 @@
 
       td.h { font-size:20px;background:#F5F5F5; }
       }
+
+
+.prev, .next {
+    cursor: pointer;
+}
+
+.prev.disabled, .next.disabled {
+    cursor: default;
+}
+
     </style>
   <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
 
@@ -28,8 +38,8 @@
   <![endif]-->
 
   <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.7.2.min.js') }}"></script>
+  <script src="https://raw.github.com/conductrics/bootstrap-table-nav/master/bootstrap-table-nav.js"></script>
 
 </head>
   {% endblock %}
