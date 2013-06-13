@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
 from pipmail.helpers import login_required, allowed_file
 from pipmail.models import List, Newsletter
-from pipmail.sql import get_sql, get_index
+from pipmail.sql import get_sql, get_rows
 
 
 import time
@@ -18,7 +18,7 @@ mod = Blueprint('lists', __name__)
 @login_required
 def index(page=0):
     nid = request.args.get('nid')
-    lists, current_lists = get_index(cntrlr='lists', page=page, nid=nid)
+    lists, current_lists = get_rows(model='lists', page=page, nid=nid)
     headings = ['name', 'description', 'date_added', 'recipients']
     return render_template('lists/index.html', headings=headings, lists=lists, 
                             page=page, nid=nid, current_lists=current_lists)
@@ -79,6 +79,7 @@ def edit():
         res = cur.fetchall()
         cols = tuple([d[0].decode('utf8') for d in cur.description])
         all_recips = [dict(zip(cols, res)) for res in cur]
+        #all_recips = get_rows('recipients', ids
         return render_template('lists/details.html', nid=nid, editing=True,
                                lst=lst, all_recipients=all_recips)
 

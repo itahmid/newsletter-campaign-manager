@@ -1,7 +1,7 @@
 import time
 from flask import Blueprint, request, redirect, url_for, \
     render_template, session
-from pipmail.sql import get_sql, get_index
+from pipmail.sql import get_sql, get_rows
 from pipmail.helpers import login_required, collect_form_errors
 
 
@@ -15,13 +15,13 @@ mod = Blueprint('campaigns', __name__)
 #                     'recipients':'{}.{}'.format(cntrlr, method), rid
 #                 }
 #     _url = cntrlrs[cntrlr]
-#     return _url
+#     return _urlS
 
 @mod.route('/campaigns', defaults={'page': 0})
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
-    newsletters = get_index(cntrlr='newsletters', page=page) #rename cntrlr
+    newsletters = get_rows(model='newsletters', _ids=['1'],page=page)
     headings = ['code', 'name', 'date_added', 'date_sent', 
                 'recipients', 'company']
     return render_template('campaigns/index.html', newsletters=newsletters,
@@ -37,6 +37,7 @@ def create():
     companies = cur.fetchall()
     cur.execute('SELECT name, email FROM staff')
     staff = cur.fetchall()
+
     if request.method == 'POST':
         errors = collect_form_errors(request.form, 'campaigns')
         if not errors:
@@ -62,19 +63,19 @@ def create():
                 conn.commit()
                 cur.execute('SELECT last_insertnid()')
                 nid = cur.fetchall()[0][0]
-            except Exception, err:
+            except Exception, e:
                 conn.rollback()
-                return render_template('error.html', error=err)
+                return render_template('server_error.html', error=e)
             return redirect(url_for('lists.index', nid=nid))
-
-    return render_template('campaigns/details.html', companies=companies,
-                           staff=staff, errors=errors, editing=False)
+        return render_template('campaigns/details.html', companies=companies,
+                               staff=staff, errors=errors, editing=False)
 
 
 @mod.route('/edit_campaign', methods=['GET', 'POST'])
 @login_required
 def edit():
     conn, cur = get_sql()
+
     if request.method == 'GET':
         nid = request.args.get('nid')
         cur.execute('SELECT * FROM `newsletters` WHERE id = %d' % int(nid))
@@ -82,6 +83,8 @@ def edit():
         if res:
             cols = tuple([d[0].decode('utf8') for d in cur.description])
             newsletter = dict(zip(cols, res))
+
+            
             cur.execute("""SELECT name
                             FROM companies
                             WHERE id = %d""" % newsletter['company'])

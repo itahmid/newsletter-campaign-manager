@@ -2,7 +2,7 @@ from helpers import unix_to_local
 
 
 class Base(object):
-    '''Base class for models'''
+
     def __init__(self, conn, cur, _id):
         self.conn = conn
         self.cur = cur
@@ -16,6 +16,7 @@ class Base(object):
 
 
 class User(Base):
+
     def __init__(self, conn, cur, _id):
         super(User, self).__init__(conn, cur, _id)
         self.info = self.get_result_dict('users')
@@ -24,7 +25,7 @@ class User(Base):
 
 
 class List(Base):
-    '''Model for subscriber lists'''
+    
     def __init__(self, conn, cur, _id):
         super(List, self).__init__(conn, cur, _id)
         self.info = self.get_result_dict('lists')
@@ -60,7 +61,7 @@ class List(Base):
 
 
 class Newsletter(Base):
-    '''Create dictionary of newsletters'''
+
     def __init__(self, conn, cur, _id):
         super(Newsletter, self).__init__(conn, cur, _id)
         self.info = self.get_result_dict('newsletters')
@@ -88,23 +89,9 @@ class Newsletter(Base):
         return recip_count
 
 
-# class User(object):
-#     '''Model for pipmail user'''
-#     def __init__(self, conn, _id):
-#         self.conn, self.cur = get_sql()
-#         self.id = str(_id)
-#         for k, v in self.get_result_dict().iteritems():
-#             setattr(self, k, v)
-#         self.local_time = unix_to_local(self.last_login)
+class Template(Base):
+    """Not implemented yet"""
 
-#     def get_result_dict(self):
-#         self.cur.execute("SELECT * FROM users WHERE id = %s" % self.id)
-#         res = self.cur.fetchall()
-#         cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
-#         return dict(zip(cols, res[0][1:]))
 
-#     def get_all_users(self):
-#         self.cur.execute("SELECT * FROM users")
-#         res = self.cur.fetchall()
-#         cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
-#         return dict(zip(cols, res[0][1:]))
+class Recipient(Base):
+    """Not implemented yet"""
