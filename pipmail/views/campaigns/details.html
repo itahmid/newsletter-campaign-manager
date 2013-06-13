@@ -1,43 +1,15 @@
 {% extends "base.html" %}
-
 {% block content %}
-{% if errors %}
-<br>
-<div class="alert alert-error">
-   <button type="button" class="close" data-dismiss="alert">&times;</button>
-   <h4>Error</h4>
-   {% for err in errors %}
-   <span class="text-error">
-      Please enter a
-      <span style='font-weight:bold;'>{{ err }}</span>
-   </span>
-   <br>
-   {% endfor %}
-{% endif %}
-</div>
-<br>
-
-<ul class="nav nav-tabs">
-   <li class="active">
-      <a href="#">Step 1</a>
-   </li>
-   <li>
-      <a href="{{ url_for('subscribers.index', nid=nid) if editing else url_for('campaigns.create_campaign')  }}">Step 2</a>
-   </li>
-   <li>
-      <a href="{{ url_for('messages.edit_message', nid=nid) if editing else url_for('campaigns.create_campaign')  }}">Step 3</a>
-   </li>
-</ul>
-
-<form action="{{ url_for('campaigns.edit_campaign', nid = nid) if editing else url_for('campaigns.create_campaign') }}" method="post">
-
+{% from 'macros/_macros.html' import steps with context %}
+{{ steps('1', nid)}}
+<form action="{{ url_for('campaigns.edit', nid = nid) if editing else url_for('campaigns.create') }}" method="post">
    <table class="table table-hover table-bordered">
       <tr>
          <td class="h">Priority</td>
       </tr>
       <tr>
          <td>
-            <select width="350" style="width: 350px" name="priority" id="priority">
+            <select width="350" style="width: 350px" name="priority" nid="priority">
                <option value="2">Normal</option>
                <option value="3">Low</option>
                <option value="1">High</option>
@@ -49,16 +21,7 @@
       </tr>
       <tr>
          <td class="alternate">
-            {% if editing %}
-            {% if newsletter['unsub'] %}
-            <input type="checkbox" name="unsub" id="unsub" value="1" checked />
-            {% else %}
-            <input type="checkbox" name="unsub" id="unsub" value="1" />
-            {% endif %}
-            {% else %} 
-             <input type="checkbox" name="unsub" id="unsub" value="1" />
-            {% endif %}
-
+            <input type="checkbox" name="unsub" id="unsub" value="1" {{checked if newsletter['unsub'] else ''}} />
             Yes add an unsubscribe link to this email
          </td>
       </tr>
@@ -67,9 +30,7 @@
       </tr>
       <tr>
          <td class="alternate">
-
             <select width="350" style="width: 350px" name="company" id="company" >
-
                <option value="{{ newsletter['company'] if editing else '' }}">{{ newsletter['company'] if editing else "Select" }}</option>
                {% for comp in companies %}
                <option value="{{ comp[0] }}">{{ comp[1] }}</option>
@@ -83,9 +44,7 @@
       <tr>
          <td>
             <label>#</label>
-
             <input width="350" style="width: 350px" name="code" type="text" id="code" value="{{ newsletter['code']  if editing else '' }}" />
-
          </td>
       </tr>
       <tr>
@@ -95,17 +54,14 @@
          <td>
             <label>Subject</label>
             <input width="350" style="width: 350px" name="subject" type="text" id="subject" value="{{ newsletter['name'] if editing else ''}}" />
-
          </td>
       </tr>
       <tr>
          <td class="h">From Name</td>
       </tr>
       <tr>
-
          <td>
             <label>Name</label>
-
             <input width="350" style="width: 350px" name="from_name" type="text" id="from_name" value="{{ newsletter['from_name'] if editing else '' }}" />
             or choose
             <select onchange="updateInput('from_name', this.value)" width="350" style="width: 350px" name="from_name_sel" id="from_name_sel" >
@@ -122,10 +78,9 @@
       <tr>
          <td>
             <label>Email</label>
-
             <input width="350" style="width: 350px" name="from_email" type="text" id="from_email" value="{{ newsletter['from_email'] if editing else '' }}"  />
             or choose
-            <select onchange="updateInput('from_email', this.value)" width="350" style="width: 350px" name="from_email_sel" id="from_email_sel" >
+            <select onchange="updateInput('from_email', this.value)" width="350" style="width: 350px" name="from_email_sel" nid="from_email_sel" >
                <option value="">Select</option>
                {% for st in staff %}
                <option value="{{ st[1] }}">{{ st[0] }} ({{st[1]}})</option>
@@ -152,6 +107,5 @@
    </table>
    <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
 </form>
-
 <br />
 {% endblock %}

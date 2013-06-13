@@ -64,10 +64,10 @@
       <h1 class="pull-left">Latest Campaigns</h1>
       <br>
 
-      <a href="{{ url_for('campaigns.create_campaign') }}" class="btn btn-success pull-right">Create New Campaign</a>
+      <a href="{{ url_for('campaigns.create') }}" class="btn btn-success pull-right">Create New Campaign</a>
 
-{% import 'macros/misc.html' as misc %}
-{{ misc.render_table(newsletters, "table table-hover table-bordered")}}
+{% from 'macros/_macros.html' import render_table with context %}
+{{ render_table('campaigns', headings, newsletters, "table table-hover table-bordered")}}
       
 
-{% endblock %}
+{% endblock %}    

@@ -5,7 +5,7 @@ mod = Blueprint('messages', __name__)
 
 
 @mod.route('/create_message', methods=['GET', 'POST'])
-def create_message():
+def create():
     nid = request.args.get('nid')
     if not nid:
         nid = 0
@@ -15,10 +15,10 @@ def create_message():
 
 
 @mod.route('/edit_message', methods=['GET', 'POST'])
-def edit_message():
+def edit():
     editing = True
 
-    nid = request.args.get('nid')
+    nid = request.args.get('id')
     if not nid:
         nid = 0
     if request.method == 'POST':

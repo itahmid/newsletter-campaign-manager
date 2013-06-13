@@ -9,27 +9,19 @@ import time
 import csv
 import os
 
-error_dict = {'name': 'Please enter a name for this list',
-              'description': 'Please enter a brief description for this list',
-              'first_name': 'Please enter a first name for this recipient',
-              'last_name': 'Please enter a last name for this recipient',
-              'email': 'Please enter an email address for this recipient',
-              }
-
 UPLOAD_FOLDER = '%s/pipmail/static/uploads' % os.getcwd()
 
-mod = Blueprint('subscribers', __name__)
-
+mod = Blueprint('lists', __name__)
 
 @mod.route('/lists', defaults={'page': 0})
 @mod.route('/lists/page/<int:page>')
 @login_required
-def index(page=0, msg=None):
-    '''Render subscriber list index'''
-    nid = request.args.get('id')
-    lists, current_lists = get_index(cntrlr='lists', page=page, id=id)
-    return render_template('subscribers/index.html', lists=lists, page=page,
-                           nid=nid, msg=msg, current_lists=current_lists)
+def index(page=0):
+    nid = request.args.get('nid')
+    lists, current_lists = get_index(cntrlr='lists', page=page, nid=nid)
+    headings = ['name', 'description', 'date_added', 'recipients']
+    return render_template('lists/index.html', headings=headings, lists=lists, 
+                            page=page, nid=nid, current_lists=current_lists)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -61,18 +53,35 @@ def create():
             except Exception, e:
                 conn.rollback()
                 error = e
-                return render_template('subscribers/details.html', error=error,
+                return render_template('lists/details.html', error=error,
                                        editing=False)
-            return redirect(url_for('subscribers.edit_list', lid=lid))
+            return redirect(url_for('lists.edit', lid=lid))
 
-    return render_template('subscribers/details.html', error=error,
+    return render_template('lists/details.html', error=error,
                            editing=False)
 
 
-@mod.route('/edit_list/<int:lid>', methods=['GET', 'POST'])
+@mod.route('/edit_list', methods=['GET', 'POST'])
 @login_required
-def edit(lid):
+def edit():
     conn, cur = get_sql()
+    if request.method == 'GET':
+        nid = request.args.get('nid')
+        lid = request.args.get('lid')
+        lst = List(conn, cur, lid).info
+        # edit_name = request.args.get('recip_name')
+        # if edit_name:
+        #     edit_email = request.args.get('recip_email')
+        #     return render_template('lists/details.html', editing=True,
+        #                            lst=lst, recipients=recips,
+        #                            edit_name=edit_name, edit_email=edit_email)
+        cur.execute("SELECT * FROM recipients")
+        res = cur.fetchall()
+        cols = tuple([d[0].decode('utf8') for d in cur.description])
+        all_recips = [dict(zip(cols, res)) for res in cur]
+        return render_template('lists/details.html', nid=nid, editing=True,
+                               lst=lst, all_recipients=all_recips)
+
     if request.method == 'POST':
         try:
             cur.execute("""UPDATE lists
@@ -81,29 +90,15 @@ def edit(lid):
                         """, (
                         request.form['name'],
                         request.form['description'],
-                        lid)
+                        _id)
                         )
             conn.commit()
         except Exception as e:
             print(e)
             conn.rollback()
-        return redirect(url_for('subscribers.index'))
-    lst = List(conn, cur, lid)
+        return redirect(url_for('lists.index'))
+    lst = List(conn, cur, _id)
     recips = lst.get_recips()
-    if request.method == 'GET':
-        edit_name = request.args.get('recip_name')
-        if edit_name:
-            edit_email = request.args.get('recip_email')
-            return render_template('subscribers/details.html', editing=True,
-                                   lst=lst, recipients=recips,
-                                   edit_name=edit_name, edit_email=edit_email)
-        cur.execute("SELECT * FROM recipients")
-        res = cur.fetchall()
-        cols = tuple([d[0].decode('utf8') for d in cur.description])
-        all_recips = [dict(zip(cols, res)) for res in cur]
-        return render_template('subscribers/details.html', editing=True,
-                               lst=lst, recipients=recips,
-                               all_recipients=all_recips)
 
 
 @mod.route('/delete_list/<int:lid>')
@@ -112,7 +107,7 @@ def delete(lid):
     conn, cur = get_sql()
     cur.execute('DELETE FROM lists WHERE id = %d' % lid)
     conn.commit()
-    return redirect(url_for('subscribers.index'))
+    return redirect(url_for('lists.index'))
 
 
 @mod.route('/add_to_campaign', methods=['GET', 'POST'])
@@ -147,8 +142,8 @@ def add_to_campaign():
             except Exception as e:
                 print(e)
                 conn.rollback()
-        return redirect(url_for('subscribers.index', nid=nid))
-    return redirect(url_for('subscribers.index'))
+        return redirect(url_for('lists.index', nid=nid))
+    return redirect(url_for('lists.index'))
 
 
 @mod.route('/remove_from_campaign', methods=['GET', 'POST'])
@@ -176,6 +171,5 @@ def remove_from_campaign():
         except Exception as e:
             print(e)
             conn.rollback()
-        return redirect(url_for('subscribers.index', nid=nid))
-    return redirect(url_for('subscribers.index'))
-
+        return redirect(url_for('lists.index', nid=nid))
+    return redirect(url_for('lists.index'))

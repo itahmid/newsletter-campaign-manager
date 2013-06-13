@@ -1,0 +1,88 @@
+{% macro render_table(cntrlr, headings, data, class='') %}
+    <table class="{{class}}">
+        <thead>
+            <tr>
+                {% for h in headings  %}
+                    {% if '_' in h %}
+                        <td class="vcenter">{{  '%s %s' % (h.split('_')[0]|capitalize, 
+                        h.split('_')[1]|capitalize) }}</td>
+                
+                    {% else %}
+                        <td class="vcenter">{{ h|capitalize }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td class="vcenter"></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in data %}
+                <tr>
+                    {% for h in headings %}
+                        <td>{{ d[h] }}</td>
+                    {% endfor %}
+                    <td style="table-layout:fixed;overflow:hidden;text-align:center;width:20%;">
+                    {{ actions(cntrlr, d['id']) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro actions(cntrlr, _id) %}
+    {% if cntrlr == 'campaigns' %}
+        {% set _actions = ('edit', 'delete') %}
+        {% for a in _actions %}
+            <a href="{{ url_for('%s.%s' % (cntrlr, a), nid=_id)}}" class="btn btn-mini">
+            <i class="icon-edit"></i>{{a|capitalize}}</a>
+        {% endfor %}
+    {% endif %}
+
+    {% if cntrlr == 'lists' %}
+        {% set _actions = ('edit', 'delete') %}
+        {% for a in _actions %}
+            {% if a == 'edit' and nid %}
+                <a href="{{ url_for('%s.%s' % (cntrlr, a), nid=nid, lid=_id,)}}" class="btn btn-mini">
+                <i class="icon-edit"></i>{{a|capitalize}}</a>
+            {% else %}
+                <a href="{{ url_for('%s.%s' % (cntrlr, a), lid=_id)}}" class="btn btn-mini">
+                <i class="icon-edit"></i>{{a|capitalize}}</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro input(name, value='', type='text') %}
+    <input type="{{ type }}" value="{{ value|e }}" name="{{ name }}">
+{% endmacro %}
+
+{% macro steps(step, nid) %}
+    <div class="nav nav-tabs">
+        {% if step == "1" %}
+            <li class="active">
+                <a href="#">Step 1</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ url_for('campaigns.edit', nid = nid) if nid else url_for('campaigns.create') }}">Step 1</a>
+            </li>
+        {% endif %}
+        {% if step == "2" %}
+            <li class="active">
+                <a href="#">Step 2</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ url_for('lists.index', nid = nid) if nid else url_for('campaigns.create') }}">Step 2</a>
+            </li>
+        {% endif %}
+        {% if step == "3" %}
+            <li class="active">
+                <a href="#">Step 3</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ url_for('messages.edit', nid = nid) if nid else url_for('campaigns.create') }}">Step 3</a>
+            </li>
+        {% endif %}
+    </div>
+{% endmacro %}

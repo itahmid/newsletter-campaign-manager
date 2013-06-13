@@ -9,7 +9,6 @@
     <meta name="author" content="">
     <meta charset="utf-8">
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-    <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
     <style type="text/css">
     body { padding-top: 40px; }
@@ -25,8 +24,9 @@
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.7.2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}">
   </head>
   {% endblock %}
   <body>
@@ -48,7 +48,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li>
-                    <a href="{{ url_for('campaigns.create_campaign') }}">Create</a>
+                    <a href="{{ url_for('campaigns.create') }}">Create</a>
                   </li>
                   <li>
                     <a href="#">Search</a>
@@ -67,10 +67,10 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-submenu">
-                    <a href="{{ url_for('subscribers.index') }}">Lists</a>
+                    <a href="{{ url_for('lists.index') }}">Lists</a>
                     <ul class="dropdown-menu">
                       <li>
-                        <a href="{{ url_for('subscribers.create_list') }}">Create</a>
+                        <a href="{{ url_for('lists.create') }}">Create</a>
                       </li>
                     </ul>
                   </li>
@@ -87,38 +87,53 @@
               </li>
             </ul>
             {% block navbar_right %}
-            <ul class="nav pull-right">
-              {% if not session['logged_in'] %}
-              <li>
-                <a href="{{ url_for('login') }}">Login</a>
-              </li>
-              {% else %}
-              <li>
-                <a href="{{ url_for('logout') }}">Logout</a>
-              </li>
-              {% endif %}
-            </ul>
-            {% endblock %}
+            
+            <div class="pull-right">
+              <ul class="nav pull-right">
+                {% if not session['logged_in'] %}
+                <li>
+                  <a href="{{ url_for('login') }}">
+                  <i class="icon-off">
+                  </i>&nbsp;Login</a>
+                </li>
+                {% else %}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{session['current_user']}} <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('manage.index') }}"><i class="icon-cog"></i>&nbsp;Manage</a></li>
+                    <li class="divider"></li>
+                    <li>
+                      <a href="{{ url_for('logout') }}">
+                      <i class="icon-off">
+                      </i>&nbsp;Logout</a>
+                    </li>
+                    {% endif %}
+                  </ul>
+                </li>
+              </ul>
+            </div>
           </div>
-          <!--/.nav-collapse --> </div>
-        </div>
-      </div>
-      {% endblock %}
-      <div class="container page">
-        <div class="content">
-          {% block content %}
-          
           {% endblock %}
         </div>
-        <hr>
-        {% block footer %}
-        <footer class="footer">
-          <p>pipmail</p>
-        </footer>
+        <!--/.nav-collapse --> </div>
+      </div>
+    </div>
+    {% endblock %}
+    <div class="container page">
+      <div class="content">
+        {% block content %}
+        
         {% endblock %}
       </div>
-      {% block js_footer %}
-      <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
+      <hr>
+      {% block footer %}
+      <footer class="footer">
+        <p>pipmail</p>
+      </footer>
       {% endblock %}
-    </body>
-  </html>
+    </div>
+    {% block js_footer %}
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+    {% endblock %}
+  </body>
+</html>

@@ -1,12 +1,11 @@
 import os
 import time
 from flask import Flask, redirect, request, url_for, render_template, \
-    send_from_directory, session, Markup
+    send_from_directory, session
 #from flask.ext.mysql import MySQL
 import settings
 from helpers import login_required
 from sql import mysql, get_sql
-import simplejson
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
@@ -21,11 +20,6 @@ app.config.setdefault('MYSQL_DATABASE_DB', settings.DB)
 app.config.setdefault('MYSQL_DATABASE_CHARSET', 'utf8')
 
 mysql.init_app(app)
-def to_json(value):
-    return Markup(simplejson.dumps(value))
-
-app.jinja_env.filters['to_json'] = to_json
-
 
 @app.route('/favicon.ico')
 def favicon():

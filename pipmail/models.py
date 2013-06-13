@@ -15,15 +15,22 @@ class Base(object):
         return dict(zip(cols, res[0][1:]))
 
 
+class User(Base):
+    def __init__(self, conn, cur, _id):
+        super(User, self).__init__(conn, cur, _id)
+        self.info = self.get_result_dict('users')
+        self.info['id'] = str(_id)
+        self.info['last_login'] = unix_to_local(self.info['last_login'])
+
+
 class List(Base):
     '''Model for subscriber lists'''
     def __init__(self, conn, cur, _id):
         super(List, self).__init__(conn, cur, _id)
-        self.id = str(_id)
-        for k, v in self.get_result_dict('lists').iteritems():
-            setattr(self, k, v)
-        self.recip_count = self.get_recips(count=True)
-        self.local_time = unix_to_local(self.date_added)
+        self.info = self.get_result_dict('lists')
+        self.info['id'] = str(_id)
+        self.info['recipients'] = self.get_recips(count=True)
+        self.info['date_added'] = unix_to_local(self.info['date_added'])
 
     def get_recips(self, count=False):
         recip_ids = []
@@ -53,14 +60,15 @@ class List(Base):
 
 
 class Newsletter(Base):
+    '''Create dictionary of newsletters'''
     def __init__(self, conn, cur, _id):
         super(Newsletter, self).__init__(conn, cur, _id)
-        self.id = str(_id)
         self.info = self.get_result_dict('newsletters')
+        self.info['id'] = str(_id)
         self.info['local_time'] = unix_to_local(self.info['date_added'])
         self.info['list_ids'] = self.info['list_ids'].encode('ascii', 'ignore').split(',')
         self.info['company'] = self.get_company_name()
-        self.info['recip_count'] = 0
+        self.info['recipients'] = 0
 
     def get_company_name(self):
         self.cur.execute("""SELECT name FROM companies
