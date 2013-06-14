@@ -49,6 +49,15 @@
             {% endif %}
         {% endfor %}
     {% endif %}
+
+    {% if cntrlr == 'templates' %}
+        {% set _actions = ('edit', 'delete') %}
+        {% for a in _actions %}
+            <a href="{{ url_for('%s.%s' % (cntrlr, a), tid=_id)}}" class="btn btn-mini">
+            <i class="icon-edit"></i>{{a|capitalize}}</a>
+        {% endfor %}
+    {% endif %}
+
 {% endmacro %}
 
 {% macro input(name, value='', type='text') %}
@@ -81,7 +90,16 @@
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('messages.edit', nid = nid) if nid else url_for('campaigns.create') }}">Step 3</a>
+                <a href="{{ url_for('templates.index', nid = nid) if nid else url_for('campaigns.create') }}">Step 3</a>
+            </li>
+        {% endif %}
+        {% if step == "4" %}
+            <li class="active">
+                <a href="#">Step 4</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ url_for('contents.index', nid = nid) if nid else url_for('campaigns.create') }}">Step 4</a>
             </li>
         {% endif %}
     </div>

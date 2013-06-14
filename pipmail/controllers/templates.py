@@ -1,12 +1,30 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template, request
+from pipmail.sql import get_sql, get_rows
+from pipmail.helpers import login_required, collect_form_errors
 
 
 mod = Blueprint('templates', __name__)
 
 
-@mod.route('/templates')
-def index():
-    return render_template('templates/index.html')
+@mod.route('/templates', defaults={'page': 0})
+@mod.route('/page/<int:page>')
+def index(page):
+    nid = request.args.get('nid')
+    templates = get_rows(model='templates', page=page)
+    headings = ['name', 'date_added']
+    return render_template('templates/index.html', headings=headings, templates=templates)
+
+
+@mod.route('/edit_template', methods=['GET', 'POST'])
+@login_required
+def edit():
+    conn, cur = get_sql()
+    if request.method == 'GET':
+        nid = request.args.get('nid')
+        tid = request.args.get('tid')
+        tmplt = Template(conn, cur, lid).info
+        return render_template('templates/details.html', nid=nid, editing=True,
+                               tmplt=tmplt)
 
 # @mod.route('/create_template', methods=['GET', 'POST'])
 # @login_required

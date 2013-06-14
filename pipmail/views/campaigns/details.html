@@ -21,7 +21,11 @@
       </tr>
       <tr>
          <td class="alternate">
-            <input type="checkbox" name="unsub" id="unsub" value="1" {{checked if newsletter['unsub'] else ''}} />
+            {% if newsletter %}
+               <input type="checkbox" name="unsub" id="unsub" value="1" {{checked if newsletter['unsub'] else ''}} />
+            {% else %}
+               <input type="checkbox" name="unsub" id="unsub" value="1" />
+            {% endif %}
             Yes add an unsubscribe link to this email
          </td>
       </tr>

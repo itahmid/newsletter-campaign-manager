@@ -18,10 +18,10 @@ mod = Blueprint('lists', __name__)
 @login_required
 def index(page=0):
     nid = request.args.get('nid')
-    lists, current_lists = get_rows(model='lists', page=page, nid=nid)
+    lists = get_rows(model='lists', page=page)
     headings = ['name', 'description', 'date_added', 'recipients']
     return render_template('lists/index.html', headings=headings, lists=lists, 
-                            page=page, nid=nid, current_lists=current_lists)
+                            page=page, nid=nid)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])

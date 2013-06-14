@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<br>
+{% if nid != None %}
+<ul class="nav nav-tabs">
+    <li>
+        <a href="{{ url_for('campaigns.edit_campaign', nid=nid) }}">Step 1</a>
+    </li>
+    <li>
+        <a href="{{ url_for('subscribers.index', nid=nid) }}">Step 2</a>
+    </li>
+    <li class="active">
+        <a href="#">Step 3</a>
+    </li>
+</ul>
+<br>
+{% endif %}
+<script type=text/javascript src="{{ url_for('static',
+filename='ckeditor/ckeditor.js') }}"></script>
+
+<form action="{{ url_for('messages.edit_message', nid = nid) if editing else url_for('messages.create_message') }}" method="post">
+    <textarea id='chkeditor2' class='ckeditor' name='editor1'></textarea>
+    <br>
+    <input type="submit" class="btn btn-success pull-right" value="Save &amp; Continue" />
+    <br></form>
+{% endblock %}

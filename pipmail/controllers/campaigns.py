@@ -21,7 +21,7 @@ mod = Blueprint('campaigns', __name__)
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
-    newsletters = get_rows(model='newsletters', _ids=['1'],page=page)
+    newsletters = get_rows(model='newsletters', page=page)
     headings = ['code', 'name', 'date_added', 'date_sent', 
                 'recipients', 'company']
     return render_template('campaigns/index.html', newsletters=newsletters,
@@ -31,7 +31,7 @@ def index(page):
 @mod.route('/create_campaign', methods=['GET', 'POST'])
 @login_required
 def create():
-    errors = None
+    errors = []
     conn, cur = get_sql()
     cur.execute('SELECT id, name FROM companies')
     companies = cur.fetchall()
@@ -67,8 +67,8 @@ def create():
                 conn.rollback()
                 return render_template('server_error.html', error=e)
             return redirect(url_for('lists.index', nid=nid))
-        return render_template('campaigns/details.html', companies=companies,
-                               staff=staff, errors=errors, editing=False)
+    return render_template('campaigns/details.html', companies=companies,
+                           staff=staff, errors=errors, editing=False)
 
 
 @mod.route('/edit_campaign', methods=['GET', 'POST'])

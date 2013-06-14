@@ -90,7 +90,11 @@ class Newsletter(Base):
 
 
 class Template(Base):
-    """Not implemented yet"""
+    def __init__(self, conn, cur, _id):
+        super(Template, self).__init__(conn, cur, _id)
+        self.info = self.get_result_dict('templates')
+        self.info['id'] = str(_id)
+        self.info['date_added'] = unix_to_local(self.info['date_added'])
 
 
 class Recipient(Base):

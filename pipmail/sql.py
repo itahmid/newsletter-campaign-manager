@@ -1,5 +1,5 @@
 from flask.ext.mysql import MySQL
-from models import Newsletter, List, User
+from models import User, List, Newsletter, Template
 mysql = MySQL()
 
 
@@ -14,7 +14,7 @@ def get_rows(_ids=None, **kwargs):
     model = kwargs.get('model')
     _id = kwargs.get('id')
     page = kwargs.get('page')
-    _models = {'users':User, 'lists':List, 'newsletters':Newsletter}
+    _models = {'users':User, 'lists':List, 'newsletters':Newsletter, 'templates':Template}
     if not _ids:
         offset = 0
         if page > 0:
