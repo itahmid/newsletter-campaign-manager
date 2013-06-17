@@ -22,7 +22,7 @@ mod = Blueprint('campaigns', __name__)
 @login_required
 def index(page):
     newsletters = get_rows(model='newsletters', page=page)
-    headings = ['code', 'name', 'date_added', 'date_sent', 
+    headings = ['code', 'subject', 'date_added', 'date_sent', 
                 'recipients', 'company']
     return render_template('campaigns/index.html', newsletters=newsletters,
                             headings=headings, page=page)
@@ -42,7 +42,7 @@ def create():
         errors = collect_form_errors(request.form, 'campaigns')
         if not errors:
             try:
-                cur.execute("""INSERT INTO newsletters(code, name, author,
+                cur.execute("""INSERT INTO newsletters(code, subject, author,
                             company, from_name, from_email, replyto_email,
                             date_added, date_sent, priority, unsub)
                             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
@@ -105,7 +105,7 @@ def edit():
     if not errors:
         try:
             cur.execute("""UPDATE newsletters
-                        SET code=%s, name=%s, author=%s, company=%s,
+                        SET code=%s, subject=%s, author=%s, company=%s,
                         from_name=%s, from_email=%s, replyto_email=%s,
                         date_added=%s, date_sent=%s, priority=%s, unsub=%s
                         WHERE id = %s

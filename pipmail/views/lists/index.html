@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-{% from 'macros/_macros.html' import steps with context %}
-{{ steps('2', nid)}}
+{% if nid %}
+    {% from '_macros.html' import steps with context %}
+    {{ steps('2', nid)}}
+{% endif %}
 <div class="row-fluid">
     <div class="span20">
         <h1 class="pull-left">Existing Lists</h1>
         <br>
         <a href="{{ url_for('lists.create') }}" class="btn btn-success pull-right ">Create New List</a>
 
-{% from 'macros/_macros.html' import render_table with context %}
+{% from '_macros.html' import render_table with context %}
 {{ render_table('lists', headings, lists, "table table-hover table-bordered")}}
       
 

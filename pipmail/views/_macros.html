@@ -30,11 +30,12 @@
 
 {% macro actions(cntrlr, _id) %}
     {% if cntrlr == 'campaigns' %}
-        {% set _actions = ('edit', 'delete') %}
-        {% for a in _actions %}
-            <a href="{{ url_for('%s.%s' % (cntrlr, a), nid=_id)}}" class="btn btn-mini">
-            <i class="icon-edit"></i>{{a|capitalize}}</a>
-        {% endfor %}
+            <a href="" class="btn btn-mini">
+            <i class="icon-remove"></i>Stats</a>
+            <a href="{{ url_for('%s.%s' % (cntrlr, 'edit'), nid=_id)}}" class="btn btn-mini">
+            <i class="icon-edit"></i>Edit</a>
+            <a href="{{ url_for('%s.%s' % (cntrlr, 'delete'), nid=_id)}}" class="btn btn-mini">
+            <i class="icon-remove"></i>Delete</a>
     {% endif %}
 
     {% if cntrlr == 'lists' %}

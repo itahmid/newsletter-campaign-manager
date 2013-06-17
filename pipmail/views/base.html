@@ -100,7 +100,7 @@
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{session['current_user']}} <b class="caret"></b></a>
                   <ul class="dropdown-menu">
-                    <li><a href="{{ url_for('manage.index') }}"><i class="icon-cog"></i>&nbsp;Manage</a></li>
+                    <li><a href="{{ url_for('users.index') }}"><i class="icon-cog"></i>&nbsp;Users</a></li>
                     <li class="divider"></li>
                     <li>
                       <a href="{{ url_for('logout') }}">
