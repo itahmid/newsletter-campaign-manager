@@ -1,5 +1,6 @@
 from flask.ext.mysql import MySQL
 from models import User, List, Newsletter, Template
+import time
 mysql = MySQL()
 
 
@@ -8,6 +9,25 @@ def get_sql():
     cur = conn.cursor()
     return conn, cur
 
+def insert_row(tbl, form, cur):
+    cols = []
+    vals = []
+    for k, v in form.iteritems():
+        if (v != '' and k[len(k) - 3:] != 'sel'):
+            cols.append(k)
+            vals.append(v)
+    vals.append(int(time.time()))
+    vals = tuple(vals)
+   
+    r_ops = ','.join(['%s' for x in xrange(len(cols)+1)])
+    cols = ','.join(cols)
+    #vals = ','.join(vals)
+    qry_base =  """INSERT INTO {tbl}({cols},date_added) VALUES {r_ops}""".format(tbl=tbl, cols=cols, r_ops=r_ops)
+    print qry_base
+    print vals
+    cur.execute(qry_base, vals)
+    #cur.execute(qry)
+    # cur.execute(qry_base, (vals)
 
 def get_rows(_ids=None, **kwargs):
     conn, cur = get_sql()

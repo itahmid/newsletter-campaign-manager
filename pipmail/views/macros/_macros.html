@@ -5,28 +5,27 @@
 'lists':('name', 'description', 'date_added', 'recipients')}.get(cntrlr) %}
 
     <table class="{{class}}">
-        <thead >
-            <tr class="head">
+        <thead>
+            <tr>
                 {% for h in headings  %}
                     {% if '_' in h %}
-                        <td class="head">{{  '%s %s' % (h.split('_')[0]|capitalize, 
-                        h.split('_')[1]|capitalize) }}</td>
+                        <th>{{  '%s %s' % (h.split('_')[0]|capitalize, 
+                        h.split('_')[1]|capitalize) }}</th>
                 
                     {% else %}
-                        <td>{{ h|capitalize }}</td>
+                        <th>{{ h|capitalize }}</th>
                     {% endif %}
                 {% endfor %}
                 <th></th>
             </tr>
         </thead>
         <tbody>
-
             {% for d in data %}
                 <tr>
                     {% for h in headings %}
                         <td>{{ d[h] }}</td>
                     {% endfor %}
-                    <td>
+                    <td style="table-layout:fixed;overflow:hidden;text-align:center;width:20%;">
                     {{ actions(cntrlr, d['id']) }}</td>
                 </tr>
             {% endfor %}

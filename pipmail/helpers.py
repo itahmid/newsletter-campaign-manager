@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import redirect, session
+from flask import redirect, session, flash, url_for
 import datetime
 
 
@@ -8,13 +8,12 @@ def allowed_file(filename, exts):
            filename.rsplit('.', 1)[1] in exts
 
 
-def collect_form_errors(form, cntrlr):
-    errors = []
+def collect_form_errors(form):
+    form_errors = []
     for k, v in form.iteritems():
         if (v == '' and k[len(k) - 3:] != 'sel'):
-            errors.append(k.replace('_', ' '))
-    return errors
-
+            form_errors.append(k.replace('_', ' '))
+    return form_errors
 
 def login_required(func):
     @wraps(func)

@@ -3,9 +3,8 @@
 {% from '_macros.html' import input %}
 <h2>Login</h2>
 {% if errors %}
-  {% include "snippets/error.html" %}
-
-{% endif %}
+{% include 'error.html' %}
+{% endif%}
 
 {% if logout %}
   <p class="text-info"> <strong>Logged out:</strong>

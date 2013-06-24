@@ -1,9 +1,8 @@
 import time
 from flask import Blueprint, request, redirect, url_for, \
-    render_template, session
-from pipmail.sql import get_sql, get_rows
+    render_template, session, flash
+from pipmail.sql import get_sql, get_rows, insert_row
 from pipmail.helpers import login_required, collect_form_errors
-
 
 mod = Blueprint('campaigns', __name__)
 
@@ -22,8 +21,6 @@ mod = Blueprint('campaigns', __name__)
 @login_required
 def index(page):
     newsletters = get_rows(model='newsletters', page=page)
-    headings = ['code', 'subject', 'date_added', 'date_sent', 
-                'recipients', 'company']
     return render_template('campaigns/index.html', newsletters=newsletters,
                              page=page)
 
@@ -37,36 +34,37 @@ def create():
     companies = cur.fetchall()
     cur.execute('SELECT name, email FROM staff')
     staff = cur.fetchall()
-
     if request.method == 'POST':
-        errors = collect_form_errors(request.form, 'campaigns')
-        if not errors:
-            try:
-                cur.execute("""INSERT INTO newsletters(code, subject, author,
-                            company, from_name, from_email, replyto_email,
-                            date_added, date_sent, priority, unsub)
-                            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                            """, (
-                            request.form.get('code'),
-                            request.form.get('subject'),
-                            session.get('current_user'),
-                            request.form.get('company'),
-                            request.form.get('from_name'),
-                            request.form.get('from_email'),
-                            request.form.get('replyto_email'),
-                            int(time.time()),
-                            0,
-                            request.form.get('priority'),
-                            request.form.get('unsub', 0),
-                            )
-                            )
-                conn.commit()
-                cur.execute('SELECT last_insertnid()')
-                nid = cur.fetchall()[0][0]
-            except Exception, e:
-                conn.rollback()
-                return render_template('server_error.html', error=e)
-            return redirect(url_for('lists.index', nid=nid))
+        form_errors = collect_form_errors(request.form)
+        if not form_errors:
+            print 'lol'
+            insert_row('newsletters', request.form, cur)
+            # try:
+            #     cur.execute("""INSERT INTO newsletters(code, subject, author,
+            #                 company, from_name, from_email, replyto_email,
+            #                 date_added, date_sent, priority, unsub)
+            #                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            #                 """, (
+            #                 request.form.get('code'),
+            #                 request.form.get('subject'),
+            #                 session.get('current_user'),
+            #                 request.form.get('company'),
+            #                 request.form.get('from_name'),
+            #                 request.form.get('from_email'),
+            #                 request.form.get('replyto_email'),
+            #                 int(time.time()),
+            #                 0,
+            #                 request.form.get('priority'),
+            #                 request.form.get('unsub', 0),
+            #                 )
+            #                 )
+            #     conn.commit()
+            #     cur.execute('SELECT last_insert_id()')
+            #     nid = cur.fetchall()[0][0]
+            # except Exception, e:
+            #     conn.rollback()
+            #     return render_template('server_error.html', error=e)
+            # return redirect(url_for('lists.index', nid=nid))
     return render_template('campaigns/details.html', companies=companies,
                            staff=staff, errors=errors, editing=False)
 
