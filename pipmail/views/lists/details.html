@@ -4,11 +4,10 @@
 {% from 'macros/_macros.html' import steps with context %}
 {{ steps('2', nid) }}
 {% endif %}
-<form action="{{ url_for('lists.edit', _id=_id) if editing else url_for('lists.create') }}" method="post">
-    <br>
-    <div class="row-fluid">
-        <div class="span7">
-            <table class="table table-hover table-bordered table-condensed">
+
+<div class="row-fluid">
+<div class="span6"><br/>
+ <table class="table table-hover table-bordered table-condensed">
                 <thead>
                     <tr>
                         <td class="h">List Details</td>
@@ -45,13 +44,11 @@
                    
                 </tfoot>
             </table>
-        </div>
-            
-            
-            {% if editing %}
-            {% include "lists/recipients.html" %}
-            <div class="span6">
-                <div class="accordion" id="accordion2">
+</div>
+
+{% if editing %}
+<div class="span6"><br/>
+ <div class="accordion" id="accordion2">
                     <div class="accordion-group">
                         <div class="accordion-heading">
                             <a style="font-size:20px;background:#F5F5F5;" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
@@ -60,29 +57,36 @@
                         </div>
                         <div id="collapseOne" class="accordion-body collapse" style="height: 0px; ">
                             <div class="accordion-inner">
+
+
                                 <form action="{{ url_for('lists.create') }}" method="post">
-                                    <table class="table table-hover table-bordered" style="max-width: none;">
-                                        <tr>
-                                            <td align="right">First Name</td>
-                                            <td align="left"><input style="width: 200px" name="new_first_name" type="text" id="new_first_name" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td align="right">Last Name</td>
-                                            <td align="left"><input style="width: 200px" name="new_last_name" type="text" id="new_last_Name" value="" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td align="right">Email</td>
-                                            <td align="left"><input style="width: 200px" name="new_email" type="text" id="new_email" value="" /></td>
-                                        </tr>
-                                        
-                                        
-                                        
-                                    </table>
-                                    <input type="hidden" name="_id" id="_id" value="{{lst['id']}}" />
+                                <ul class="nav nav-list">
+                                    <div class="field_container"><label>First Name</label>
+                                    <input style="width: 200px" name="new_first_name" type="text" id="new_first_name" value="" /></div>
+                                <li class="divider"></li>
+                                 <div class="field_container"><label>Last Name</label>
+                                    <input style="width: 200px" name="new_last_name" type="text" id="new_last_name" value="" /></div>
+
+                                <li class="divider"></li>
+                    
+                                           <div class="field_container"><label>Email</label>
+                                    <input style="width: 200px" name="new_email" type="text" id="new_email" value="" /></div>
+
+                                <li class="divider"></li>
+                                   <input type="hidden" name="_id" id="_id" value="{{lst['id']}}" />
                                     <input type="submit" style="width: 150px;" name="addnew" class="btn btn-primary pull-center" value="Create Recipient"/>
                                     
-                                    
+
+                        
                                 </form>
+                                </ul>
+
+
+                                          
+        
+                                        
+                                        
+    
                             </div>
                         </div>
                     </div>
@@ -186,6 +190,7 @@
                 </div>
             </div>
         </div>
-    </div>
+</div>  
+
     {% endif %}
     {% endblock  %}
