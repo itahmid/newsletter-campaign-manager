@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% import 'macros/forms.html' as forms %}
+{% from '_macros.html' import input %}
 <h2>Login</h2>
 {% if errors %}
   {% include "snippets/error.html" %}
@@ -14,9 +14,9 @@
     <form action="{{ url_for('login') }}" method="post">
      <dl>
     <dt>Email</dt>
-    <dd>{{ forms.input('email') }}</dd>
+    <dd>{{ input('email') }}</dd>
     <dt>Password</dt>
-    <dd>{{ forms.input('password', type='password') }}</dd>
+    <dd>{{ input('password', type='password') }}</dd>
     <dd><input type="submit" value="Login"></dd>
 </dl> 
 

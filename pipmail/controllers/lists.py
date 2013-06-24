@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
-from pipmail.helpers import login_required, allowed_file
+from pipmail.helpers import login_required, allowed_file, collect_form_errors
 from pipmail.models import List, Newsletter
 from pipmail.sql import get_sql, get_rows
 
@@ -19,9 +19,7 @@ mod = Blueprint('lists', __name__)
 def index(page=0):
     nid = request.args.get('nid')
     lists = get_rows(model='lists', page=page)
-    headings = ['name', 'description', 'date_added', 'recipients']
-    return render_template('lists/index.html', headings=headings, lists=lists, 
-                            page=page, nid=nid)
+    return render_template('lists/index.html', lists=lists, page=page, nid=nid)
 
 
 @mod.route('/create_list', methods=['GET', 'POST'])
@@ -30,13 +28,8 @@ def create():
     error = None
     conn, cur = get_sql()
     if request.method == 'POST':
-        errors = [opt for opt, val in request.form.iteritems()
-                  if (val not in ('first_name', 'last_name', 'email')
-                      and val == '')]
-        if len(errors) > 0:
-            error = [error_dict.get(err) for err in errors
-                     if error_dict.get(err) != '']
-        else:
+        errors = collect_form_errors(request.form, 'campaigns')
+        if not errors:
             try:
                 cur.execute("""INSERT into lists(name, description,
                             date_added)

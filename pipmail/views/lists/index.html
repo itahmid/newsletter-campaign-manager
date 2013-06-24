@@ -11,7 +11,7 @@
         <a href="{{ url_for('lists.create') }}" class="btn btn-success pull-right ">Create New List</a>
 
 {% from '_macros.html' import render_table with context %}
-{{ render_table('lists', headings, lists, "table table-hover table-bordered")}}
+{{ render_table('lists', lists, "table table-hover table-bordered")}}
       
 
 {% endblock %}

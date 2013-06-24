@@ -1,4 +1,9 @@
-{% macro render_table(cntrlr, headings, data, class='') %}
+{% macro render_table(cntrlr, data, class='') %}
+
+{% set headings = {
+'campaigns':('code', 'subject', 'date_added', 'date_sent', 'recipients', 'company'),
+'lists':('name', 'description', 'date_added', 'recipients')}.get(cntrlr) %}
+
     <table class="{{class}}">
         <thead>
             <tr>

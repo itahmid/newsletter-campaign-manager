@@ -12,7 +12,6 @@
                 <thead>
                     <tr>
                         <td class="h">List Details</td>
-                        <td class="h">333</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,10 +21,7 @@
                             <input width="200" style="width: 200px" name="name" type="text"
                             id="name" value="{{ lst['name'] if editing else ''}}" />
                         </td>
-                        <td>
-                            <label> <strong>2222</strong></label>
-                            <input width="200" style="width: 200px" name="name" type="text" id="name" value="{{ lst['name'] if editing else ''}}" />
-                        </td>
+                        
                     </tr>
                     <tr>
                         <td>
@@ -34,10 +30,7 @@
                             
                             <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ lst['description'] if editing else '' }}" />
                         </td>
-                        <td >
-                            
-                            ayo
-                        </td>
+
                     </tr>
                 </tbody>
                 <tfoot>
@@ -56,6 +49,7 @@
             
             
             {% if editing %}
+            {% include "lists/recipients.html" %}
             <div class="span6">
                 <div class="accordion" id="accordion2">
                     <div class="accordion-group">

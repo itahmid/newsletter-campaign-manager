@@ -25,7 +25,7 @@ def index(page):
     headings = ['code', 'subject', 'date_added', 'date_sent', 
                 'recipients', 'company']
     return render_template('campaigns/index.html', newsletters=newsletters,
-                            headings=headings, page=page)
+                             page=page)
 
 
 @mod.route('/create_campaign', methods=['GET', 'POST'])

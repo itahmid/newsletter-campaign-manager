@@ -61,7 +61,7 @@
       <br>
       <a href="{{ url_for('campaigns.create') }}" class="btn btn-success pull-right">Create New Campaign</a>
       {% from '_macros.html' import render_table with context %}
-      {{ render_table('campaigns', headings, newsletters, "table table-hover table-bordered")}}
+      {{ render_table('campaigns', newsletters, "table table-hover table-bordered")}}
       <div class="pagination">
          <ul>
             {% if page != 0 %}
