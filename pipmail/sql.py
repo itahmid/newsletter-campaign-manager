@@ -1,5 +1,5 @@
 from flask.ext.mysql import MySQL
-from models import User, List, Newsletter, Template
+from models import Newsletter, List
 import time
 mysql = MySQL()
 
@@ -10,40 +10,44 @@ def get_sql():
     return conn, cur
 
 def insert_row(tbl, form, cur):
-    cols = []
-    vals = []
-    for k, v in form.iteritems():
-        if (v != '' and k[len(k) - 3:] != 'sel'):
-            cols.append(k)
-            vals.append(v)
-    vals.append(int(time.time()))
-    vals = tuple(vals)
+    cur.execute("describe %s" % tbl)
+    keys = set(row[0] for row in cur.fetchall()).intersection(form)
+    print keys
+    cols = ', '.join(keys)
+
+
+    # cols = []
+    # vals = []
+    # for k, v in form.iteritems():
+    #     if (v != '' and k[len(k) - 3:] != 'sel'):
+    #         cols.append(k)
+    #         vals.append(v)
+    # vals.append(int(time.time()))
+    # vals = tuple(vals)
    
-    r_ops = ','.join(['%s' for x in xrange(len(cols)+1)])
-    cols = ','.join(cols)
-    #vals = ','.join(vals)
+    r_ops = ', '.join(['%s' for x in xrange(len(cols)+1)])
+    cols = ', '.join(keys)
     qry_base =  """INSERT INTO {tbl}({cols},date_added) VALUES {r_ops}""".format(tbl=tbl, cols=cols, r_ops=r_ops)
-    print qry_base
-    print vals
     cur.execute(qry_base, vals)
-    #cur.execute(qry)
-    # cur.execute(qry_base, (vals)
 
 def get_rows(_ids=None, **kwargs):
     conn, cur = get_sql()
     model = kwargs.get('model')
     _id = kwargs.get('id')
     page = kwargs.get('page')
-    _models = {'users':User, 'lists':List, 'newsletters':Newsletter, 'templates':Template}
+    _models = {'list':List, 'newsletter':Newsletter}
     if not _ids:
         offset = 0
         if page > 0:
             offset = (page * 15)
-        cur.execute("""SELECT id FROM %s
+        cur.execute("""SELECT %s_id FROM %s
                     ORDER BY date_added
-                    DESC LIMIT 15 OFFSET %s""" % (model, offset))
+                    DESC LIMIT 15 OFFSET %s""" % (model, model, offset))
         _ids = cur.fetchall()
     return [_models.get(model)(conn, cur, i[0]).info for i in _ids]
+
+#def get_row_index(**kwargs):
+
 
 
 

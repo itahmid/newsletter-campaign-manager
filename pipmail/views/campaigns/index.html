@@ -73,20 +73,27 @@
             {% for i in range(1) %}
             <li class="active">
                <a href="{{ url_for('campaigns.index', page = page)
-            }}">{{page}}</a></li>
+            }}">{{page}}</a>
+            </li>
             <li>
                <a href="{{ url_for('campaigns.index', page = (page + 1))
-            }}">{{page + 1}}</a></li>
+            }}">{{page + 1}}</a>
+            </li>
             <li>
                <a href="{{ url_for('campaigns.index', page = (page + 2))
-            }}">{{page + 2}}</a></li>
+            }}">{{page + 2}}</a>
+            </li>
             <li>
                <a href="{{ url_for('campaigns.index', page = (page + 3))
-            }}">{{page + 3}}</a></li>
+            }}">{{page + 3}}</a>
+            </li>
             {% endfor %}
             <li>
                <a href="{{ url_for('campaigns.index', page = (page + 1))
-            }}">Next</a></li>
+            }}">Next</a>
+            </li>
          </ul>
       </div>
+   </div>
+</div>
       {% endblock %}

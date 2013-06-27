@@ -6,21 +6,12 @@ from pipmail.helpers import login_required, collect_form_errors
 
 mod = Blueprint('campaigns', __name__)
 
-# @mod.add_app_template_filter
-# def choosenid(cntrlr, method, nid):
-#     cntrlrs = {  
-#                     'campaigns':'{}.{}'.format(cntrlr, method), nid, 
-#                     'lists':'{}.{}'.format(cntrlr, method), lid, 
-#                     'recipients':'{}.{}'.format(cntrlr, method), rid
-#                 }
-#     _url = cntrlrs[cntrlr]
-#     return _urlS
 
 @mod.route('/campaigns', defaults={'page': 0})
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
-    newsletters = get_rows(model='newsletters', page=page)
+    newsletters = get_rows(model='newsletter', page=page)
     return render_template('campaigns/index.html', newsletters=newsletters,
                              page=page)
 
@@ -30,15 +21,18 @@ def index(page):
 def create():
     errors = []
     conn, cur = get_sql()
-    cur.execute('SELECT id, name FROM companies')
+    cur.execute('SELECT company_id, name FROM company')
     companies = cur.fetchall()
-    cur.execute('SELECT name, email FROM staff')
+    cur.execute('SELECT first_name, last_name, email FROM staff')
     staff = cur.fetchall()
     if request.method == 'POST':
         form_errors = collect_form_errors(request.form)
+        print 'ololol'
         if not form_errors:
             print 'lol'
-            insert_row('newsletters', request.form, cur)
+            for k, v in request.form.iteritems():
+                print k,v
+            insert_row('newsletter', request.form, cur)
             # try:
             #     cur.execute("""INSERT INTO newsletters(code, subject, author,
             #                 company, from_name, from_email, replyto_email,
@@ -65,6 +59,7 @@ def create():
             #     conn.rollback()
             #     return render_template('server_error.html', error=e)
             # return redirect(url_for('lists.index', nid=nid))
+    print form_errors
     return render_template('campaigns/details.html', companies=companies,
                            staff=staff, errors=errors, editing=False)
 
