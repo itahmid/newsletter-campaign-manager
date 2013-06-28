@@ -1,8 +1,11 @@
 {% macro render_table(cntrlr, data, class='') %}
 
 {% set headings = {
-'campaigns':('code', 'subject', 'date_added', 'date_sent', 'recipients', 'company'),
-'lists':('name', 'description', 'date_added', 'recipients')}.get(cntrlr) %}
+
+    'newsletters':('code', 'subject', 'date_added', 'date_sent', 'recipients', 'company'),
+    'lists':('name', 'description', 'date_added', 'recipients')
+
+}.get(cntrlr) %}
 
     <table class="{{class}}">
         <thead>
@@ -34,7 +37,7 @@
 {% endmacro %}
 
 {% macro actions(cntrlr, _id) %}
-    {% if cntrlr == 'campaigns' %}
+    {% if cntrlr == 'newsletters' %}
             <a href="" class="btn btn-mini">
             <i class="icon-remove"></i>Stats</a>
             <a href="{{ url_for('%s.%s' % (cntrlr, 'edit'), nid=_id)}}" class="btn btn-mini">
@@ -78,7 +81,7 @@
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('campaigns.edit', nid = nid) if nid else url_for('campaigns.create') }}">Step 1</a>
+                <a href="{{ url_for('newsletters.edit', nid = nid) if nid else url_for('newsletters.create') }}">Step 1</a>
             </li>
         {% endif %}
         {% if step == "2" %}
@@ -87,7 +90,7 @@
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('lists.index', nid = nid) if nid else url_for('campaigns.create') }}">Step 2</a>
+                <a href="{{ url_for('lists.index', nid = nid) if nid else url_for('newsletters.create') }}">Step 2</a>
             </li>
         {% endif %}
         {% if step == "3" %}
@@ -96,7 +99,7 @@
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('templates.index', nid = nid) if nid else url_for('campaigns.create') }}">Step 3</a>
+                <a href="{{ url_for('templates.index', nid = nid) if nid else url_for('newsletters.create') }}">Step 3</a>
             </li>
         {% endif %}
         {% if step == "4" %}
@@ -105,7 +108,7 @@
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('contents.index', nid = nid) if nid else url_for('campaigns.create') }}">Step 4</a>
+                <a href="{{ url_for('contents.index', nid = nid) if nid else url_for('newsletters.create') }}">Step 4</a>
             </li>
         {% endif %}
     </div>

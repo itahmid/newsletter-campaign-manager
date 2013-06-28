@@ -3,15 +3,15 @@ from helpers import unix_to_local
 
 class Base(object):
 
-    def __init__(self, conn, cur, _id):
+    def __init__(self, conn, cur):
         self.conn = conn
         self.cur = cur
-        self.id = str(_id)
 
     def get_result_dict(self, tbl):
-        self.cur.execute("SELECT * FROM %s WHERE id = %s" % (tbl, self.id))
+        self.cur.execute("SELECT * FROM %s WHERE %s_id = %s" % (tbl, self.id))
         res = self.cur.fetchall()
-        cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
+        #cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
+        cols = tuple([col[0] for col in self.cur.description])
         return dict(zip(cols, res[0][1:]))
 
 

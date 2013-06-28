@@ -2,16 +2,14 @@ import os
 import time
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
-#from flask.ext.mysql import MySQL
 import settings
-from helpers import login_required, collect_form_errors
+from helpers import login_required, collect_form_items
 from sql import mysql, get_sql
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config.update(DEBUG=True,)
 app.secret_key = settings.secret_key
-# from flask.ext.mysql import MySQL
-# mysql = MySQL()
+
 
 app.config.setdefault('MYSQL_DATABASE_PORT', 3306)
 app.config.setdefault('MYSQL_DATABASE_USER', settings.USER)
@@ -35,7 +33,7 @@ def page_not_found(e):
 @app.route('/')
 @login_required
 def index():
-    return redirect(url_for('campaigns.index'))
+    return redirect(url_for('newsletters.index'))
 
 @app.route('/test')
 def test():
@@ -45,12 +43,12 @@ def test():
 def login():
     errors = []
     if request.method == 'POST' and 'email' in request.form:
-        errors = collect_form_errors(request.form)
-        if not errors:
+        form_errors = collect_form_items(request.form)
+        if not form_errors:
             email = request.form.get('email')
             password = request.form.get('password')
             conn, cur = get_sql()
-            cur.execute("""SELECT * FROM users WHERE email = '%s'
+            cur.execute("""SELECT * FROM user WHERE email = '%s'
                         AND password='%s'""" % (email, password))
             res = cur.fetchall()
             if not res:
@@ -58,12 +56,12 @@ def login():
             else:
                 session['logged_in'] = True
                 session['current_user'] = email
-                cur.execute("""UPDATE users
+                cur.execute("""UPDATE user
                                SET last_login=%s
                                WHERE email=%s""", (int(time.time()), email))
                 conn.commit()
-                return redirect(url_for('campaigns.index'))
-    return render_template('auth/login.html', errors=errors)
+                return redirect(url_for('newsletters.index'))
+    return render_template('auth/login.html', form_errors=errors)
 
 
 @app.route('/logout')

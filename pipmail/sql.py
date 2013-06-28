@@ -1,6 +1,6 @@
 from flask.ext.mysql import MySQL
 from models import Newsletter, List
-import time
+from time import time
 mysql = MySQL()
 
 
@@ -9,26 +9,23 @@ def get_sql():
     cur = conn.cursor()
     return conn, cur
 
-def insert_row(tbl, form, cur):
-    cur.execute("describe %s" % tbl)
-    keys = set(row[0] for row in cur.fetchall()).intersection(form)
-    print keys
-    cols = ', '.join(keys)
 
+def insert_row(tbl, form_items, conn, cur):
+    r_ops = ','.join(['%s' for x in xrange(len(form_items.keys()))])
+    cols = ','.join(form_items.keys())
+    vals =tuple(form_items.values())
+    qry = "INSERT INTO %s(%s) VALUES(%s)" % (tbl, cols, r_ops)
+    try:
+        cur.execute(qry, vals)
+        conn.commit()
+        cur.execute('SELECT last_insert_id()')
+        _id = cur.fetchall()[0][0]
+    except Exception, e:
+        conn.rollback()
+        return 'error lol'
+    return _id
 
-    # cols = []
-    # vals = []
-    # for k, v in form.iteritems():
-    #     if (v != '' and k[len(k) - 3:] != 'sel'):
-    #         cols.append(k)
-    #         vals.append(v)
-    # vals.append(int(time.time()))
-    # vals = tuple(vals)
-   
-    r_ops = ', '.join(['%s' for x in xrange(len(cols)+1)])
-    cols = ', '.join(keys)
-    qry_base =  """INSERT INTO {tbl}({cols},date_added) VALUES {r_ops}""".format(tbl=tbl, cols=cols, r_ops=r_ops)
-    cur.execute(qry_base, vals)
+    
 
 def get_rows(_ids=None, **kwargs):
     conn, cur = get_sql()

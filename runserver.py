@@ -1,9 +1,9 @@
 from pipmail import app
-from pipmail.controllers import campaigns, lists, recipients, contents, users, templates
+from pipmail.controllers import newsletters, lists, recipients, contents, users, templates
 
 
 if __name__ == '__main__':
-    app.register_blueprint(campaigns.mod)
+    app.register_blueprint(newsletters.mod)
     app.register_blueprint(lists.mod)
     app.register_blueprint(recipients.mod)
     app.register_blueprint(users.mod)

@@ -1,8 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, \
     render_template, session
 from pipmail.sql import get_sql, get_rows
-from pipmail.helpers import login_required, collect_form_errors
-
+from pipmail.helpers import login_required, collect_form_items
 
 mod = Blueprint('users', __name__)
 

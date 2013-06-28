@@ -12,8 +12,13 @@ def collect_form_errors(form):
     form_errors = []
     for k, v in form.iteritems():
         if (v == '' and k[len(k) - 3:] != 'sel'):
-            form_errors.append(k.replace('_', ' '))
+            form_items.append(k.replace('_', ' '))
     return form_errors
+
+def collect_form_items(form):
+    return 'lol'
+    
+
 
 def login_required(func):
     @wraps(func)

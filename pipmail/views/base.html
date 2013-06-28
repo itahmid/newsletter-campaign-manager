@@ -20,6 +20,7 @@
     .table th { 
       font-size:18px;
       background:#F1F1F1; 
+      color:#105289;
       border:none;
     }
 
@@ -28,7 +29,7 @@
  }
 
     .table tbody tr:hover td {
-      background-color: #F2F8FF;
+      background-color: #E1EBF2;
 
     }
 .table-striped tbody tr:nth-child(even) td,
@@ -41,10 +42,10 @@
 }
 
 
-    label {
+/*    label {
       width:100px;  
           float:left;
-}
+}*/
     </style>
     <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
     <!--[if lt IE 9]>
@@ -74,7 +75,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li>
-                    <a href="{{ url_for('campaigns.create') }}">Create</a>
+                    <a href="{{ url_for('newsletters.create') }}">Create</a>
                   </li>
                   <li>
                     <a href="#">Search</a>
