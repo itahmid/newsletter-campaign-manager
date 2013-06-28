@@ -5,17 +5,19 @@ Email campaign manager written using the Python Flask micro-framework.  Adapting
 
 todo
 =======
-- ~~add models/use ORM for database lookups~~  ~~(maybe)~~ ~~(probably)~~ my class models are better
-- add everything the old Ruby/PHP versions have
-- email templates and delivery
+- add everything the old PHP version has
+- add templates/daily update/sections/articles/delivery
 - statistics/reporting page like in old pipmail
 - campaign searches
 - types/companies/staff
-- multiple list ids for campaigns
 - unsubscribe links/unsubscriber search & deletion
 - add tests
 - more robust error handling
 - fix table macros/pagination
+- fix styling of tables
+- fix the campaign search styling
+- create script to generate mysql tables from schema
+- delete old unnecessary files
 
 installation
 =======

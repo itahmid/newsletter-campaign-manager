@@ -7,6 +7,7 @@
 
 }.get(cntrlr) %}
 
+
     <table class="{{class}}">
         <thead>
             <tr>
@@ -29,7 +30,14 @@
                         <td>{{ d[h] }}</td>
                     {% endfor %}
                     <td style="table-layout:fixed;overflow:hidden;text-align:center;width:20%;">
-                    {{ actions(cntrlr, d['id']) }}</td>
+                    {% if cntrlr == 'newsletters' %}
+
+                        {{ actions(cntrlr, d['newsletter_id'])}}
+                    {% endif %}
+                    {% if cntrlr == 'lists' %}
+                        {{ actions(cntrlr, d['list_id'])}}
+                    {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
