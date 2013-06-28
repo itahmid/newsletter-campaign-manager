@@ -1,0 +1,7 @@
+<div class="alert alert-error">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+{% for err in form_errors %} 
+You entered an invalid <strong><u>{{ err }}!</u></strong><br/>
+{% endfor %}
+</div>
+

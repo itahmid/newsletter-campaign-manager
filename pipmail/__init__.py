@@ -3,7 +3,7 @@ import time
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
 import settings
-from helpers import login_required, collect_form_items
+from helpers import login_required, collect_form_errors
 from sql import mysql, get_sql
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'views')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -11,7 +11,7 @@ app.config.update(DEBUG=True,)
 app.secret_key = settings.secret_key
 
 
-app.config.setdefault('MYSQL_DATABASE_PORT', 3306)
+app.config.setdefault('MYSQL_DATABASE_PORT', 3306) #add dict
 app.config.setdefault('MYSQL_DATABASE_USER', settings.USER)
 app.config.setdefault('MYSQL_DATABASE_PASSWORD', settings.PASSWORD)
 app.config.setdefault('MYSQL_DATABASE_DB', settings.DB)
@@ -43,7 +43,7 @@ def test():
 def login():
     errors = []
     if request.method == 'POST' and 'email' in request.form:
-        form_errors = collect_form_items(request.form)
+        form_errors = collect_form_errors(request.form)
         if not form_errors:
             email = request.form.get('email')
             password = request.form.get('password')

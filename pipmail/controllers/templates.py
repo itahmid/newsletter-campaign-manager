@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from pipmail.sql import get_sql, get_rows
+from pipmail.sql import get_sql, get_index
 from pipmail.helpers import login_required, collect_form_items
 
 

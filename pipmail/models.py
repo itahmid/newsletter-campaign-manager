@@ -1,23 +1,22 @@
 from helpers import unix_to_local
-
+import MySQLdb
 
 class Base(object):
 
-    def __init__(self, conn, cur):
+    def __init__(self, conn, cur, _id):
         self.conn = conn
         self.cur = cur
+        self._id = _id
 
     def get_result_dict(self, tbl):
-        self.cur.execute("SELECT * FROM %s WHERE %s_id = %s" % (tbl, self.id))
-        res = self.cur.fetchall()
-        #cols = tuple([d[0].decode('utf8') for d in self.cur.description[1:]])
-        cols = tuple([col[0] for col in self.cur.description])
-        return dict(zip(cols, res[0][1:]))
+        dict_cur = self.conn.cursor(MySQLdb.cursors.DictCursor)
+        dict_cur.execute("SELECT * FROM %s WHERE %s_id = %s" % (tbl, tbl, self._id))
+        return dict_cur.fetchall()[0]
 
 
 class User(Base):
 
-    def __init__(self, conn, cur, _id):
+    def __init__(self, conn, _id):
         super(User, self).__init__(conn, cur, _id)
         self.info = self.get_result_dict('users')
         self.info['id'] = str(_id)
@@ -63,7 +62,7 @@ class Newsletter(Base):
 
     def __init__(self, conn, cur, _id):
         super(Newsletter, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('newsletters')
+        self.info = self.get_result_dict('newsletter')
         self.info['date_added'] = unix_to_local(self.info['date_added'])
         self.info['list_ids'] = self.info['list_ids'].encode('ascii', 'ignore').split(',')
         self.info['company'] = self.get_company_name()
@@ -71,7 +70,7 @@ class Newsletter(Base):
 
     def get_company_name(self):
         self.cur.execute("""SELECT name FROM company
-                        WHERE id = %s""" % self.info['company'])
+                        WHERE company_id = %s""" % self.info['company'])
         comp = self.cur.fetchall()[0][0]
         if comp == 0:
             comp = 'N/A'

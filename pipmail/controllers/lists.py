@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
 from pipmail.helpers import login_required, allowed_file, collect_form_items
 from pipmail.models import List, Newsletter
-from pipmail.sql import get_sql, get_rows
+from pipmail.sql import get_sql, get_index
 
 
 import time
@@ -18,7 +18,7 @@ mod = Blueprint('lists', __name__)
 @login_required
 def index(page=0):
     nid = request.args.get('nid')
-    lists = get_rows(model='lists', page=page)
+    lists = get_index(model='list', page=page)
     return render_template('lists/index.html', lists=lists, page=page, nid=nid)
 
 

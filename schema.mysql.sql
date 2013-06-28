@@ -5,9 +5,10 @@ CREATE TABLE `newsletter`
     `subject` VARCHAR(255) NOT NULL,
     `author` INT UNSIGNED NOT NULL,
     `company` INT(11) NOT NULL DEFAULT '0',
-    `from_name` VARCHAR(80),
-    `from_email` VARCHAR(50),
-    `unsub_link` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+    `from_name` VARCHAR(80) NOT NULL,
+    `from_email` VARCHAR(50) NOT NULL,
+    `replyto_email` VARCHAR(50) NOT NULL,
+    `unsub` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
     `date_added` INT(11) UNSIGNED NOT NULL,
     `date_sent` INT(11) UNSIGNED NOT NULL DEFAULT '0',
     `list_ids` VARCHAR(255) NOT NULL DEFAULT '0',
@@ -19,7 +20,7 @@ CREATE TABLE `list`
 (
     `list_id` INT(11) UNSIGNED AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
-    `description` VARCHAR(255),
+    `description` VARCHAR(255) NOT NULL,
     `date_added` INT(11) UNSIGNED NOT NULL,
     PRIMARY KEY(`list_id`)
 );
@@ -60,6 +61,7 @@ CREATE TABLE `user`
     `first_name` VARCHAR(50) NOT NULL,
     `last_name` VARCHAR(50) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
     `date_added` INT(11) UNSIGNED NOT NULL,
     `last_login` INT(11) NOT NULL default '0',
     PRIMARY KEY(`user_id`)

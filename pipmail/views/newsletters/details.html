@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-{% from 'macros/_macros.html' import steps with context %}
+{% from '_macros.html' import steps with context %}
 {{ steps('1', nid)}}
 
 {% if form_errors %}
-{% include 'form_errors.html' %}
+{% include 'form_error.html' %}
 {% endif%}
 
 <form action="{{ url_for('newsletters.edit', nid = nid) if editing else url_for('newsletters.create') }}" method="post">

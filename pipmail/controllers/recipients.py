@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from werkzeug import secure_filename
 from pipmail.helpers import login_required, allowed_file
 from pipmail.models import List, Newsletter
-from pipmail.sql import get_sql, get_rows
+from pipmail.sql import get_sql, get_index
 
 
 import time

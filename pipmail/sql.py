@@ -13,7 +13,7 @@ def get_sql():
 def insert_row(tbl, form_items, conn, cur):
     r_ops = ','.join(['%s' for x in xrange(len(form_items.keys()))])
     cols = ','.join(form_items.keys())
-    vals =tuple(form_items.values())
+    vals = tuple(form_items.values())
     qry = "INSERT INTO %s(%s) VALUES(%s)" % (tbl, cols, r_ops)
     try:
         cur.execute(qry, vals)
@@ -21,27 +21,39 @@ def insert_row(tbl, form_items, conn, cur):
         cur.execute('SELECT last_insert_id()')
         _id = cur.fetchall()[0][0]
     except Exception, e:
+        print e
         conn.rollback()
         return None
     return _id
 
-    
 
-def get_rows(_ids=None, **kwargs):
+def update_row(tbl, form_items, conn, cur, _id):
+    cols = ','.join(form_items.keys())
+    vals = tuple(form_items.values())
+    cols = ','.join(['%%s=%s' % col for col in form_items.keys()])
+    qry = "UPDATE newsletters SET %s WHERE %s_id = %s" % (cols, tbl, _id)
+    print qry
+
+
+def get_index(model, page):
     conn, cur = get_sql()
-    model = kwargs.get('model')
-    _id = kwargs.get('id')
-    page = kwargs.get('page')
     _models = {'list':List, 'newsletter':Newsletter}
-    if not _ids:
-        offset = 0
-        if page > 0:
-            offset = (page * 15)
-        cur.execute("""SELECT %s_id FROM %s
-                    ORDER BY date_added
-                    DESC LIMIT 15 OFFSET %s""" % (model, model, offset))
-        _ids = cur.fetchall()
+    offset = 0
+    if page > 0:
+        offset = (page * 15)
+    cur.execute("""SELECT %s_id FROM %s
+                ORDER BY date_added
+                DESC LIMIT 15 OFFSET %s""" % (model, model, offset))
+    _ids = cur.fetchall()
     return [_models.get(model)(conn, cur, i[0]).info for i in _ids]
+
+def get_staff(conn, cur):
+    cur.execute('SELECT name, email FROM staff')
+    return cur.fetchall()
+
+def get_companies(conn, cur):
+    cur.execute('SELECT company_id, name FROM company')
+    return cur.fetchall()
 
 #def get_row_index(**kwargs):
 
