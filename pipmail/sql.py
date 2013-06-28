@@ -22,7 +22,7 @@ def insert_row(tbl, form_items, conn, cur):
         _id = cur.fetchall()[0][0]
     except Exception, e:
         conn.rollback()
-        return 'error lol'
+        return None
     return _id
 
     
