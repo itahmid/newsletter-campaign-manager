@@ -27,13 +27,13 @@ class List(Base):
     
     def __init__(self, conn, cur, _id):
         super(List, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('lists')
+        self.info = self.get_result_dict('list')
         self.info['recipients'] = self.get_recips(count=True)
         self.info['date_added'] = unix_to_local(self.info['date_added'])
 
     def get_recips(self, count=False):
         recip_ids = []
-        self.cur.execute("""SELECT id, list_ids
+        self.cur.execute("""SELECT recipient_id, list_ids
                             FROM recipient
                             WHERE list_ids != '0'""")
         res = self.cur.fetchall()

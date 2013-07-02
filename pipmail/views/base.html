@@ -1,169 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% block head %}
-    <title>pipmail</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="author" content="">
-    <meta charset="utf-8">
-    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
-    <style type="text/css">
+<head>
+{% block head %}
+  <title>pipmail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  <meta charset="utf-8">
+  <style type="text/css">
     body { padding-top: 40px; }
     @media screen and (max-width: 768px) {
     body { padding-top: 0px; }
     }
-
-
-    .table th { 
-      font-size:18px;
+    .piptable th { 
+      font-size:16px;
       color:#FFFFFF;
       border-left: none;
       background-color:#0080c0;
+
+    
     }
 
-    .table, .table td { 
-    
- }
 
-    .table tbody tr:hover td {
-      background-color: #f9f9f9;
-    
+  </style>
 
-  }
-
-  .table-nobordr
-/*  .table-striped tbody tr:nth-child(even) td,
-  .table-striped tbody tr:nth-child(even) th {
-  background-color: #f9f9f9;
-
-}.table-striped tbody tr:nth-child(odd) td,
-.table-striped tbody tr:nth-child(odd) th {
-  background-color: #ffffff;
-}*/
-
-
-/*    label {
-      width:100px;  
-          float:left;
-}*/
-    </style>
-    <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.7.2.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}">
-  </head>
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
+  <!-- SUPPORT FOR IE6-8 OF HTML5 ELEMENTS -->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.7.2.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/functions.js') }}"></script>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}">
+</head>
+{% endblock %}
+<body>
+  {% block navbar %}
+    {% include 'navbar.html' %}
   {% endblock %}
-  <body>
-    {% block navbar %}
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/campaigns">pipmail</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li class="dropdown">
-                <a href="/campaigns" class="dropdown-toggle" data-toggle="dropdown">
-                Campaigns <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <a href="{{ url_for('newsletters.create') }}">Create</a>
-                  </li>
-                  <li>
-                    <a href="#">Search</a>
-                  </li>
-                  <li>
-                    <a href="#">Queue</a>
-                  </li>
-                  <li>
-                    <a href="#">Types</a>
-                  </li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a href="/" class="dropdown-toggle" data-toggle="dropdown">
-                Subscribers <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-submenu">
-                    <a href="{{ url_for('lists.index') }}">Lists</a>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a href="{{ url_for('lists.create') }}">Create</a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li>
-                    <a href="#">Unsubscribers</a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a href="{{ url_for('templates.index') }}">Templates</a>
-              </li>
-              <li>
-                <a>Statistics</a>
-              </li>
-            </ul>
-            {% block navbar_right %}
-            
-            <div class="pull-right">
-              <ul class="nav pull-right">
-                {% if not session['logged_in'] %}
-                <li>
-                  <a href="{{ url_for('login') }}">
-                  <i class="icon-off">
-                  </i>&nbsp;Login</a>
-                </li>
-                {% else %}
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{session['current_user']}} <b class="caret"></b></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="{{ url_for('users.index') }}"><i class="icon-cog"></i>&nbsp;Users</a></li>
-                    <li class="divider"></li>
-                    <li>
-                      <a href="{{ url_for('logout') }}">
-                      <i class="icon-off">
-                      </i>&nbsp;Logout</a>
-                    </li>
-                    {% endif %}
-                  </ul>
-                </li>
-              </ul>
-            </div>
-          </div>
-          {% endblock %}
-        </div>
-        <!--/.nav-collapse --> </div>
-      </div>
-    </div>
-    {% endblock %}
-    <div class="container page">
-      <div class="content">
-        {% block content %}
-        
-        {% endblock %}
-      </div>
-      <hr>
-      {% block footer %}
-      <footer class="footer">
-        <p>pipmail</p>
-      </footer>
+  <div class="container page">
+    <div class="content">
+      {% block content %}
       {% endblock %}
     </div>
-    {% block js_footer %}
-    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+    <hr>
+    {% block footer %}
+    <footer class="footer">
+      <p>pipmail</p>
+    </footer>
     {% endblock %}
-  </body>
+  </div>
+  {% block js_footer %}
+  <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+  {% endblock %}
+</body>
 </html>

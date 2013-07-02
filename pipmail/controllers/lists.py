@@ -1,11 +1,12 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, session
 from werkzeug import secure_filename
-from pipmail.helpers import login_required, allowed_file, collect_form_items
+from pipmail.helpers import login_required, allowed_file, collect_form_errors
 from pipmail.models import List, Newsletter
-from pipmail.sql import get_sql, get_index
+from pipmail.sql import get_sql, get_index, insert_row, update_row, \
+    get_companies, get_staff
 
 
-import time
+from time import time
 import csv
 import os
 
@@ -25,31 +26,21 @@ def index(page=0):
 @mod.route('/create_list', methods=['GET', 'POST'])
 @login_required
 def create():
-    error = None
+    form_errors = None
     conn, cur = get_sql()
     if request.method == 'POST':
-        errors = collect_form_errors(request.form, 'campaigns')
-        if not errors:
-            try:
-                cur.execute("""INSERT into lists(name, description,
-                            date_added)
-                            VALUES (%s, %s, %s)
-                            """, (
-                            request.form['name'],
-                            request.form['description'],
-                            int(time.time())
-                            )
-                            )
-                conn.commit()
-                cur.execute('SELECT last_insert_id()')
-                lid = cur.fetchall()[0][0]
-            except Exception, e:
-                conn.rollback()
-                error = e
-                return render_template('lists/details.html', error=error,
-                                       editing=False)
+        form_errors = collect_form_errors(request.form)
+        if not form_errors:
+            form_items = {}
+            for k, v in request.form.iteritems():
+                if (v != ''):
+                    form_items[k] = v
+            form_items['author'] = session.get('current_user')
+            form_items['date_added'] = int(time())
+            lid = insert_row('list', form_items, conn, cur)
+            if not lid:
+                return render_template('server_error.html')
             return redirect(url_for('lists.edit', lid=lid))
-
     return render_template('lists/details.html', error=error,
                            editing=False)
 
@@ -68,7 +59,7 @@ def edit():
         #     return render_template('lists/details.html', editing=True,
         #                            lst=lst, recipients=recips,
         #                            edit_name=edit_name, edit_email=edit_email)
-        cur.execute("SELECT * FROM recipients")
+        cur.execute("SELECT * FROM recipient")
         res = cur.fetchall()
         cols = tuple([d[0].decode('utf8') for d in cur.description])
         all_recips = [dict(zip(cols, res)) for res in cur]
