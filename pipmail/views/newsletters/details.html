@@ -6,9 +6,7 @@
 {% if form_errors %}
 {% include 'form_error.html' %}
 {% endif%}
-
 <form action="{{ url_for('newsletters.edit', nid = nid) if editing else url_for('newsletters.create') }}" method="post">
-
 
    <table class="table table-striped table-bordered table-condensed">
       <tr>
@@ -17,9 +15,9 @@
       <tr>
          <td class="alternate">
             {% if newsletter %}
-               <input type="checkbox" name="unsub" id="unsub" value="{{newsletter['unsub']}}" {{checked if newsletter['unsub'] else ''}} />
+            <input type="checkbox" name="unsub" id="unsub" value="{{newsletter['unsub']}}" {{checked if newsletter['unsub'] else ''}} />
             {% else %}
-               <input type="checkbox" name="unsub" id="unsub" value="1" />
+            <input type="checkbox" name="unsub" id="unsub" value="1" />
             {% endif %}
             Yes add an unsubscribe link to this email
          </td>

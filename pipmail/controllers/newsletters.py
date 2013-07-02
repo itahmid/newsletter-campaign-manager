@@ -47,7 +47,8 @@ def create():
 def edit():
     form_errors = None
     conn, cur = get_sql()
-
+    companies = get_companies(conn, cur)
+    staff = get_staff(conn, cur)
     if request.method == 'GET':
         nid = request.args.get('nid')
         cur.execute('SELECT * FROM `newsletter` WHERE newsletter_id = %d' % int(nid))
@@ -74,31 +75,6 @@ def edit():
             print k,v
         form_errors = collect_form_errors(request.form)
         if not form_errors:
-            # try:
-            #     cur.execute("""UPDATE newsletters
-            #                 SET code=%s, subject=%s, author=%s, company=%s,
-            #                 from_name=%s, from_email=%s, replyto_email=%s,
-            #                 date_added=%s, date_sent=%s, priority=%s, unsub=%s
-            #                 WHERE id = %s
-            #                 """, (
-            #                 request.form.get('code'),
-            #                 request.form.get('subject'),
-            #                 session.get('current_user'),
-            #                 request.form.get('company'),
-            #                 request.form.get('from_name'),
-            #                 request.form.get('from_email'),
-            #                 request.form.get('replyto_email'),
-            #                 int(time.time()),
-            #                 0,
-            #                 request.form.get('priority'),
-            #                 request.form.get('unsub', 0),
-            #                 nid)
-            #                 )
-            #     conn.commit()
-            # except Exception as e:
-            #     print e
-            #     conn.rollback()
-            #     return render_template('server_error.html')
             form_items = {}
             for k, v in request.form.iteritems():
                 if (v != '' and k[len(k) - 3:] != 'sel'):
