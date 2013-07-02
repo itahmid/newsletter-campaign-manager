@@ -22,6 +22,7 @@ CREATE TABLE `list`
     `name` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
     `date_added` INT(11) UNSIGNED NOT NULL,
+    `author` VARCHAR(50) NOT NULL,
     PRIMARY KEY(`list_id`)
 );
 
@@ -67,4 +68,13 @@ CREATE TABLE `user`
     PRIMARY KEY(`user_id`)
 );
 
+
+CREATE TABLE `template`
+(
+    `staff_id` INT(11) UNSIGNED AUTO_INCREMENT,
+    `first_name` VARCHAR(50) NOT NULL,
+    `last_name` VARCHAR(50) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
+    PRIMARY KEY(`staff_id`)
+);
 

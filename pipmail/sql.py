@@ -1,5 +1,5 @@
 from flask.ext.mysql import MySQL
-from models import Newsletter, List
+from models import Newsletter, List, Template
 from time import time
 mysql = MySQL()
 
@@ -37,7 +37,7 @@ def update_row(tbl, form_items, conn, cur, _id):
 
 def get_index(model, page):
     conn, cur = get_sql()
-    _models = {'list':List, 'newsletter':Newsletter}
+    _models = {'list':List, 'newsletter':Newsletter, 'template':Template}
     offset = 0
     if page > 0:
         offset = (page * 15)
