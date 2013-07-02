@@ -4,7 +4,7 @@
 {% from '_macros.html' import pagination with context %}
 <div class="row-fluid">
    <div class="span6">
-      <table class="table table-condensed">
+      <table class="table table-striped table-bordered table-condensed">
          <h3>Newsletter Queue</h3>
 
          <tbody>
@@ -51,8 +51,42 @@
       <br>
       <a href="{{ url_for('newsletters.create') }}" class="btn btn-success pull-right">Create New Campaign</a>
 
-      {{ render_table('newsletters', newsletters, "table table-bordered")}}
-
+      <table class="table table-striped table-bordered table-condensed">
+         <thead>
+            <tr>
+               <th class="span2">Code</th>
+               <th class="span5">Subject</th>
+               <th class="span4">Date Added</th>
+               <th class="span4">Date Sent</th>
+               <th class="span1">Recipients</th>
+               <th class="span2">Company</th>
+               <th class="span2">Actions</th>
+            </tr>
+         </thead>
+         {% for nl in newsletters %}
+         <tr>
+            <td>{{nl['code']}}</td>
+            <td>{{nl['subject']}}</td>
+            <td>{{nl['date_added']}}</td>
+            <td>{{nl['date_sent']}}</td>
+            <td>0</td>
+            <td>{{nl['company']}}</td>
+            <td style="table-layout:fixed;overflow:hidden;text-align:center;width:20%;">
+               <a href="" class="btn btn-mini"> <i class="icon-remove"></i>
+                  Stats
+               </a>
+               <a href="{{ url_for('newsletters.edit', nid=nl['newsletter_id'])}}" class="btn btn-mini">
+                  <i class="icon-edit"></i>
+                  Edit
+               </a>
+               <a href="{{ url_for('newsletters.edit', nid=nl['newsletter_id'])}}" class="btn btn-mini">
+                  <i class="icon-remove"></i>
+                  Delete
+               </a>
+            </td>
+         </tr>
+         {% endfor %}
+      </table>
       {{ pagination('newsletters', page) }}
    </div>
 </div>
