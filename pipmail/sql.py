@@ -28,11 +28,25 @@ def insert_row(tbl, form_items, conn, cur):
 
 
 def update_row(tbl, form_items, conn, cur, _id):
-    cols = ','.join(form_items.keys())
-    vals = tuple(form_items.values())
-    cols = ','.join(['%%s=%s' % col for col in form_items.keys()])
-    qry = "UPDATE newsletters SET %s WHERE %s_id = %s" % (cols, tbl, _id)
+    for k, v in form_items.iteritems():
+        print k, v
+    _new = ', '.join(['%s=%s' % (k,v) for k, v in form_items.iteritems()])
+    #vals = tuple(form_items.values())
+    # cols = ','.join(['%s=%%s' % (col for col in form_items.keys(), val for val in form])
+    qry = "UPDATE newsletter SET %s WHERE %s_id = %s" % (_new, tbl, _id)
     print qry
+    try:
+        cur.execute(qry)
+        conn.commit()
+        cur.execute('SELECT last_insert_id()')
+        _id = cur.fetchall()[0][0]
+        print _id
+    except Exception, e:
+        print e
+        conn.rollback()
+        return None
+    print _id
+    return _id
 
 
 def get_index(model, page):

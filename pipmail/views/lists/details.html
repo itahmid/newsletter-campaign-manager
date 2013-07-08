@@ -9,32 +9,34 @@
         <br/>
         <form action="{{ url_for('lists.edit', lid = lid) if lid else url_for('lists.create') }}" method="post">
             <table class="table table-bordered table-striped table-condensed">
-                <thead>
+               
                     <tr>
-                        <th>List Details</th>
+                        <th>Name</th>
                     </tr>
-                </thead>
-                <tbody>
+          
+                
                     <tr>
 
-                        <td>
-                            <label> <strong>Enter the name of the list</strong>
-                            </label>
+                        <td><label>Enter a name for this list</label>
+                        
                             <input width="200" style="width: 200px" name="name" type="text"
                             id="name" value="{{ lst['name'] if editing else ''}}" />
                         </td>
 
                     </tr>
+ <tr>
+                        <th>Description</th>
+                    </tr>
+
                     <tr>
                         <td>
-                            <label> <strong>Enter a brief description for this list</strong>
-                            </label>
+                          <label>Enter a brief description</label>
 
                             <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ lst['description'] if editing else '' }}" />
                         </td>
 
                     </tr>
-                </tbody>
+            
                 <tfoot>
                     <tr>
                         <td colspan="3">

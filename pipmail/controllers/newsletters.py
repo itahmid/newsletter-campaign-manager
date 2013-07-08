@@ -56,21 +56,17 @@ def edit():
         if res:
             cols = tuple([d[0].decode('utf8') for d in cur.description])
             newsletter = dict(zip(cols, res))
-            cur.execute("""SELECT name
-                            FROM company
-                            WHERE company_id = %d""" % newsletter['company'])
-            try:
-                newsletter['company'] = cur.fetchall()[0][0]
-            except:
-                newsletter['company'] = 'None'
-            cur.execute('SELECT company_id, name FROM `company`')
-            companies = cur.fetchall()
-            cur.execute('SELECT name, email FROM `staff`')
-            staff = cur.fetchall()
+            company_name = cur.execute("""SELECT name 
+                                          FROM company 
+                                          WHERE company_id = %d""" % int(newsletter['company']))
+            comp_name = cur.fetchone()[0]
+            newsletter['company'] = (newsletter['company'], comp_name)
             return render_template('newsletters/details.html', newsletter=newsletter,
                                    staff=staff, companies=companies, nid=nid)
         return render_template('404.html')
     if request.method == 'POST':    
+        nid = request.args.get('nid')
+        print nid
         for k,v in request.form.iteritems():
             print k,v
         form_errors = collect_form_errors(request.form)
@@ -82,6 +78,7 @@ def edit():
             form_items['date_added'] = int(time())
             nid = update_row('newsletter', form_items, conn, cur, nid)
             if not nid:
+                print 'lol'
                 return render_template('server_error.html')
             return redirect(url_for('lists.index', nid=nid))
         return render_template('newsletters/details.html', newsletter=newsletter,

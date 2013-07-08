@@ -11,14 +11,14 @@
         <br>
         <a href="{{ url_for('lists.create') }}" class="btn btn-success pull-right ">Create New List</a>
 
-        <table class="table table-striped table-bordered table-condensed">
+        <table class="table table-striped table-condensed">
             <thead>
                 <tr>
                     <th class="span2">Name</th>
-                    <th class="span5">Description</th>
-                    <th class="span4">Date Added</th>
+                    <th class="span4">Description</th>
+                    <th class="span3">Date Added</th>
                     <th class="span1">Recipients</th>
-                    <th class="span1">Actions</th>
+                    <th class="span2"></th>
                 </tr>
             </thead>
             {% for lst in lists %}
@@ -27,14 +27,29 @@
                 <td>{{lst['description']}}</td>
                 <td>{{lst['date_added']}}</td>
                 <td>0</td>
-                <td style="table-layout:fixed;overflow:hidden;text-align:center;width:20%;">
-                    <a href="{{ url_for('lists.edit', lid=lst['list_id'])}}" class="btn btn-mini"> <i class="icon-edit"></i>
-                        Edit
-                    </a>
-                    <a href="{{ url_for('lists.edit', lid=lst['list_id'])}}" class="btn btn-mini"> <i class="icon-remove"></i>
-                        Delete
-                    </a>
-                </td>
+                <td class="pull-left" style="border:0;background:0;padding:0;" >
+               <ul style="list-style:none;">
+                  <li class="dropdown">
+                     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#menu1">
+                        Actions <b class="caret"></b>
+                     </a>
+                     <ul class="dropdown-menu">
+                        <li>
+                           <a href="{{ url_for('lists.edit', lid=lst['list_id'])}}" > <i class="icon-edit"></i>
+                              Edit
+                           </a>
+                        </li>
+
+                        <li>
+                           <a href="{{ url_for('lists.edit', lid=lst['list_id'])}}" >
+                              <i class="icon-remove"></i>
+                              Delete
+                           </a>
+                        </li>
+                     </ul>
+                  </li>
+               </ul>
+            </td>
             </tr>
             {% endfor %}
         </table>

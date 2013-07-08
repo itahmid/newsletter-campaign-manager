@@ -10,16 +10,16 @@ filename='ckeditor/ckeditor.js') }}"></script>
 
 <form action="{{ url_for('templates.create')}}" method="post">
     <table class="table table-bordered table-striped table-condensed">
-        <thead>
+       
             <tr>
-                <th>Template Details</th>
+                <th>Name</th>
             </tr>
-        </thead>
-        <tbody>
+    
+      
             <tr>
 
                 <td>
-                    <label> <strong>Enter the name of the template</strong>
+                    <label>Enter a name for this template
                     </label>
                     <input width="200" style="width: 200px" name="name" type="text"
                             id="name" value="{{ lst['name'] if editing else ''}}" />
@@ -27,25 +27,30 @@ filename='ckeditor/ckeditor.js') }}"></script>
 
             </tr>
             <tr>
+                <th>Description</th>
+            </tr>
+            <tr>
                 <td>
-                    <label> <strong>Enter a brief description for this template</strong>
+                    <label> Enter a brief description
                     </label>
 
                     <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ tmplt['description'] if tid else '' }}" />
                 </td>
 
             </tr>
-
+<tr>
+                <th>Content</th>
+            </tr>
             <tr>
-                <td>
+                <td><label>Enter the template content</label>
                     <textarea cols="80" id="editor1" name="editor1" rows="10">{{tmplt['html'] if tid else ''}}</textarea>
                     <script>CKEDITOR.replace('editor1');</script>
                    
 
                 </td>
             </tr>
-        </tbody>
-        <tfoot>
+      
+      
             <tr>
                 <td colspan="3">
                     <input type="submit" class="btn btn-success pull-left" 
@@ -55,7 +60,7 @@ filename='ckeditor/ckeditor.js') }}"></script>
 
         </tr>
 
-    </tfoot>
+   
 </table>
 <!-- 
     Available placeholders:

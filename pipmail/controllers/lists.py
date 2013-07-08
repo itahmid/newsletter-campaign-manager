@@ -41,7 +41,7 @@ def create():
             if not lid:
                 return render_template('server_error.html')
             return redirect(url_for('lists.edit', lid=lid))
-    return render_template('lists/details.html', error=error,
+    return render_template('lists/details.html', form_errors=form_errors,
                            editing=False)
 
 
