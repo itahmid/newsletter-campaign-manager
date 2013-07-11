@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for, sessio
 from werkzeug import secure_filename
 from pipmail.helpers import login_required, allowed_file, collect_form_errors
 from pipmail.models import List, Newsletter
-from pipmail.sql import get_sql, get_index, insert_row, update_row, \
+from pipmail.sql import get_sql, get_recip_index, get_index, insert_row, update_row, \
     get_companies, get_staff
 
 
@@ -44,28 +44,20 @@ def create():
     return render_template('lists/details.html', form_errors=form_errors,
                            editing=False)
 
-
+@mod.route('/edit_list', defaults={'page': 0})
 @mod.route('/edit_list', methods=['GET', 'POST'])
 @login_required
-def edit():
+def edit(page=0):
     conn, cur = get_sql()
     if request.method == 'GET':
         nid = request.args.get('nid')
         lid = request.args.get('lid')
         lst = List(conn, cur, lid).info
-        # edit_name = request.args.get('recip_name')
-        # if edit_name:
-        #     edit_email = request.args.get('recip_email')
-        #     return render_template('lists/details.html', editing=True,
-        #                            lst=lst, recipients=recips,
-        #                            edit_name=edit_name, edit_email=edit_email)
-        cur.execute("SELECT * FROM recipient")
-        res = cur.fetchall()
-        cols = tuple([d[0].decode('utf8') for d in cur.description])
-        all_recips = [dict(zip(cols, res)) for res in cur]
-        #all_recips = get_rows('recipients', ids
+        recips = get_recip_index(page=page, list_id=lid)
+
+        print recips
         return render_template('lists/details.html', nid=nid, editing=True,
-                               lst=lst, all_recipients=all_recips)
+                               lst=lst, recips=recips, page=page)
 
     if request.method == 'POST':
         try:

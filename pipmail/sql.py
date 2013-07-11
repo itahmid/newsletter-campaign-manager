@@ -1,5 +1,5 @@
 from flask.ext.mysql import MySQL
-from models import Newsletter, List, Template
+from models import Newsletter, List, Template, Recipient
 from time import time
 mysql = MySQL()
 
@@ -51,7 +51,7 @@ def update_row(tbl, form_items, conn, cur, _id):
 
 def get_index(model, page):
     conn, cur = get_sql()
-    _models = {'list':List, 'newsletter':Newsletter, 'template':Template}
+    _models = {'list':List, 'newsletter':Newsletter, 'template':Template, 'recipient':Recipient}
     offset = 0
     if page > 0:
         offset = (page * 15)
@@ -61,6 +61,30 @@ def get_index(model, page):
     _ids = cur.fetchall()
     return [_models.get(model)(conn, cur, i[0]).info for i in _ids]
 
+def get_recip_index(list_id, page):
+    conn, cur = get_sql()
+    offset = 0
+    if page > 0:
+        offset = (page * 3)
+    recip_ids = []
+    cur.execute("""SELECT recipient_id, list_ids
+                            FROM recipient
+                            WHERE list_ids != '0'""")
+    res = cur.fetchall()
+    for i in res:
+        list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
+        if str(list_id) in list_ids:
+                recip_ids.append(str(i[0]))
+    recip_count = len(recip_ids)
+    format_strings = ','.join(['%s'] * recip_count)
+    base_qry = "SELECT first_name, last_name, email FROM recipient "
+    qry_part1 = "WHERE recipient_id IN (%s) " % ','.join(recip_ids)
+    qry_part2 = "ORDER BY date_added DESC LIMIT 3 OFFSET %s" % offset
+    cur.execute(base_qry+qry_part1+qry_part2)
+    res = cur.fetchall()
+    cols = tuple([d[0].decode('utf8') for d in cur.description])
+    return [dict(zip(cols, res)) for res in cur]
+
 def get_staff(conn, cur):
     cur.execute('SELECT name, email FROM staff')
     return cur.fetchall()
@@ -68,6 +92,8 @@ def get_staff(conn, cur):
 def get_companies(conn, cur):
     cur.execute('SELECT company_id, name FROM company')
     return cur.fetchall()
+
+
 
 #def get_row_index(**kwargs):
 

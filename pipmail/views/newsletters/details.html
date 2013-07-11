@@ -30,7 +30,9 @@
             <select width="250" name="company" id="company" >
                <option value="{{ newsletter['company'][0] if newsletter else '' }}">{{ newsletter['company'][1] if newsletter else "Select" }}</option>
                {% for comp in companies %}
+               {% if newsletter %}
                {% if comp[0] != newsletter['company'][0] %}
+               {% endif %}
                <option value="{{ comp[0] }}">{{ comp[1] }}</option>
                {% endif %}
                {% endfor %}

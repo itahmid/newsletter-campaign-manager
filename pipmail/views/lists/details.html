@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% from '_macros.html' import recip_pagination with context %}
 {% if nid %}
 {% from 'macros/_macros.html' import steps with context %}
 {{ steps('2', nid) }}
@@ -9,46 +10,29 @@
         <br/>
         <form action="{{ url_for('lists.edit', lid = lid) if lid else url_for('lists.create') }}" method="post">
             <table class="table table-bordered table-striped table-condensed">
-               
-                    <tr>
-                        <th>Name</th>
-                    </tr>
-          
-                
-                    <tr>
-
-                        <td><label>Enter a name for this list</label>
-                        
-                            <input width="200" style="width: 200px" name="name" type="text"
-                            id="name" value="{{ lst['name'] if editing else ''}}" />
-                        </td>
-
-                    </tr>
- <tr>
-                        <th>Description</th>
-                    </tr>
-
-                    <tr>
-                        <td>
-                          <label>Enter a brief description</label>
-
-                            <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ lst['description'] if editing else '' }}" />
-                        </td>
-
-                    </tr>
-            
-                <tfoot>
-                    <tr>
-                        <td colspan="3">
-                            <input type="submit" class="btn btn-success pull-left" 
-                            value="Save &amp; Continue" />
-                        </form>
-                    </td>
-
+                <tr>
+                    <th>Name</th>
                 </tr>
-
-            </tfoot>
-        </table>
+                <tr>
+                    <td>
+                        <label>Enter a name for this list</label>
+                        <input width="200" style="width: 200px" name="name" type="text"
+                            id="name" value="{{ lst['name'] if editing else ''}}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Enter a brief description</label>
+                        <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ lst['description'] if editing else '' }}" />
+                    </td>
+                </tr>
+            </table>
+            <input type="submit" class="btn btn-success pull-left" 
+                            value="Save &amp; Continue" />
+        </form>
     </div>
     {% if editing %}
     <div class="span6">
@@ -56,137 +40,86 @@
         <div class="accordion" id="accordion2">
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a style="font-size:20px;background:#F5F5F5;" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">Add New Recipient</a>
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">Add Recipient</a>
                 </div>
-                <div id="collapseOne" class="accordion-body collapse" style="height: 0px; ">
+                <div id="collapseOne" class="accordion-body collapse in">
                     <div class="accordion-inner">
 
-                        <form action="{{ url_for('lists.create') }}" method="post">
-                            <ul class="nav nav-list">
-                                <div class="field_container">
-                                    <label>First Name</label>
-                                    <input style="width: 200px" name="new_first_name" type="text" id="new_first_name" value="" />
-                                </div>
-                                <li class="divider"></li>
-                                <div class="field_container">
-                                    <label>Last Name</label>
-                                    <input style="width: 200px" name="new_last_name" type="text" id="new_last_name" value="" />
-                                </div>
-
-                                <li class="divider"></li>
-
-                                <div class="field_container">
-                                    <label>Email</label>
-                                    <input style="width: 200px" name="new_email" type="text" id="new_email" value="" />
-                                </div>
-
-                                <li class="divider"></li>
-                                <input type="hidden" name="_id" id="_id" value="{{lst['id']}}" />
-                                <input type="submit" style="width: 150px;" name="addnew" class="btn btn-primary pull-center" value="Create Recipient"/>
-
-                            </form>
-                        </ul>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="accordion" id="accordion2">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a style="font-size:20px;background:#F5F5F5;" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Remove Recipient</a>
-                </div>
-                <div id="collapseTwo" class="accordion-body collapse" style="height: 0px; ">
-                    <div class="accordion-inner" >
-                        <form action="{{ url_for('recipients.remove') }}" method="post">
-                            <table id="example">
-                                <thead>
-                                    <tr>
-                                        <th style="width:200px;">Name</th>
-                                        <th style="width:200px;">Email</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% if recipients %}
-                                        {% for recip in recipients %}
-                                    <tr>
-                                        <td class="gradeA">{{recip['first_name']+' '+recip['last_name']}}</td>
-                                        <td>{{ recip['email'] }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                        {% else %}
-                                    <tr>
-                                        <td>No Recipients</td>
-                                        <td></td>
-                                    </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-
-                            <input type="hidden" name="lid" id="lid" value="{{_id}}" />
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="accordion" id="accordion2">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a style="font-size:20px;background:#F5F5F5;" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">Edit Recipient</a>
-                </div>
-                <div id="collapseThree" class="accordion-body collapse" style="height: 0px; ">
-                    <div class="accordion-inner">
-                        <table>
-                            <tr>
-                                <td align="right">First Name:</td>
-                                <td align="left">
-                                    <input style="width: 300px" name="new_first_name" type="text" id="new_first_name" value="" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">Last Name:</td>
-                                <td align="left">
-                                    <input style="width: 300px" name="new_last_name" type="text" id="new_last_Name" value="" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">Email:</td>
-                                <td align="left">
-                                    <input style="width: 300px" name="new_email" type="text" id="new_email" value="" />
-                                </td>
-                            </tr>
-                        </table>
-
-                        <input type="hidden" name="list_id" id="list_id" value="" />
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="accordion" id="accordion2">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a style="font-size:20px;background:#F5F5F5;" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">Import from CSV</a>
-                </div>
-                <div id="collapseFour" class="accordion-body collapse" style="height: 0px; ">
-                    <div class="accordion-inner">
-                        <form action="/upload_csv" method="post" enctype="multipart/form-data">
-                            <table>
+                        <table class="table table-bordered table-striped table-condensed">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <input type="submit" class="btn btn-success pull-left" value="Upload" />
-                                    </td>
+                                    <th class="span2">Name</th>
+                                    <th class="span3">Email</th>
+                                    <th class="span1"></th>
                                 </tr>
-                            </table>
+                            </thead>
+                            {% for recip in recips %}
+                            <tr >
+                                <td style="border-top:0;" >{{recip['first_name']+' '+recip['last_name']}}</td>
+                                <td style="border-top:0;">{{recip['email']}}</td>
+                                <td style="border-top:0;">{{recip['date_added']}}</td>
+                                <td class="pull-left" style="border:0;background:0;padding:0;" >
+                                    <ul style="list-style:none;">
+                                        <li class="dropdown">
+                                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#menu1">
+                                                Actions <b class="caret"></b>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="" > <i class="icon-edit"></i>
+                                                        Edit
+                                                    </a>
+                                                </li>
 
-                            <input type="file" name="file" id="file" />
-                            <input type="hidden" name="list_id" id="list_id" value="{{_id}}" />
+                                                <li>
+                                                    <a href="" > <i class="icon-remove"></i>
+                                                        Delete
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        {{ recip_pagination(page) }}
+                        <form action="{{ url_for('lists.create') }}" method="post">
+                            <label>Enter a name for this recipient</label>
+                            <input width="200" style="width: 200px" name="name" type="text"
+                            id="name" value="{{ lst['name'] if editing else ''}}" />
+
+                            <label>Enter an email</label>
+                            <input width="200" style="width: 300px" name="description" type="text" id="description" value="{{ lst['description'] if editing else '' }}" />
+                            <br/>
+
+                            <input type="submit" class="btn btn-success pull-left" 
+                            value="Create Recipient" />
                         </form>
+
                     </div>
                 </div>
             </div>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">Modify Recipient</a>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">Anim pariatur cliche...</div>
+                </div>
+            </div>
+
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseThree">Import Recipients</a>
+                </div>
+                <div id="collapseThree" class="accordion-body collapse">
+                    <div class="accordion-inner">Anim pariatur cliche...</div>
+                </div>
+            </div>
+
         </div>
+
     </div>
 </div>
 {% endif %}

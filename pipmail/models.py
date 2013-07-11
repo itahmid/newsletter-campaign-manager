@@ -39,7 +39,7 @@ class List(Base):
         res = self.cur.fetchall()
         for i in res:
             list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
-            if self.id in list_ids:
+            if str(self.info['list_id']) in list_ids:
                 recip_ids.append(int(i[0]))
         recip_count = len(recip_ids)
         if count:
@@ -86,11 +86,17 @@ class Newsletter(Base):
         return recip_count
 
 
+class Recipient(Base):
+    def __init__(self, conn, cur, _id):
+        super(Recipient, self).__init__(conn, cur, _id)
+        self.info = self.get_result_dict('recipient')
+        self.info['date_added'] = unix_to_local(self.info['date_added'])    
+
 class Template(Base):
     def __init__(self, conn, cur, _id):
         super(Template, self).__init__(conn, cur, _id)
         self.info = self.get_result_dict('template')
-        self.info['date_added'] = unix_to_local(self.info['date_added'])
+        self.info['date_added'] = unix_to_local(self.info['date_added'])        
 
 
 # class Recipient(Base):
