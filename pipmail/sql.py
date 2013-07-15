@@ -28,24 +28,24 @@ def insert_row(tbl, form_items, conn, cur):
 
 
 def update_row(tbl, form_items, conn, cur, _id):
-    for k, v in form_items.iteritems():
-        print k, v
-    _new = ', '.join(['%s=%s' % (k,v) for k, v in form_items.iteritems()])
-    #vals = tuple(form_items.values())
-    # cols = ','.join(['%s=%%s' % (col for col in form_items.keys(), val for val in form])
-    qry = "UPDATE newsletter SET %s WHERE %s_id = %s" % (_new, tbl, _id)
-    print qry
+    cols = ', '.join(['%s=%%s' % k for k in form_items.iterkeys()])
+    qry = "UPDATE %s SET %s WHERE %s_id = %%s" % (tbl, cols, tbl)
+    vals = []
+    for v in form_items.itervalues():
+        try:
+            v =  int(v)
+        except:
+            v = v.encode('ascii', 'ignore')
+        vals.append(v)
+    vals.append(int(_id))
+    vals = tuple(vals)
     try:
-        cur.execute(qry)
+        cur.execute(qry, vals)
         conn.commit()
-        cur.execute('SELECT last_insert_id()')
-        _id = cur.fetchall()[0][0]
-        print _id
     except Exception, e:
         print e
         conn.rollback()
         return None
-    print _id
     return _id
 
 

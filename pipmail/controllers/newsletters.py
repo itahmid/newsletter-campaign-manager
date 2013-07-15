@@ -66,9 +66,6 @@ def edit():
         return render_template('404.html')
     if request.method == 'POST':    
         nid = request.args.get('nid')
-        print nid
-        for k,v in request.form.iteritems():
-            print k,v
         form_errors = collect_form_errors(request.form)
         if not form_errors:
             form_items = {}
@@ -78,7 +75,6 @@ def edit():
             form_items['date_added'] = int(time())
             nid = update_row('newsletter', form_items, conn, cur, nid)
             if not nid:
-                print 'lol'
                 return render_template('server_error.html')
             return redirect(url_for('lists.index', nid=nid))
         return render_template('newsletters/details.html', newsletter=newsletter,
