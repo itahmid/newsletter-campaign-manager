@@ -54,9 +54,7 @@ def edit(page=0):
         lid = request.args.get('lid')
         lst = List(conn, cur, lid).info
         recips = get_recip_index(page=page, list_id=lid)
-
-        print recips
-        return render_template('lists/details.html', nid=nid, editing=True,
+        return render_template('lists/details.html', nid=nid, lid=lid,
                                lst=lst, recips=recips, page=page)
 
     if request.method == 'POST':

@@ -71,11 +71,15 @@ def get_recip_index(list_id, page):
                             FROM recipient
                             WHERE list_ids != '0'""")
     res = cur.fetchall()
+
+
     for i in res:
         list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
         if str(list_id) in list_ids:
                 recip_ids.append(str(i[0]))
     recip_count = len(recip_ids)
+    if recip_count == 0:
+        return None
     format_strings = ','.join(['%s'] * recip_count)
     base_qry = "SELECT first_name, last_name, email FROM recipient "
     qry_part1 = "WHERE recipient_id IN (%s) " % ','.join(recip_ids)

@@ -6,13 +6,10 @@
 {{ steps('2', nid) }}
 {% endif %}
 <div class="row-fluid">
-   <div class="span6">
-      <legend>Details</legend>
+    <div class="span6">
+        <legend>Details</legend>
 
-
-      
-
-  <form action="{{ url_for('lists.edit', lid = lid) if lid else url_for('lists.create') }}" method="post">
+        <form action="{{ url_for('lists.edit', lid = lid) if lid else url_for('lists.create') }}" method="post">
             <table class="table table-bordered table-striped table-condensed">
                 <tr>
                     <th>Name</th>
@@ -38,24 +35,22 @@
                             value="Save &amp; Continue" />
         </form>
 
+    </div>
 
+    <div class="span6">
 
-
-
-   </div>
-
-   <div class="span6">
-
-      <legend>Quick Search</legend>
-      FIX LATER
-   </div>
+        <legend>Quick Search</legend>
+        FIX LATER
+    </div>
 </div>
-
-{% if editing %}
+{% if lid %}
 <div class="row-fluid">
-   <div class="span20">
+    <div class="span20">
         <h1 class="pull-left">Existing Recipients</h1>
         <br>
+        {% if not recips %}
+            lololol
+            {% else %}
         <table class="table table-striped table-condensed">
             <thead>
                 <tr>
@@ -96,7 +91,8 @@
             {% endfor %}
         </table>
         {{ recip_pagination(page) }}
-   </div>
+        {% endif %}
+    </div>
 </div>
 {% endif %}
 
