@@ -10,30 +10,44 @@
         <br>
         <a href="{{ url_for('templates.create') }}" class="btn btn-success pull-right ">Create New Template</a>
 
-        <table class="table table-striped table-bordered table-condensed">
+        <table class="table table-striped table-condensed">
             <thead>
                 <tr>
                     <th class="span2">Name</th>
                     <th class="span6">Preview</th>
                     <th class="span2">Date Added</th>
-                    <th class="span1">Actions</th>
+                    <th class="span1"></th>
                 </tr>
             </thead>
             {% for tmplt in templates %}
             <tr>
-                <td>{{tmplt['name']}}</td>
+                <td style="border-top:0;" >{{tmplt['name']}}</td>
                 
-                <td></td>
-                <td>{{tmplt['date_added']}}</td>
+                <td style="border-top:0;" ></td>
+                <td style="border-top:0;" >{{tmplt['date_added']}}</td>
       
-                <td style="table-layout:fixed;overflow:hidden;text-align:center;width:20%;">
-                    <a href="{{ url_for('templates.edit', tid=tmplt['template_id'])}}" class="btn btn-mini"> <i class="icon-edit"></i>
-                        Edit
-                    </a>
-                    <a href="{{ url_for('templates.edit', tid=tmplt['template_id'])}}" class="btn btn-mini"> <i class="icon-remove"></i>
-                        Delete
-                    </a>
-                </td>
+                 <td class="pull-left" style="border:0;background:0;padding:0;" >
+          <ul style="list-style:none;">
+            <li class="dropdown">
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#menu1">
+                Actions <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="{{ url_for('templates.edit', tid=tmplt['template_id'])}}" > <i class="icon-edit"></i>
+                    Edit
+                  </a>
+                </li>
+
+                <li>
+                  <a href="{{ url_for('templates.delete', tid=tmplt['template_id'])}}" > <i class="icon-remove"></i>
+                    Delete
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </td>
             </tr>
             {% endfor %}
         </table>

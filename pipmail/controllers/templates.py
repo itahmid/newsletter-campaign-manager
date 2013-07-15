@@ -38,17 +38,27 @@ def create():
             if not tid:
                 return render_template('server_error.html')
             return redirect(url_for('templates.edit', nid=nid, tid=tid))
-    return render_template('template/details.html', nid=nid, error=error)
+    return render_template('templates/details.html', nid=nid, form_errors=form_errors)
 
 @mod.route('/edit_template', methods=['GET'])
 @login_required
-def edit():
+def edit(tid):
     conn, cur = get_sql()
     if request.method == 'GET':
         nid = request.args.get('nid')
         tid = request.args.get('tid')
         tmplt = Template(conn, cur, tid).info
         return render_template('templates/details.html', nid=nid, tid=tid, tmplt=tmplt)
+
+@mod.route('/delete_template/<int:tid>', methods=['GET'])
+@login_required
+def delete(tid):
+    if request.method == 'GET':
+
+        conn, cur = get_sql()
+        cur.execute('DELETE FROM template WHERE template_id = %s' % tid)
+        conn.commit()
+        return redirect(url_for('templates.index'))
 
 # @mod.route('/create_template', methods=['GET', 'POST'])
 # @login_required

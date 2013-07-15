@@ -16,10 +16,9 @@ class Base(object):
 
 class User(Base):
 
-    def __init__(self, conn, _id):
+    def __init__(self, conn, cur, _id):
         super(User, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('users')
-        self.info['id'] = str(_id)
+        self.info = self.get_result_dict('user')
         self.info['last_login'] = unix_to_local(self.info['last_login'])
 
 

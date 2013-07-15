@@ -1,5 +1,5 @@
 from flask.ext.mysql import MySQL
-from models import Newsletter, List, Template, Recipient
+from models import Newsletter, List, Template, User
 from time import time
 mysql = MySQL()
 
@@ -51,7 +51,7 @@ def update_row(tbl, form_items, conn, cur, _id):
 
 def get_index(model, page):
     conn, cur = get_sql()
-    _models = {'list':List, 'newsletter':Newsletter, 'template':Template, 'recipient':Recipient}
+    _models = {'list':List, 'newsletter':Newsletter, 'template':Template, 'user':User}
     offset = 0
     if page > 0:
         offset = (page * 15)
@@ -59,6 +59,8 @@ def get_index(model, page):
                 ORDER BY date_added
                 DESC LIMIT 15 OFFSET %s""" % (model, model, offset))
     _ids = cur.fetchall()
+    #print len([_ids[0][0], conn, cur])
+
     return [_models.get(model)(conn, cur, i[0]).info for i in _ids]
 
 def get_recip_index(list_id, page):
@@ -71,8 +73,6 @@ def get_recip_index(list_id, page):
                             FROM recipient
                             WHERE list_ids != '0'""")
     res = cur.fetchall()
-
-
     for i in res:
         list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
         if str(list_id) in list_ids:

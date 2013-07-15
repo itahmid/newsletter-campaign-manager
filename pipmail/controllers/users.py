@@ -11,5 +11,5 @@ mod = Blueprint('users', __name__)
 @mod.route('/page/<int:page>')
 @login_required
 def index(page):
-    users = get_rows(model='users', page=page) 
+    users = get_index(model='user', page=page) 
     return render_template('users/index.html', users=users, page=page)

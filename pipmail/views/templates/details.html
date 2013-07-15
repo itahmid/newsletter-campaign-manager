@@ -10,57 +10,42 @@ filename='ckeditor/ckeditor.js') }}"></script>
 
 <form action="{{ url_for('templates.create')}}" method="post">
     <table class="table table-bordered table-striped table-condensed">
-       
-            <tr>
-                <th>Name</th>
-            </tr>
-    
-      
-            <tr>
 
-                <td>
-                    <label>Enter a name for this template
-                    </label>
-                    <input width="200" style="width: 200px" name="name" type="text"
+        <tr>
+            <th>Name</th>
+        </tr>
+
+        <tr>
+
+            <td>
+                <label>Enter a name for this template</label>
+                <input width="200" style="width: 200px" name="name" type="text"
                             id="name" value="{{ lst['name'] if editing else ''}}" />
-                </td>
-
-            </tr>
-            <tr>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td>
-                    <label> Enter a brief description
-                    </label>
-
-                    <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ tmplt['description'] if tid else '' }}" />
-                </td>
-
-            </tr>
-<tr>
-                <th>Content</th>
-            </tr>
-            <tr>
-                <td><label>Enter the template content</label>
-                    <textarea cols="80" id="editor1" name="editor1" rows="10">{{tmplt['html'] if tid else ''}}</textarea>
-                    <script>CKEDITOR.replace('editor1');</script>
-                   
-
-                </td>
-            </tr>
-      
-      
-            <tr>
-                <td colspan="3">
-                    <input type="submit" class="btn btn-success pull-left" 
-                            value="Save &amp; Continue" />
-                </form>
             </td>
 
         </tr>
 
-   
+        <tr>
+            <th>Content</th>
+        </tr>
+        <tr>
+            <td>
+                <label>Enter the template content</label>
+                <textarea cols="80" id="editor1" name="editor1" rows="10">{{tmplt['html'] if tid else ''}}</textarea>
+                <script>CKEDITOR.replace('editor1');</script>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="3">
+                <input type="submit" class="btn btn-success pull-left" 
+                            value="Save &amp; Continue" />
+            </form>
+        </td>
+
+    </tr>
+
 </table>
 <!-- 
     Available placeholders:
