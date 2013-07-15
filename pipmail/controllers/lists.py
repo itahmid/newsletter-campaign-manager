@@ -76,14 +76,14 @@ def edit(page=0):
     recips = lst.get_recips()
 
 
-@mod.route('/delete_list/<int:lid>')
+@mod.route('/delete_list/<int:lid>', methods=['GET'])
 @login_required
 def delete(lid):
-    conn, cur = get_sql()
-    cur.execute('DELETE FROM lists WHERE id = %d' % lid)
-    conn.commit()
-    return redirect(url_for('lists.index'))
-
+    if request.method == 'GET':
+        conn, cur = get_sql()
+        cur.execute('DELETE FROM list WHERE list_id = %s' % lid)
+        conn.commit()
+        return redirect(url_for('lists.index'))
 
 @mod.route('/add_to_campaign', methods=['GET', 'POST'])
 @login_required

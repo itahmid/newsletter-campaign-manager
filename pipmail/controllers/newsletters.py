@@ -92,11 +92,10 @@ def search():
     return render_template('newsletters/search.html')
 
 
-@mod.route('/delete_campaign', methods=['GET', 'POST'])
+@mod.route('/delete_campaign', methods=['GET'])
 @login_required
 def delete():
     if request.method == 'GET':
-        nid = request.args.get('nid')
         conn, cur = get_sql()
         cur.execute('DELETE FROM newsletter WHERE newsletter_id = %s' % nid)
         conn.commit()
