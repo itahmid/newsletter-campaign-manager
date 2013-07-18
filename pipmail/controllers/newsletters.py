@@ -37,7 +37,6 @@ def create():
             if not nid:
                 return render_template('server_error.html')
             return redirect(url_for('lists.index', nid=nid))
-
     return render_template('newsletters/details.html', companies=companies,
                            staff=staff, form_errors=form_errors)
 
