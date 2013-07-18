@@ -1,19 +1,19 @@
 pipmail
 =======
 
-Email campaign manager written using the Python Flask micro-framework.  Adapting my pymail project for a specific application.
+An email campaign manager written using the Python Flask micro-framework and Twitter Bootstrap.
 
 todo
 =======
-- add everything the old PHP version has
-- add templates/daily update/sections/articles/delivery
+- fix the pagination on index pages (get the # of items first)
+- add articles/sections from old pipmail
+- edit the message content step
 - statistics/reporting page like in old pipmail
 - campaign searches
 - types/companies/staff
-- unsubscribe links/unsubscriber search & deletion
+- fix the checkbox for the unsubscriber link in newsletter creation
 - add tests
 - more robust error handling
-- fix table macros/pagination
 - fix styling of tables
 - fix the campaign search styling
 - create script to generate mysql tables from schema
