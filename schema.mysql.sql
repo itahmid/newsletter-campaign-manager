@@ -8,7 +8,7 @@ CREATE TABLE `newsletter`
     `from_name` VARCHAR(80) NOT NULL,
     `from_email` VARCHAR(50) NOT NULL,
     `replyto_email` VARCHAR(50) NOT NULL,
-    `unsub` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+    `unsub` TINYINT(1) NOT NULL DEFAULT '0',
     `date_added` INT(11) UNSIGNED NOT NULL,
     `date_sent` INT(11) UNSIGNED NOT NULL DEFAULT '0',
     `list_ids` VARCHAR(255) NOT NULL DEFAULT '0',
@@ -42,6 +42,7 @@ CREATE TABLE `recipient`
     `last_name` VARCHAR(50) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
     `list_ids` VARCHAR(255) NOT NULL DEFAULT '0,',
+    `date_added` INT(11) UNSIGNED NOT NULL,
     PRIMARY KEY(`recipient_id`)
 );
 
@@ -49,8 +50,7 @@ CREATE TABLE `recipient`
 CREATE TABLE `staff`
 (
     `staff_id` INT(11) UNSIGNED AUTO_INCREMENT,
-    `first_name` VARCHAR(50) NOT NULL,
-    `last_name` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
     PRIMARY KEY(`staff_id`)
 );
@@ -59,8 +59,7 @@ CREATE TABLE `staff`
 CREATE TABLE `user`
 (
     `user_id` INT(11) UNSIGNED AUTO_INCREMENT,
-    `first_name` VARCHAR(50) NOT NULL,
-    `last_name` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `date_added` INT(11) UNSIGNED NOT NULL,

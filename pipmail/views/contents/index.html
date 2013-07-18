@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% from 'macros/_macros.html' import steps with context %}
+{% from '_macros.html' import steps with context %}
 {{ steps('4', nid)}}
 
 <script type=text/javascript src="{{ url_for('static',

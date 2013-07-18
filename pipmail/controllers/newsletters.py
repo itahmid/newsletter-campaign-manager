@@ -81,22 +81,21 @@ def edit():
                                 staff=staff, companies=companies, nid=nid, 
                                 form_errors=form_errors)
 
-
-@mod.route('/search_campigns/')
-@login_required
-def search():
-    conn, cur = get_sql()
-    if request.method == 'POST':
-        for k, v in request.form.iteritems():
-            print k, v
-    return render_template('newsletters/search.html')
-
-
 @mod.route('/delete_campaign', methods=['GET'])
 @login_required
 def delete():
     if request.method == 'GET':
+        nid = request.args.get('nid')
         conn, cur = get_sql()
         cur.execute('DELETE FROM newsletter WHERE newsletter_id = %s' % nid)
         conn.commit()
         return redirect(url_for('index'))
+
+# @mod.route('/search_campigns/')
+# @login_required
+# def search():
+#     conn, cur = get_sql()
+#     if request.method == 'POST':
+#         for k, v in request.form.iteritems():
+#             print k, v
+#     return render_template('newsletters/search.html')

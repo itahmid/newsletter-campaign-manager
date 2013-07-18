@@ -15,7 +15,7 @@ mod = Blueprint('templates', __name__)
 def index(page):
     nid = request.args.get('nid')
     templates = get_index(model='template', page=page)
-    return render_template('templates/index.html', templates=templates)
+    return render_template('templates/index.html', nid=nid, templates=templates)
 
 @mod.route('/create_template', methods=['POST', 'GET'])
 @login_required

@@ -15,7 +15,11 @@
       <tr>
          <td class="alternate">
             {% if newsletter %}
-            <input type="checkbox" name="unsub" id="unsub" value="{{newsletter['unsub']}}" {{checked if newsletter['unsub'] else ''}} />
+               {% if newsletter['unsub'] == 1 %}
+                  <input type="checkbox" name="unsub" id="unsub" value="1" checked />
+               {% else %}
+                  <input type="checkbox" name="unsub" id="unsub" value="0" />
+               {% endif %}
             {% else %}
             <input type="checkbox" name="unsub" id="unsub" value="1" />
             {% endif %}
@@ -28,13 +32,17 @@
       <tr>
          <td class="alternate">
             <select width="250" name="company" id="company" >
-               <option value="{{ newsletter['company'][0] if newsletter else '' }}">{{ newsletter['company'][1] if newsletter else "Select" }}</option>
+               <option value="{{ newsletter['company'][0] if newsletter else '' }}">
+               {{ newsletter['company'][1] if newsletter else "Select" }}
+               </option>
                {% for comp in companies %}
-               {% if newsletter %}
-               {% if comp[0] != newsletter['company'][0] %}
-               {% endif %}
-               <option value="{{ comp[0] }}">{{ comp[1] }}</option>
-               {% endif %}
+                  {% if newsletter %}
+                     {% if comp[0] != newsletter['company'][0] %}
+                     <option value="{{ comp[0] }}">{{ comp[1] }}</option>
+                     {% endif %}
+                  {% else %}
+                  <option value="{{ comp[0] }}">{{ comp[1] }}</option>
+                  {% endif %}
                {% endfor %}
             </select>
          </td>
