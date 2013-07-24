@@ -1,5 +1,5 @@
 from flask.ext.mysql import MySQL
-from models import Newsletter, List, Template, User
+from models import Newsletter, List, User, Template
 from time import time
 mysql = MySQL()
 
@@ -61,7 +61,7 @@ def get_index(model, page):
     _ids = cur.fetchall()
     #print len([_ids[0][0], conn, cur])
 
-    return [_models.get(model)(conn, cur, i[0]).info for i in _ids]
+    return [_models.get(model)(conn, cur, i[0]).record for i in _ids]
 
 def get_recip_index(list_id, page):
     conn, cur = get_sql()

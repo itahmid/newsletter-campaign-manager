@@ -54,7 +54,7 @@ class List(Base):
 
     def get_recips(self, count=False):
         recip_ids = []
-        self.cur.execute("SELECT recipient_id, list_idsFROM recipient WHERE list_ids != '0'")
+        self.cur.execute("SELECT recipient_id, list_ids FROM recipient WHERE list_ids != '0'")
         res = self.cur.fetchall()
         for i in res:
             list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
@@ -139,4 +139,6 @@ class Recipient(Base):
         self.record = self.get_result_dict('recipient')
         self.record['date_added'] = unix_to_local(self.record['date_added'])    
 
-#class Template(Base):
+class Template(Base):
+    """Not implemented yet"""
+
