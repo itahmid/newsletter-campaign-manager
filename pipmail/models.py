@@ -2,7 +2,9 @@ from helpers import unix_to_local
 import MySQLdb
 
 class Base(object):
-
+    """
+    Returns a dict() object that represents a record
+    """
     def __init__(self, conn, cur, _id):
         self.conn = conn
         self.cur = cur
@@ -15,30 +17,48 @@ class Base(object):
 
 
 class User(Base):
-
+    """
+    Returns a user record containing:
+        {
+            user_id : int,
+            name : str,
+            email : str,
+            password : str,
+            date_added : int,
+            last_login : int
+        }
+    """
     def __init__(self, conn, cur, _id):
         super(User, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('user')
-        self.info['last_login'] = unix_to_local(self.info['last_login'])
+        self.record = self.get_result_dict('user')
+        self.record['last_login'] = unix_to_local(self.record['last_login'])
 
 
 class List(Base):
-    
+    """
+    Returns a list record containing:
+        {
+            list_id: int,
+            name : str,
+            description: str,
+            date_added : int,
+            author : str,
+            last_login : int
+        }
+    """
     def __init__(self, conn, cur, _id):
         super(List, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('list')
-        self.info['recipients'] = self.get_recips(count=True)
-        self.info['date_added'] = unix_to_local(self.info['date_added'])
+        self.record = self.get_result_dict('list')
+        self.record['recipients'] = self.get_recips(count=True)
+        self.record['date_added'] = unix_to_local(self.record['date_added'])
 
     def get_recips(self, count=False):
         recip_ids = []
-        self.cur.execute("""SELECT recipient_id, list_ids
-                            FROM recipient
-                            WHERE list_ids != '0'""")
+        self.cur.execute("SELECT recipient_id, list_idsFROM recipient WHERE list_ids != '0'")
         res = self.cur.fetchall()
         for i in res:
             list_ids = [_id.encode('utf8') for _id in i[1].split(',')]
-            if str(self.info['list_id']) in list_ids:
+            if str(self.record['list_id']) in list_ids:
                 recip_ids.append(int(i[0]))
         recip_count = len(recip_ids)
         if count:
@@ -58,18 +78,34 @@ class List(Base):
 
 
 class Newsletter(Base):
-
+    """
+    Returns a newsletter record containing:
+        {
+            newsletter_id: int,
+            code : str,
+            subject: str,
+            date_added : int,
+            date_sent : int,
+            author : str,
+            company : int, (should considering changing maybe)
+            from_name : str,
+            from_email: str,
+            replyto_email : str,
+            list_ids : str (convert to list),
+            unsub : int (consider changing to "unsub_link")
+        }
+    """
     def __init__(self, conn, cur, _id):
         super(Newsletter, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('newsletter')
-        self.info['date_added'] = unix_to_local(self.info['date_added'])
-        self.info['list_ids'] = self.info['list_ids'].encode('ascii', 'ignore').split(',')
-        self.info['company'] = self.get_company_name()
-        self.info['recipients'] = 0
+        self.record = self.get_result_dict('newsletter')
+        self.record['date_added'] = unix_to_local(self.record['date_added'])
+        self.record['list_ids'] = self.record['list_ids'].encode('ascii', 'ignore').split(',')
+        self.record['company'] = self.get_company_name()
+        self.record['recipients'] = 0
 
     def get_company_name(self):
         self.cur.execute("""SELECT name FROM company
-                        WHERE company_id = %s""" % self.info['company'])
+                        WHERE company_id = %s""" % self.record['company'])
         comp = self.cur.fetchall()[0][0]
         if comp == 0:
             comp = 'N/A'
@@ -77,7 +113,7 @@ class Newsletter(Base):
 
     def get_recip_count(self):
         recip_count = 0
-        for _id in self.info['list_ids']:
+        for _id in self.record['list_ids']:
             self.cur.execute("""SELECT COUNT(id)
                                 FROM recipient
                                 WHERE list_id = %s""" % _id)
@@ -86,17 +122,21 @@ class Newsletter(Base):
 
 
 class Recipient(Base):
+    """
+    Returns a recipient record containing:
+        {
+            recipient_id: int,
+            first_name : str, (consider changing to just name or changing other tables for consistency)
+            last_name: str,
+            email : str,
+            date_added: int,
+            list_ids : str (convert to list)
+        }
+
+    """
     def __init__(self, conn, cur, _id):
         super(Recipient, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('recipient')
-        self.info['date_added'] = unix_to_local(self.info['date_added'])    
+        self.record = self.get_result_dict('recipient')
+        self.record['date_added'] = unix_to_local(self.record['date_added'])    
 
-class Template(Base):
-    def __init__(self, conn, cur, _id):
-        super(Template, self).__init__(conn, cur, _id)
-        self.info = self.get_result_dict('template')
-        self.info['date_added'] = unix_to_local(self.info['date_added'])        
-
-
-# class Recipient(Base):
-#     """Not implemented yet"""
+#class Template(Base):
