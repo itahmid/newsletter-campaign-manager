@@ -29,7 +29,7 @@
       </a>
       <ul class="dropdown-menu">
           <li>
-          <a href="" > <i class="icon-edit"></i>
+          <a href="" id="edit" > <i class="icon-edit"></i>
             Edit
           </a> </li>
           <li>
@@ -58,7 +58,7 @@
          {% for nl in newsletters %}
          <tr>
             <td style="border-top:0;">
-               <input type="checkbox" id="{{nl['nid']}}"/>
+               <input type="checkbox" name="checkboxlist" id="{{nl['newsletter_id']}}"/>
             </td>
 
             <td style="border-top:0;">{{nl['code']}}</td>
@@ -82,5 +82,16 @@ $(document).ready(function() {
       $('td input:checkbox', table).attr('checked', e.target.checked);
    });
 });
+
+
+$(document).ready(function() {
+  $('#edit').click(function () {
+    var checkValues = $('input[name=checkboxlist]:checked').map(function() {
+        return $(this).attr("id");
+    }).get();
+      alert(checkValues);
+  });
+});
+
 </script>
 {% endblock %}
