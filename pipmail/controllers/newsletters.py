@@ -13,9 +13,6 @@ mod = Blueprint('newsletters', __name__)
 @login_required
 def index(page):
     newsletters = get_index(model='newsletter', page=page)
-    for x in newsletters:
-        for k,v in x.iteritems():
-            print k,v
     return render_template('newsletters/index.html', newsletters=newsletters,
                              page=page)
 
