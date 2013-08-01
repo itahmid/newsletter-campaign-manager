@@ -19,7 +19,7 @@
       </a>
       <ul class="dropdown-menu">
         <li>
-          <a href="" > <i class="icon-edit"></i>
+          <a href="" id="edit"  > <i class="icon-edit"></i>
             Edit
           </a>
         </li>
@@ -37,7 +37,7 @@
       <thead>
         <tr>
           <th class="span1">
-            <input type="checkbox" value="1" id="all"/>
+            <input type="checkbox" class="checkall"/>
           </th>
           <th class="span3">Name</th>
           <th class="span4">Description</th>
@@ -49,7 +49,7 @@
       {% for lst in lists %}
       <tr >
         <td style="border-top:0;">
-          <input type="checkbox" value="1" id="{{lst['lid']}}"/>
+          <input type="checkbox" name="checkboxlist" id="{{lst['list_id']}}"/>
         </td>
         <td style="border-top:0;">{{lst['name']}}</td>
         <td style="border-top:0;">{{lst['description']}}</td>
@@ -62,6 +62,7 @@
     {{ pagination('lists', page) }}
   </div>
 </div>
+
 <script>
 $(document).ready(function() {
    $('th input:checkbox').click(function(e) {
@@ -69,6 +70,20 @@ $(document).ready(function() {
       $('td input:checkbox', table).attr('checked', e.target.checked);
    });
 });
-</script>
 
+
+$(document).ready(function() {
+  $('#edit').click(function () {
+    var checkValues = $('input[name=checkboxlist]:checked').map(function() {return $(this).attr("id");}).get();
+    if((checkValues).length > 1){
+      alert("Please select only one list to edit");
+      
+    } else {
+        var url = "{{ url_for('lists.edit', lid=''  ) }}"+checkValues;
+        $("#edit").prop("href",url)
+    }
+  });
+});
+
+</script>
 {% endblock %}
