@@ -38,9 +38,9 @@ class List(Base):
     """
     Returns a list record containing:
         {
-            list_id: int,
+            list_id : int,
             name : str,
-            description: str,
+            description : str,
             date_added : int,
             author : str,
             last_login : int
@@ -81,7 +81,7 @@ class Newsletter(Base):
     """
     Returns a newsletter record containing:
         {
-            newsletter_id: int,
+            newsletter_id : int,
             code : str,
             subject: str,
             date_added : int,
@@ -104,11 +104,10 @@ class Newsletter(Base):
         self.record['recipients'] = 0
 
     def get_company_name(self):
+        comp = "n/a"
         self.cur.execute("""SELECT name FROM company
                         WHERE company_id = %s""" % self.record['company'])
         comp = self.cur.fetchall()[0][0]
-        if comp == 0:
-            comp = 'N/A'
         return comp
 
     def get_recip_count(self):
@@ -125,9 +124,9 @@ class Recipient(Base):
     """
     Returns a recipient record containing:
         {
-            recipient_id: int,
+            recipient_id : int,
             first_name : str, (consider changing to just name or changing other tables for consistency)
-            last_name: str,
+            last_name : str,
             email : str,
             date_added: int,
             list_ids : str (convert to list)
@@ -140,5 +139,20 @@ class Recipient(Base):
         self.record['date_added'] = unix_to_local(self.record['date_added'])    
 
 class Template(Base):
-    """Not implemented yet"""
+    """
+    Returns a template record containing:
+        {
+            template_id : int,
+            name : str,
+            html : str,
+            date_added : int,
+            company_id : int
+        }
+
+    """
+    def __init__(self, conn, cur, _id):
+        super(Template, self).__init__(conn, cur, _id)
+        self.record = self.get_result_dict('template')
+        self.record['date_added'] = unix_to_local(self.record['date_added'])
+
 
