@@ -31,8 +31,8 @@ def create_recipient():
         last_name = request.form['new_last_name']
         email = request.form['new_email']
         cur.execute("""SELECT *
-                           FROM recipients
-                           WHERE email = '%s'""" % email)
+                        FROM recipients
+                        WHERE email = '%s'""" % email)
         res = cur.fetchall()
         if not res:
             try:

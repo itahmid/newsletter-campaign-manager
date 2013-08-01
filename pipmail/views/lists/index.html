@@ -11,7 +11,6 @@
     <br>
     <br>
     <br>
-
     <div class="btn-group pull-left">
       <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
         Actions
@@ -31,8 +30,6 @@
       </ul>
     </div>
     <br>
-  
-
     <table class="table table-striped table-condensed">
       <thead>
         <tr>
@@ -43,7 +40,6 @@
           <th class="span4">Description</th>
           <th class="span3">Date Added</th>
           <th class="span1">Recipients</th>
-
         </tr>
       </thead>
       {% for lst in lists %}
@@ -55,7 +51,6 @@
         <td style="border-top:0;">{{lst['description']}}</td>
         <td style="border-top:0;">{{lst['date_added']}}</td>
         <td style="border-top:0;">0</td>
-
       </tr>
       {% endfor %}
     </table>
@@ -64,6 +59,7 @@
 </div>
 
 <script>
+
 $(document).ready(function() {
    $('th input:checkbox').click(function(e) {
       var table = $(e.target).closest('table');
@@ -71,19 +67,16 @@ $(document).ready(function() {
    });
 });
 
-
 $(document).ready(function() {
   $('#edit').click(function () {
     var checkValues = $('input[name=checkboxlist]:checked').map(function() {return $(this).attr("id");}).get();
     if((checkValues).length > 1){
       alert("Please select only one list to edit");
-      
     } else {
         var url = "{{ url_for('lists.edit', lid=''  ) }}"+checkValues;
         $("#edit").prop("href",url)
     }
   });
 });
-
 </script>
 {% endblock %}

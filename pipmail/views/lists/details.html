@@ -68,23 +68,25 @@
             {% else %}
         <table class="table table-striped table-condensed">
             <thead>
-                <tr><th class="span1">
-            <input type="checkbox" class="checkall"/>
-          </th>
+                <tr>
+                    <th class="span1">
+                        <input type="checkbox" class="checkall"/>
+                    </th>
                     <th class="span2">Name</th>
                     <th class="span3">Email</th>
                     <th class="span3">Current Lists</th>
-              
+
                 </tr>
             </thead>
             {% for recip in recips %}
-            <tr >  <td style="border-top:0;">
-          <input type="checkbox" name="checkboxlist" id="{{recip['recipient_id']}}"/>
-        </td>
+            <tr >
+                <td style="border-top:0;">
+                    <input type="checkbox" name="checkboxlist" id="{{recip['recipient_id']}}"/>
+                </td>
                 <td style="border-top:0;" >{{recip['first_name']+' '+recip['last_name']}}</td>
                 <td style="border-top:0;">{{recip['email']}}</td>
                 <td style="border-top:0;">{{recip['date_added']}}</td>
-                
+
             </tr>
             {% endfor %}
         </table>
@@ -116,4 +118,4 @@ $(document).ready(function() {
 });
 
 </script>
-    {% endblock  %}
+{% endblock  %}
