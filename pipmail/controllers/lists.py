@@ -52,7 +52,7 @@ def edit(page=0):
     if request.method == 'GET':
         nid = request.args.get('nid')
         lid = request.args.get('lid')
-        lst = List(conn, cur, lid).info
+        lst = List(conn, cur, lid).record
         recips = get_recip_index(page=page, list_id=lid)
         return render_template('lists/details.html', nid=nid, lid=lid,
                                lst=lst, recips=recips, page=page)
