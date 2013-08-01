@@ -29,6 +29,7 @@
       </a>
       <ul class="dropdown-menu">
           <li>
+
           <a href="" id="edit" > <i class="icon-edit"></i>
             Edit
           </a> </li>
@@ -86,10 +87,19 @@ $(document).ready(function() {
 
 $(document).ready(function() {
   $('#edit').click(function () {
-    var checkValues = $('input[name=checkboxlist]:checked').map(function() {
-        return $(this).attr("id");
-    }).get();
-      alert(checkValues);
+    var checkValues = $('input[name=checkboxlist]:checked').map(function() {return $(this).attr("id");}).get();
+    if((checkValues).length > 1){
+      alert("Please select only one newsletter to edit");
+      
+    } else {
+        var url = "{{ url_for('newsletters.edit', nid=''  ) }}"+checkValues;
+        $("#edit").prop("href",url)
+        //alert(url);
+        //$(location).attr('href',url);
+        //window.location.replace(url);
+    }
+
+      
   });
 });
 
