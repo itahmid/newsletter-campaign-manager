@@ -9,18 +9,14 @@ mod = Blueprint('contents', __name__)
 @login_required
 def index():
     nid = request.args.get('nid')
-    return render_template('contents/index.html', nid=nid)
+    return render_template('contents/details.html', nid=nid)
 
-
-
-# @mod.route('/create_message', methods=['GET', 'POST'])
-# def create():
-#     nid = request.args.get('nid')
-#     if not nid:
-#         nid = 0
-#     msg = request.args.get('msg')
-#     print msg
-#     return render_template('contents/details.html', nid=nid)
+@mod.route('/create_message', methods=['GET', 'POST'])
+def create():
+    nid = request.args.get('nid')
+    for k, v in request.args.iteritems():
+        print k,v
+    return render_template('contents/details.html', nid=nid)
 
 
 # @mod.route('/edit_message', methods=['GET', 'POST'])

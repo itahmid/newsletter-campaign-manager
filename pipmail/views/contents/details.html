@@ -1,26 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<br>
-{% if nid != None %}
-<ul class="nav nav-tabs">
-    <li>
-        <a href="{{ url_for('campaigns.edit_campaign', nid=nid) }}">Step 1</a>
-    </li>
-    <li>
-        <a href="{{ url_for('subscribers.index', nid=nid) }}">Step 2</a>
-    </li>
-    <li class="active">
-        <a href="#">Step 3</a>
-    </li>
-</ul>
-<br>
+{% if nid %}
+{% from '_macros.html' import steps with context %}
+{{ steps('4', nid)}}
 {% endif %}
+
+<h1 class="pull-left">Editing Message</h1>
+<br>
+<br>
+<br>
+
 <script type=text/javascript src="{{ url_for('static',
 filename='ckeditor/ckeditor.js') }}"></script>
 
-<form action="{{ url_for('messages.edit_message', nid = nid) if editing else url_for('messages.create_message') }}" method="post">
-    <textarea id='chkeditor2' class='ckeditor' name='editor1'></textarea>
-    <br>
-    <input type="submit" class="btn btn-success pull-right" value="Save &amp; Continue" />
-    <br></form>
+<form action="{{ url_for('contents.create', nid = nid) if nid else url_for('contents.create') }}" method="post">
+<table class="table table-striped table-bordered table-condensed">
+    <tr>
+        <td>
+<textarea id='chkeditor1' class='ckeditor' name='editor1'></textarea>
+</td>
+</tr>
+</table>
+   <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
+</form>
+<br>
+
 {% endblock %}
