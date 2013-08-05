@@ -4,12 +4,11 @@
 {% from '_macros.html' import steps with context %}
 {{ steps('4', nid)}}
 {% endif %}
-
 <h1 class="pull-left">Editing Message</h1>
 <br>
 <br>
 <br>
-
+Maybe put template selection here.
 <script type=text/javascript src="{{ url_for('static',
 filename='ckeditor/ckeditor.js') }}"></script>
 
@@ -21,8 +20,8 @@ filename='ckeditor/ckeditor.js') }}"></script>
 </td>
 </tr>
 </table>
+Add upload slots here.
    <input type="submit" class="btn btn-success pull-left" value="Save &amp; Continue" />
 </form>
 <br>
-
 {% endblock %}
