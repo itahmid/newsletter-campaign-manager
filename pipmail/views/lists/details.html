@@ -6,34 +6,24 @@
 {{ steps('2', nid) }}
 {% endif %}
 <div class="row-fluid">
-    <div class="span6">
-        <legend>Details</legend>
+    <div class="span1">
 
-        <form action="{{ url_for('lists.edit', lid = lid) if lid else url_for('lists.create') }}" method="post">
-            <table class="table table-bordered table-striped table-condensed">
-                <tr>
-                    <th>Name</th>
-                </tr>
-                <tr>
-                    <td>
-                        <label>Enter a name for this list</label>
-                        <input width="200" style="width: 200px" name="name" type="text"
-                            id="name" value="{{ lst['name'] if editing else ''}}" />
-                    </td>
-                </tr>
-                <tr>
-                    <th>Description</th>
-                </tr>
-                <tr>
-                    <td>
-                        <label>Enter a brief description</label>
-                        <input width="200" style="width: 400px" name="description" type="text" id="description" value="{{ lst['description'] if editing else '' }}" />
-                    </td>
-                </tr>
-            </table>
-            <input type="submit" class="btn btn-success pull-right" 
-                            value="Save &amp; Continue" />
-        </form>
+        <table class="table-condensed">
+
+            <tr>
+               
+                <td>
+                    <label style="font-weight:bold;">
+                        Name</label>
+                    <input width="200" style="width: 200px" name="name" type="text"
+                            id="name" value="{{ lst['name'] if editing else ''}}" placeholder="{{ lst['name'] if lid else ''}}" />
+                </td>
+
+                <td><label style="font-weight:bold;">Description</label>
+                    <input width="200" style="width: 300px" name="description" type="text" id="description" value="{{ lst['description'] if lid else '' }}" />
+                </td>
+            </tr>
+        </table>
 
     </div>
 </div>
