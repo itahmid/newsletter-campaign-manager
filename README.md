@@ -12,7 +12,6 @@ todo
 - campaign searches
 - types/companies/staff
 - fix the checkbox for the unsubscriber link in newsletter creation
-- add tests
 - more robust error handling
 - fix styling of tables
 - fix the campaign search styling

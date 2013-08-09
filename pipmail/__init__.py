@@ -2,6 +2,7 @@ import os
 import time
 from flask import Flask, redirect, request, url_for, render_template, \
     send_from_directory, session
+from flask.ext.mail import Mail
 import settings
 from helpers import login_required, collect_form_errors
 from sql import mysql, get_sql
@@ -17,7 +18,9 @@ app.config.setdefault('MYSQL_DATABASE_PASSWORD', settings.PASSWORD)
 app.config.setdefault('MYSQL_DATABASE_DB', settings.DB)
 app.config.setdefault('MYSQL_DATABASE_CHARSET', 'utf8')
 
+mail = Mail()
 mysql.init_app(app)
+mail.init_app(app)
 
 @app.route('/favicon.ico')
 def favicon():

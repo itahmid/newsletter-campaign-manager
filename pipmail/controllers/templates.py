@@ -20,35 +20,39 @@ def index(page):
 @mod.route('/create_template', methods=['POST', 'GET'])
 @login_required
 def create():
-    nid = request.args.get('nid')
     form_errors = None
     conn, cur = get_sql()
     if request.method == 'POST':
+        for k,v in request.form.iteritems():
+            print k,v
         form_errors = collect_form_errors(request.form)
-        if not form_errors:
+        if not len(form_errors) > 1:
             form_items = {}
             for k, v in request.form.iteritems():
+                print "key = {} value = {}".format(k,v)
                 if (k == 'editor1'):
-                    form_items['html'] = request.form['editor1']
-                else:
+                    form_items['html'] = request.form[k]
+                elif (k == 'file'):
+                    form_items['preview'] = request.form[k]
+                elif (v != ''):
                     form_items[k] = v
+
             form_items['author'] = session.get('current_user')
             form_items['date_added'] = int(time())
             tid = insert_row('template', form_items, conn, cur)
             if not tid:
                 return render_template('server_error.html')
-            return redirect(url_for('templates.edit', nid=nid, tid=tid))
-    return render_template('templates/details.html', nid=nid, form_errors=form_errors)
+            return redirect(url_for('templates.edit', tid=tid))
+    return render_template('templates/details.html', form_errors=form_errors)
 
 @mod.route('/edit_template', methods=['GET'])
 @login_required
-def edit(tid):
+def edit():
     conn, cur = get_sql()
     if request.method == 'GET':
-        nid = request.args.get('nid')
         tid = request.args.get('tid')
-        tmplt = Template(conn, cur, tid).info
-        return render_template('templates/details.html', nid=nid, tid=tid, tmplt=tmplt)
+        tmplt = Template(conn, cur, tid).record
+        return render_template('templates/details.html', tid=tid, tmplt=tmplt)
 
 @mod.route('/delete_template/<int:tid>', methods=['GET'])
 @login_required

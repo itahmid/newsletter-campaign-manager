@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-{% from '_macros.html' import steps with context %}
-{{ steps('3', nid)}}
+
 <!DOCTYPE html>
 
 <script type=text/javascript src="{{ url_for('static',
 filename='ckeditor/ckeditor.js') }}"></script>
-<br>
 
 <form action="{{ url_for('templates.create')}}" method="post">
     <table class="table table-bordered table-striped table-condensed">
@@ -20,7 +18,7 @@ filename='ckeditor/ckeditor.js') }}"></script>
             <td>
                 <label>Enter a name for this template</label>
                 <input width="200" style="width: 200px" name="name" type="text"
-                            id="name" value="{{ lst['name'] if editing else ''}}" />
+                            id="name" value="{{ tmplt['name'] if tid else ''}}" />
             </td>
 
         </tr>
@@ -28,25 +26,32 @@ filename='ckeditor/ckeditor.js') }}"></script>
         <tr>
             <th>Content</th>
         </tr>
+
         <tr>
             <td>
-                <label>Enter the template content</label>
+                <label>Enter the template html</label>
                 <textarea cols="80" id="editor1" name="editor1" rows="10">{{tmplt['html'] if tid else ''}}</textarea>
                 <script>CKEDITOR.replace('editor1');</script>
 
             </td>
         </tr>
-
         <tr>
-            <td colspan="3">
-                <input type="submit" class="btn btn-success pull-left" 
+            <th>Preview Image</th>
+        </tr>
+        <tr>
+            <td>
+                <form action="" method="post" enctype="multipart/form-data">
+                    <input size=30 type="file" name="preview">
+                    <br>
+                    <input type="submit" value="Upload" class="btn btn-primary"></form>
+                <br></td>
+        </tr>
+
+    </table>
+    <input type="submit" class="btn btn-success pull-left" 
                             value="Save &amp; Continue" />
-            </form>
-        </td>
+</form>
 
-    </tr>
-
-</table>
 <!-- 
     Available placeholders:
     <ul style="list-style-type: none;">
