@@ -7,20 +7,17 @@
 {% endif %}
 <div class="row-fluid">
     <div class="span1">
-
         <table class="table-condensed">
-
             <tr>
-               
                 <td>
-                    <label style="font-weight:bold;">
-                        Name</label>
-                    <input width="200" style="width: 200px" name="name" type="text"
+
+                    <label style="font-weight:bold;">Name</label>
+                    <input style="width: 200px" name="name" type="text"
                             id="name" value="{{ lst['name'] if editing else ''}}" placeholder="{{ lst['name'] if lid else ''}}" />
                 </td>
-
-                <td><label style="font-weight:bold;">Description</label>
-                    <input width="200" style="width: 300px" name="description" type="text" id="description" value="{{ lst['description'] if lid else '' }}" />
+                <td>
+                    <label style="font-weight:bold;">Description</label>
+                    <input style="width: 300px" name="description" type="text" id="description" placeholder="{{ lst['description'] if lid else '' }}" />
                 </td>
             </tr>
         </table>
@@ -34,7 +31,11 @@
         <br>
         <br>
         <br>
-        <div class="btn-group pull-left">
+        {% if not recips %}
+      
+           This list currently does not have any recipients.
+            {% else %}
+            <div class="btn-group pull-left">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                 Actions
                 <span class="caret"></span>
@@ -52,10 +53,6 @@
                 </li>
             </ul>
         </div>
-        <br>
-        {% if not recips %}
-            lololol
-            {% else %}
         <table class="table table-striped table-condensed">
             <thead>
                 <tr>
